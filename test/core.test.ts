@@ -7,7 +7,7 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { compactIndex, createCodeModeServer, DESCRIPTION_BUDGET, runInSandbox, type SandboxApi } from '../src/index.ts';
 
-const fake = fileURLToPath(new URL('./fake-upstream.ts', import.meta.url));
+const fake = fileURLToPath(new URL('./helpers/fake-upstream.ts', import.meta.url));
 const noTools: SandboxApi = { namespace: 'codemode', ids: [], callTool: () => Promise.resolve(null) };
 
 function firstText(res: CallToolResult): string {

@@ -2,7 +2,7 @@
 import { writeFileSync } from 'node:fs';
 import type { AgentRun, PathId } from '../runners/agent.ts';
 import { buildCallsSections } from '../calls/report.ts';
-import type { BenchService, BenchVariant } from '../types.ts';
+import type { BenchService, BenchVariant } from '../types/index.ts';
 import { familiesIn, modelFamily, modelsIn, runnersOf } from './families.ts';
 import { loadCalls, loadRecords, overviewFile, reportFile, type RunRecord } from './records.ts';
 
@@ -291,7 +291,7 @@ export function buildOverview(all: BenchService[]): string {
     );
     for (const svc of all) {
       const recs = loadRecords(svc.id);
-      const link = `[services/${svc.id}/RESULTS.md](services/${svc.id}/RESULTS.md)`;
+      const link = `[suites/${svc.id}/RESULTS.md](suites/${svc.id}/RESULTS.md)`;
       for (const variant of svc.variants) {
         const vr = recs.filter((r) => r.variant === variant.id && modelFamily(r.model) === family);
         for (const model of [...new Set(vr.map((r) => r.model))]) {

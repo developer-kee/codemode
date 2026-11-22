@@ -18,7 +18,7 @@ services/           one file per wrapped MCP server (blender, notion, windows, p
 bench/
   cli/              entrypoints: run, calls, report, validate
   lib/              reusable harness: runners (Claude, DSH), per-call benchmark, report building
-  services/<id>/    one service's tasks, cases, raw results, archive and generated RESULTS.md
+  suites/<id>/      one service's tasks, cases, raw results, archive and generated RESULTS.md
   legacy/           one-off migration from the pre-layout folders
 docs/landscape.md   comparison with other Code Mode implementations
 test/               unit and end-to-end tests
@@ -61,7 +61,7 @@ A service file should end with `satisfies ServiceConfig`.
 
 ## Benchmarks
 
-Each service (Blender, Windows, Playwright) is benchmarked separately, in one folder `bench/services/<service>/` that holds its tasks, per-tool-call cases, raw runs and generated `RESULTS.md`: the upstream MCP server used directly vs the same server behind codemode, same model and tasks. Each service has named variants (`scenarios`, `calls`, and for Windows `scenarios-4-tools`). The harness is model-agnostic: every record stores the model and the runner that drove it (`claude` for Claude Code, `dsh` for DeepSeek Harness headless), `--runner` defaults from the model id, and adding a model to an existing runner needs no report changes — a new harness is one new runner. The generated overview and each service report lead with a **Compare models** matrix: one column per model, showing token change, codemode/direct totals and pass counts, so providers can be compared side by side before the detailed tables.
+Each service (Blender, Windows, Playwright) is benchmarked separately, in one folder `bench/suites/<service>/` that holds its tasks, per-tool-call cases, raw runs and generated `RESULTS.md`: the upstream MCP server used directly vs the same server behind codemode, same model and tasks. Each service has named variants (`scenarios`, `calls`, and for Windows `scenarios-4-tools`). The harness is model-agnostic: every record stores the model and the runner that drove it (`claude` for Claude Code, `dsh` for DeepSeek Harness headless), `--runner` defaults from the model id, and adding a model to an existing runner needs no report changes — a new harness is one new runner. The generated overview and each service report lead with a **Compare models** matrix: one column per model, showing token change, codemode/direct totals and pass counts, so providers can be compared side by side before the detailed tables.
 
 Latest means of total tokens, codemode vs direct (all paths passed their objective checks):
 

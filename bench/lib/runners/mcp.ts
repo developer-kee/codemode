@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import type { BenchService, BenchVariant } from '../types.ts';
+import type { BenchService, BenchVariant } from '../types/index.ts';
 import type { PathId } from './agent.ts';
 
 /** Repository root, from `bench/lib/runners/mcp.ts`. */

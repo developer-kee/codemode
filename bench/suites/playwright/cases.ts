@@ -1,4 +1,4 @@
-import type { CallCase, CallDef } from '../../lib/types.ts';
+import type { CallCase, CallDef } from '../../lib/types/index.ts';
 import { ORIGIN, resetFixture } from './fixture.ts';
 
 const nav = (path: string): NonNullable<CallCase['before']> => [{ tool: 'browser_navigate', args: { url: `${ORIGIN}${path}` } }];

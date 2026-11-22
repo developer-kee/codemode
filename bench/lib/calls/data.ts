@@ -1,5 +1,5 @@
 // The `calls-latest.json` payload: what `bench:calls` records so reports can be rebuilt without rerunning.
-import type { CallDef, SkippedTool } from '../types.ts';
+import type { CallDef, SkippedTool } from '../types/index.ts';
 import type { LatencyResult } from './latency.ts';
 import type { StaticCosts } from './static.ts';
 

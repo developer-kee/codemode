@@ -1,6 +1,6 @@
 import { mkdirSync, rmSync } from 'node:fs';
 import { callsVariant } from '../../lib/calls/index.ts';
-import type { BenchService, BenchVariant } from '../../lib/types.ts';
+import type { BenchService, BenchVariant } from '../../lib/types/index.ts';
 import { windowsCalls } from './cases.ts';
 import { makeTasks, SANDBOX } from './tasks.ts';
 

@@ -25,7 +25,7 @@ export const LEGACY_VARIANT = 'scenarios';
 
 /** `bench/`, from `bench/lib/report/records.ts`. */
 const benchRoot = fileURLToPath(new URL('../../', import.meta.url));
-const servicesRoot = `${benchRoot}services/`;
+const servicesRoot = `${benchRoot}suites/`;
 
 export const resultsDir = (serviceId: string): string => `${servicesRoot}${serviceId}/results/`;
 export const callsFile = (serviceId: string): string => `${servicesRoot}${serviceId}/calls-latest.json`;

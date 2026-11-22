@@ -1,5 +1,5 @@
 import { callsVariant } from '../../lib/calls/index.ts';
-import type { BenchService, BenchVariant, Task } from '../../lib/types.ts';
+import type { BenchService, BenchVariant, Task } from '../../lib/types/index.ts';
 import { blenderCalls } from './cases.ts';
 import { blenderExec, resetScene, seedScene, snapshotScene } from './socket.ts';
 import { specs } from './tasks.ts';

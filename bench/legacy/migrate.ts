@@ -36,11 +36,11 @@ interface Mapping {
   variant: string;
 }
 const mappings: Mapping[] = [
-  { from: 'blender', to: join('services', 'blender'), variant: 'scenarios' },
-  { from: 'blender-calls', to: join('services', 'blender'), variant: 'calls' },
-  { from: 'windows-full', to: join('services', 'windows'), variant: 'scenarios' },
-  { from: 'windows', to: join('services', 'windows'), variant: 'scenarios-4-tools' },
-  { from: 'windows-calls', to: join('services', 'windows'), variant: 'calls' },
+  { from: 'blender', to: join('suites', 'blender'), variant: 'scenarios' },
+  { from: 'blender-calls', to: join('suites', 'blender'), variant: 'calls' },
+  { from: 'windows-full', to: join('suites', 'windows'), variant: 'scenarios' },
+  { from: 'windows', to: join('suites', 'windows'), variant: 'scenarios-4-tools' },
+  { from: 'windows-calls', to: join('suites', 'windows'), variant: 'calls' },
 ];
 
 let actions = 0;

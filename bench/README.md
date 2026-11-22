@@ -4,17 +4,17 @@ Each service wrapped by codemode is benchmarked **separately**. For every servic
 
 | Service | Folder | Results |
 |---|---|---|
-| Blender | [blender/](blender/) | [blender/RESULTS.md](blender/RESULTS.md) |
-| Windows ([Windows-MCP](https://github.com/CursorTouch/Windows-MCP)) | [windows/](windows/) | [windows/RESULTS.md](windows/RESULTS.md) |
-| Playwright ([@playwright/mcp](https://github.com/microsoft/playwright-mcp), local test site) | [playwright/](playwright/) | [playwright/RESULTS.md](playwright/RESULTS.md) |
+| Blender | [suites/blender/](suites/blender/) | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
+| Windows ([Windows-MCP](https://github.com/CursorTouch/Windows-MCP)) | [suites/windows/](suites/windows/) | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
+| Playwright ([@playwright/mcp](https://github.com/microsoft/playwright-mcp), local test site) | [suites/playwright/](suites/playwright/) | [suites/playwright/RESULTS.md](suites/playwright/RESULTS.md) |
 
-[RESULTS.md](RESULTS.md) is the overview, one row per service, variant and model (grouped by model family). All `RESULTS.md` files are generated from the raw runs; do not edit them by hand.
+[RESULTS.md](RESULTS.md) is the overview: a model comparison matrix, then one row per service, variant and model. All `RESULTS.md` files are generated from the raw runs; do not edit them by hand.
 
 > **Read the warning for a service before running its benchmark.** Blender runs wipe the open scene. Windows runs give the model real PowerShell and file access on your PC (the `scenarios` variant exposes every Windows-MCP tool, including screenshots and input). Playwright drives a headless browser limited to a local test site. The warning is printed when a run starts and is repeated at the top of each service's `RESULTS.md`.
 
 ## Layout
 
-Three layers: entrypoints (`cli/`), the reusable harness (`lib/`), and one folder per service (`services/<id>/`), matching `services/<id>.ts` at the repo root.
+Three layers: entrypoints (`cli/`), the reusable harness (`lib/`), and one folder per suite (`suites/<id>/`), matching `services/<id>.ts` at the repo root.
 
 ```
 bench/
@@ -27,11 +27,11 @@ bench/
     report.ts           npm run bench:report                   (rebuild every RESULTS.md)
     validate.ts         npm run bench:validate                 (offline consistency check)
   lib/
-    types.ts            BenchService, BenchVariant, Task, CallDef, ...
+    types/              BenchService, BenchVariant, Task, CallDef, ... (index.ts re-exports)
     runners/            AgentRunner and the runners: agent.ts, mcp.ts, claude.ts, dsh.ts, index.ts
     calls/              static cost, latency, connections, the `calls` variant, report sections
     report/             run records, model families, markdown summaries
-  services/<id>/
+  suites/<id>/
     index.ts            BenchService: warning, notes, preflight, and its named variants
     tasks.ts            scenario tasks, each with its own setup and objective check
     cases.ts            per-tool-call cases (data only)
@@ -40,7 +40,7 @@ bench/
     results-archive/    superseded runs, kept for reference (not in the reports)
     calls-latest.json   output of `bench:calls`: static definition costs, latency, coverage
     RESULTS.md          generated report for this service
-  legacy/migrate.ts     one-off migration from the pre-services layout
+  legacy/migrate.ts     one-off migration from the earlier layout
   work/                 scratch configs for a run (git-ignored)
 ```
 
@@ -95,7 +95,7 @@ For each repeat, task and path (path order alternates between repeats so cache w
 1. **Prepare**: the task resets the tool's world to a known state and seeds it if needed (Blender: empty and seed the scene over the addon socket; Windows: recreate a sandbox folder with seeded files).
 2. **Run** the runner — Claude Code headless (`claude -p --output-format stream-json --verbose`) or DSH headless (`dsh headless --json`) — with only that path's MCP server, built-in tools off, no skills or user/project settings, no session persistence, a fixed one-line system prompt per service, and a per-run spend cap where the runner supports one (`--max-budget-usd`, default $2). The working directory is an empty folder (`bench/work/`, git-ignored) so no `CLAUDE.md`/`AGENTS.md` is picked up.
 3. **Verify**: the task inspects the real result (a Blender scene snapshot, or files on disk) with a check written in code. A run passes only if the state is right and, where asked, the model's one-line answer contains the correct number. The model's own claim of success is never used.
-4. **Record** one JSON line in `bench/services/<service>/results/<batch>.jsonl`; `cli/report.ts` aggregates all batches into `RESULTS.md`.
+4. **Record** one JSON line in `bench/suites/<service>/results/<batch>.jsonl`; `cli/report.ts` aggregates all batches into `RESULTS.md`.
 
 ### Metrics
 
@@ -190,22 +190,22 @@ Add an entry in `<service>/tasks.ts` (Blender: a spec with `seed`, `prompt`, `ve
 
 Keep tasks deterministic: fixed seed data, no network or asset-library dependence, tolerances on numeric checks. Run `npx tsc` and `npm run bench:validate` after the change.
 
-To add a per-tool-call case, add an entry in `bench/services/<id>/cases.ts`: `tool` and `args` give the deterministic latency measurement, `before` any setup calls, and `prompt` plus `expect` (or `check`) make it a task of the `calls` variant. Every upstream tool must either have a case or be listed in `skipped` with the reason.
+To add a per-tool-call case, add an entry in `bench/suites/<id>/cases.ts`: `tool` and `args` give the deterministic latency measurement, `before` any setup calls, and `prompt` plus `expect` (or `check`) make it a task of the `calls` variant. Every upstream tool must either have a case or be listed in `skipped` with the reason.
 
 ## Add a service
 
 1. Add the service to `services/<id>.ts` (see the main README).
-2. Create `bench/services/<id>/` with
+2. Create `bench/suites/<id>/` with
    - `tasks.ts`: the scenario tasks;
    - `cases.ts`: a `CallDef` (`cases`, `skipped`, `reset`), data only;
-   - `index.ts`: a `BenchService` ([lib/types.ts](lib/types.ts)) with the `warning`, `notes`, `preflight`, and its `variants`. Each variant gives the direct upstream command, an env for the codemode wrapper so both paths expose the same tools, a system prompt, `notes` and `tasks`. Define the `scenarios` variant, then add `callsVariant(scenarios, cases)` ([lib/calls/variant.ts](lib/calls/variant.ts)) to get the `calls` variant. Add more variants (like Windows' `scenarios-4-tools`) when the same tasks should run against a different tool set.
+   - `index.ts`: a `BenchService` ([lib/types/](lib/types/)) with the `warning`, `notes`, `preflight`, and its `variants`. Each variant gives the direct upstream command, an env for the codemode wrapper so both paths expose the same tools, a system prompt, `notes` and `tasks`. Define the `scenarios` variant, then add `callsVariant(scenarios, cases)` ([lib/calls/variant.ts](lib/calls/variant.ts)) to get the `calls` variant. Add more variants (like Windows' `scenarios-4-tools`) when the same tasks should run against a different tool set.
 3. Register it in [registry.ts](registry.ts). `npm run bench -- --list` should show it, and `npm run bench:validate` should pass for the new definitions.
 
 Prefer tasks that are safe to repeat and fully checkable from outside the model. Think about side effects first and say them in `warning`.
 
 ## Raw data format
 
-`bench/services/<service>/results/<batch>.jsonl`, one object per run, all variants of the service together:
+`bench/suites/<service>/results/<batch>.jsonl`, one object per run, all variants of the service together:
 
 ```
 { batch, variant, task, model, runner, repeat, pass, verdict,
@@ -223,7 +223,7 @@ Prefer tasks that are safe to repeat and fully checkable from outside the model.
 - **Services are not comparable with each other.** Task difficulty, the number of upstream tools and the benchmark's tool whitelist differ per service.
 - **The saving is mostly tool-definition overhead.** Direct sends every upstream tool schema each turn; codemode sends one compact index. Where the model uses only one upstream tool anyway (Blender: run Python), the benchmark does not exercise **chaining several different upstream tools in one script**, which is where codemode is meant to help most.
 - **`scenarios-4-tools` understates the schema overhead.** The real Windows-MCP server offers 20 tools; that variant exposes four. The `scenarios` variant exposes all 20.
-- **The description budget is now guarded, not silently truncated.** Claude Code cuts MCP tool descriptions at about 2,048 characters, and the first design put the whole typed API in the `execute_code` description, so the model never saw the function list. Since the compact index landed, the description fits: `bench:calls` records its exact length and flags an overflow (Playwright: 1,709 characters for 25 tools), and `bench:validate` fails if a recorded description exceeds the cap. Runs in `bench/services/<service>/results-archive/v1-truncated-description/` predate the fix and their savings are **upper bounds**; current results are not. See [../docs/landscape.md](../docs/landscape.md).
+- **The description budget is now guarded, not silently truncated.** Claude Code cuts MCP tool descriptions at about 2,048 characters, and the first design put the whole typed API in the `execute_code` description, so the model never saw the function list. Since the compact index landed, the description fits: `bench:calls` records its exact length and flags an overflow (Playwright: 1,709 characters for 25 tools), and `bench:validate` fails if a recorded description exceeds the cap. Runs in `bench/suites/<service>/results-archive/v1-truncated-description/` predate the fix and their savings are **upper bounds**; current results are not. See [../docs/landscape.md](../docs/landscape.md).
 - **Prompt cache.** Cache-read tokens depend on caching behaviour and vary between runs; that is why `Fresh input`, `Cache read` and `Total` are shown separately.
 - **Telemetry.** The upstream servers send their own telemetry on both paths. It was left on to keep the paths identical.
 - **Task difficulty.** All tasks are doable with one script. Harder or more tool-diverse tasks may change the picture, in either direction.

@@ -1,4 +1,4 @@
-import type { Task, Verdict } from '../../lib/types.ts';
+import type { Task, Verdict } from '../../lib/types/index.ts';
 import { ORIGIN, resetFixture, submissions, toolsInStockTotal, topRatedId } from './fixture.ts';
 
 const fail = (detail: string): Verdict => ({ pass: false, detail });

@@ -2,7 +2,7 @@
 import { fileURLToPath } from 'node:url';
 import type { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { connectUpstream } from '../../../src/upstream.ts';
-import type { BenchService, BenchVariant } from '../types.ts';
+import type { BenchService, BenchVariant } from '../types/index.ts';
 
 /** Repository root, from `bench/lib/calls/connect.ts`. */
 const root = fileURLToPath(new URL('../../../', import.meta.url));

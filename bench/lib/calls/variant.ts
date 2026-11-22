@@ -1,5 +1,5 @@
 // Model-driven per-call variant: one task per upstream tool call.
-import type { BenchVariant, CallDef, Task, Verdict } from '../types.ts';
+import type { BenchVariant, CallDef, Task, Verdict } from '../types/index.ts';
 
 /** The `calls` variant of a service: one task per case that has a prompt, on the same upstream setup as `base`. */
 export function callsVariant(base: BenchVariant, def: CallDef): BenchVariant {

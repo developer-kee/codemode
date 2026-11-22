@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import type { CallDef } from '../../lib/types.ts';
+import type { CallDef } from '../../lib/types/index.ts';
 import { SANDBOX } from './tasks.ts';
 
 const dir = `${SANDBOX}-calls`;

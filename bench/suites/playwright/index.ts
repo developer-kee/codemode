@@ -1,5 +1,5 @@
 import { callsVariant } from '../../lib/calls/index.ts';
-import type { BenchService, BenchVariant } from '../../lib/types.ts';
+import type { BenchService, BenchVariant } from '../../lib/types/index.ts';
 import { playwrightCalls } from './cases.ts';
 import { ORIGIN, startFixture } from './fixture.ts';
 import { tasks } from './tasks.ts';

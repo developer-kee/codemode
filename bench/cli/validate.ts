@@ -18,7 +18,7 @@ import {
 } from '../lib/report/index.ts';
 import { runners } from '../lib/runners/index.ts';
 import { services } from '../registry.ts';
-import type { BenchService, BenchVariant } from '../lib/types.ts';
+import type { BenchService, BenchVariant } from '../lib/types/index.ts';
 
 type Level = 'error' | 'warn';
 interface Issue {
@@ -63,7 +63,7 @@ function checkVariant(service: BenchService, variant: BenchVariant): void {
 function checkServiceDefinition(service: BenchService): void {
   const scope = service.id;
   if (!/^[a-z0-9_-]+$/.test(service.id)) error(scope, 'service id must be lower-case letters, digits, "-" or "_"');
-  if (!existsSync(`${benchRoot}services/${service.id}/`)) error(scope, 'missing service folder under bench/services/');
+  if (!existsSync(`${benchRoot}suites/${service.id}/`)) error(scope, 'missing suite folder under bench/suites/');
   if (!existsSync(`${benchRoot}../services/${service.id}.ts`)) warn(scope, `no services/${service.id}.ts (the wrapper CLI has no such service)`);
   const variantIds = new Set<string>();
   for (const v of service.variants) {
@@ -232,9 +232,9 @@ function checkReports(service: BenchService): void {
   const expected = lf(buildServiceReport(service));
   const actual = readText(reportFile(service.id));
   if (actual === undefined) {
-    error(`services/${service.id}/RESULTS.md`, 'missing generated report');
+    error(`suites/${service.id}/RESULTS.md`, 'missing generated report');
   } else if (lf(actual) !== expected) {
-    error(`services/${service.id}/RESULTS.md`, 'is out of date; run npm run bench:report');
+    error(`suites/${service.id}/RESULTS.md`, 'is out of date; run npm run bench:report');
   }
 }
 

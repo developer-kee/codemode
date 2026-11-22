@@ -1,4 +1,4 @@
-import type { Verdict } from '../../lib/types.ts';
+import type { Verdict } from '../../lib/types/index.ts';
 import type { ObjectSnapshot, SceneSnapshot } from './socket.ts';
 
 export interface TaskSpec {

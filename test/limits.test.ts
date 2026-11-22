@@ -13,7 +13,7 @@ import {
   type ServiceConfig,
 } from '../src/index.ts';
 
-const fake = fileURLToPath(new URL('./fake-upstream.ts', import.meta.url));
+const fake = fileURLToPath(new URL('./helpers/fake-upstream.ts', import.meta.url));
 
 function firstText(res: CallToolResult): string {
   const c = res.content[0];

@@ -3,7 +3,7 @@ import { performance } from 'node:perf_hooks';
 import type { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { toIdentifier } from '../../../src/generate.ts';
-import type { CallCase, CallDef } from '../types.ts';
+import type { CallCase, CallDef } from '../types/index.ts';
 
 export interface Stats {
   median: number;
