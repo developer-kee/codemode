@@ -1,5 +1,5 @@
-import type { ServiceConfig } from '../src/types.ts';
-import { npmServer } from '../servers/resolve.ts';
+import type { ServiceConfig } from '../../src/types.ts';
+import { npmServer } from '../../servers/resolve.ts';
 
 // Browser automation via https://github.com/microsoft/playwright-mcp (npm: @playwright/mcp), pinned for reproducible
 // results. Defaults to an isolated (in-memory) profile.

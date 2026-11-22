@@ -3,7 +3,7 @@
 // Tokens are saved in your user profile, not in the repo; run it again if the sign-in expires.
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { login } from '../src/oauth.ts';
-import { listServices } from '../src/services.ts';
+import { listServices, servicePath } from '../src/services.ts';
 import type { ServiceConfig } from '../src/types.ts';
 
 const dir = fileURLToPath(new URL('../services/', import.meta.url));
@@ -14,7 +14,7 @@ if (service === undefined || !available.includes(service)) {
   process.exit(1);
 }
 
-const config = ((await import(pathToFileURL(`${dir}${service}.ts`).href)) as { default?: ServiceConfig }).default;
+const config = ((await import(pathToFileURL(`${servicePath(dir, service)}.ts`).href)) as { default?: ServiceConfig }).default;
 if (!config || !('url' in config.upstream) || !config.upstream.oauth) {
   console.error(`${service} does not use OAuth (its service file has no upstream.oauth), so there is nothing to sign in to.`);
   process.exit(1);

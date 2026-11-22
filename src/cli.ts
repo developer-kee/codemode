@@ -2,14 +2,14 @@
 // Usage: node src/cli.ts <service> [--read-only] [--update-lock]
 //        node src/cli.ts --list
 //
-// <service> is a file in services/, or in a folder there: `blender`, `notion/oauth`. Environment:
+// <service> is a folder in services/ (`blender`), or a file in one (`notion/oauth`). Environment:
 //   CODEMODE_READ_ONLY=1       same as --read-only
 //   CODEMODE_LOCK=enforce|warn|off|update   tool-definition lock mode (default enforce; --update-lock = update)
-//   CODEMODE_REQUIRE_LOCK=1    refuse to start when services/<service>.lock.json is missing
+//   CODEMODE_REQUIRE_LOCK=1    refuse to start when the service's lock file is missing
 //   CODEMODE_AUDIT=<file>      append a redacted audit trail (no code, arguments or results) to this file
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { runCodeModeServer } from './server.ts';
-import { listServices, SERVICE_NAME } from './services.ts';
+import { listServices, SERVICE_NAME, servicePath } from './services.ts';
 import type { LockMode } from './toollock.ts';
 import type { ServiceConfig } from './types.ts';
 
@@ -29,10 +29,10 @@ if (!SERVICE_NAME.test(arg) || !available.includes(arg)) {
   process.exit(1);
 }
 
-const mod = (await import(pathToFileURL(`${dir}${arg}.ts`).href)) as { default?: ServiceConfig };
+const mod = (await import(pathToFileURL(`${servicePath(dir, arg)}.ts`).href)) as { default?: ServiceConfig };
 const config = mod.default;
 if (!config?.upstream) {
-  console.error(`services/${arg}.ts must default-export a ServiceConfig`);
+  console.error(`services/${arg} must default-export a ServiceConfig`);
   process.exit(1);
 }
 
@@ -45,7 +45,7 @@ if (!['enforce', 'warn', 'off', 'update'].includes(requested)) {
   process.exit(1);
 }
 const lock = {
-  path: `${dir}${arg}.lock.json`,
+  path: `${servicePath(dir, arg)}.lock.json`,
   mode: requested as LockMode,
   require: ['1', 'true'].includes(process.env['CODEMODE_REQUIRE_LOCK'] ?? ''),
 };

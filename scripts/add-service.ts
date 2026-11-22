@@ -1,4 +1,4 @@
-﻿// <name> may be grouped: `notion/oauth` creates services/notion/oauth.ts.
+﻿// `linear` creates services/linear/index.ts; a grouped name such as `notion/oauth` creates services/notion/oauth.ts.
 // Usage: npm run add -- <name> <command> [args...]      e.g.  npm run add -- linear npx -y some-mcp
 //        npm run add -- <name> --url <https://...>
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -12,9 +12,10 @@ if (name === undefined || !SERVICE_NAME.test(name) || first === undefined) {
   console.error('Usage: npm run add -- <name> <command> [args...] | --url <url>');
   process.exit(1);
 }
-const file = fileURLToPath(new URL(`../services/${name}.ts`, import.meta.url));
+const rel = name.includes('/') ? `${name}.ts` : `${name}/index.ts`;
+const file = fileURLToPath(new URL(`../services/${rel}`, import.meta.url));
 if (existsSync(file)) {
-  console.error(`services/${name}.ts already exists`);
+  console.error(`services/${rel} already exists`);
   process.exit(1);
 }
 const url = rest[0];
@@ -25,7 +26,7 @@ if (first === '--url' && url === undefined) {
 const upstream: Upstream = first === '--url' ? { url: url ?? '' } : { command: first, args: rest };
 
 mkdirSync(dirname(file), { recursive: true });
-const up = '../'.repeat(name.split('/').length);
+const up = '../'.repeat(rel.split('/').length);
 writeFileSync(
   file,
   `import type { ServiceConfig } from '${up}src/types.ts';
@@ -37,5 +38,5 @@ export default {
 `,
 );
 console.log(
-  `Created services/${name}.ts\nRegister: claude mcp add codemode-${name.replaceAll('/', '-')} -- node ${fileURLToPath(new URL('../src/cli.ts', import.meta.url))} ${name}`,
+  `Created services/${rel}\nRegister: claude mcp add codemode-${name.replaceAll('/', '-')} -- node ${fileURLToPath(new URL('../src/cli.ts', import.meta.url))} ${name}`,
 );

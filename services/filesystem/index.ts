@@ -1,6 +1,6 @@
 import { delimiter } from 'node:path';
-import type { ServiceConfig } from '../src/types.ts';
-import { npmServer } from '../servers/resolve.ts';
+import type { ServiceConfig } from '../../src/types.ts';
+import { npmServer } from '../../servers/resolve.ts';
 
 // The reference Filesystem server, https://github.com/modelcontextprotocol/servers (npm: @modelcontextprotocol/server-filesystem),
 // pinned for reproducible results. It can only touch the directories it is started with.

@@ -1,5 +1,5 @@
-import type { ServiceConfig } from '../src/types.ts';
-import { pythonServer } from '../servers/resolve.ts';
+import type { ServiceConfig } from '../../src/types.ts';
+import { pythonServer } from '../../servers/resolve.ts';
 
 export default {
   name: 'blender',

@@ -16,6 +16,7 @@ import {
   runnerOf,
   type RunRecord,
 } from '../lib/report/index.ts';
+import { servicePath } from '../../src/services.ts';
 import { runners } from '../lib/runners/index.ts';
 import { services } from '../registry.ts';
 import type { BenchService, BenchVariant } from '../lib/types/index.ts';
@@ -65,7 +66,7 @@ function checkServiceDefinition(service: BenchService): void {
   if (!/^[a-z0-9_-]+$/.test(service.id)) error(scope, 'service id must be lower-case letters, digits, "-" or "_"');
   if (!existsSync(`${benchRoot}suites/${service.id}/`)) error(scope, 'missing suite folder under bench/suites/');
   const wrapper = service.wrapper ?? service.id;
-  if (!existsSync(`${benchRoot}../services/${wrapper}.ts`)) warn(scope, `no services/${wrapper}.ts (the wrapper CLI has no such service)`);
+  if (!existsSync(`${servicePath(`${benchRoot}../services/`, wrapper)}.ts`)) warn(scope, `no service ${wrapper} in services/ (the wrapper CLI has no such service)`);
   const variantIds = new Set<string>();
   for (const v of service.variants) {
     if (variantIds.has(v.id)) error(scope, `duplicate variant id "${v.id}"`);

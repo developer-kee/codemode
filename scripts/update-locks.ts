@@ -1,9 +1,9 @@
 // Usage: npm run lock:update [-- <service> ...]     write the locks
 //        npm run lock:verify [-- <service> ...]     check that each service still starts under its committed lock
-// Starts each service once with --update-lock so services/<service>.lock.json records exactly what its upstream
+// Starts each service once with --update-lock so the service's lock file (beside its service file) records exactly what its upstream
 // offers. Run it after you have READ what changed (git diff the lock files); the lock exists to make changes visible.
 import { fileURLToPath } from 'node:url';
-import { listServices } from '../src/services.ts';
+import { listServices, servicePath } from '../src/services.ts';
 import { readLock } from '../src/toollock.ts';
 import { connectUpstream } from '../src/upstream.ts';
 
@@ -30,7 +30,7 @@ for (const service of targets) {
     });
     await client.listTools();
     await client.close();
-    const locked = Object.keys(readLock(`${root}services/${service}.lock.json`)?.tools ?? {}).length;
+    const locked = Object.keys(readLock(`${servicePath(`${root}services/`, service)}.lock.json`)?.tools ?? {}).length;
     console.log(verify ? `${service}: starts under its lock (${locked} tools)` : `${service}: ${locked} upstream tools locked`);
   } catch (e) {
     failed++;
