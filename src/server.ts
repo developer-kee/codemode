@@ -153,7 +153,9 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       const notice = destructiveNotice(destructiveCalls);
       if (notice) console.error(`[codemode] ${notice}`);
       const text = capOutput(parts.join('\n\n') || '(no output)', maxOutputChars) + (notice ? `\n\n${notice}` : '');
-      audit.script({ script: scriptId, code, ms: performance.now() - started, calls: calls(), outputChars: text.length, ...(out.error === undefined ? {} : { error: /timed out/i.test(out.error) ? ('timeout' as const) : ('script' as const) }) });
+      // A loop cut short by the deadline reports "interrupted"; a script that waits too long reports "timed out".
+      const errorKind = out.error === undefined ? undefined : /timed out|interrupted/i.test(out.error) ? ('timeout' as const) : ('script' as const);
+      audit.script({ script: scriptId, code, ms: performance.now() - started, calls: calls(), outputChars: text.length, ...(errorKind ? { error: errorKind } : {}) });
       if (debugLog) appendFileSync(debugLog, `${JSON.stringify({ code, error: out.error, text: text.slice(0, 1500) })}\n`);
       return {
         isError: out.error !== undefined,

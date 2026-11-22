@@ -5,11 +5,12 @@
 import { createHash } from 'node:crypto';
 import { appendFileSync } from 'node:fs';
 
-export type ErrorKind = 'validation' | 'limit' | 'unknown-tool' | 'aborted' | 'upstream' | 'timeout' | 'script';
+export type ErrorKind = 'validation' | 'limit' | 'result-too-large' | 'unknown-tool' | 'aborted' | 'upstream' | 'timeout' | 'script';
 
 export function classifyError(message: string): ErrorKind {
   if (/^Invalid arguments for /.test(message)) return 'validation';
   if (/^Tool call limit reached/.test(message)) return 'limit';
+  if (/limit for one result/.test(message)) return 'result-too-large';
   if (/^Unknown tool /.test(message)) return 'unknown-tool';
   if (/timed out/i.test(message)) return 'timeout';
   if (/abort/i.test(message)) return 'aborted';
