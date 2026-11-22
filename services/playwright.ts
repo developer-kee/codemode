@@ -12,6 +12,8 @@ const allowUnsafe = process.env['CODEMODE_ALLOW_UNSAFE'] === '1';
 
 export default {
   name: 'playwright',
+  // Untrusted web pages and outbound requests; the isolated profile holds no private data. Add it if you log in.
+  capabilities: { privateData: false, untrustedContent: true, externalComms: true },
   upstream: { command: 'npx', args: ['-y', '@playwright/mcp@0.0.86', '--isolated', ...extra] },
   ...(allowUnsafe ? {} : { access: { deny: ['browser_run_code_unsafe'] } }),
 } satisfies ServiceConfig;

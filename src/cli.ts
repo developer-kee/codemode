@@ -1,21 +1,29 @@
 #!/usr/bin/env node
-// Usage: node src/cli.ts <service> [--read-only]   (service = a file in services/; or set CODEMODE_READ_ONLY=1)
+// Usage: node src/cli.ts <service> [--read-only] [--update-lock]
 //        node src/cli.ts --list
+//
+// <service> is a file in services/. Environment:
+//   CODEMODE_READ_ONLY=1       same as --read-only
+//   CODEMODE_LOCK=enforce|warn|off|update   tool-definition lock mode (default enforce; --update-lock = update)
+//   CODEMODE_REQUIRE_LOCK=1    refuse to start when services/<service>.lock.json is missing
+//   CODEMODE_AUDIT=<file>      append a redacted audit trail (no code, arguments or results) to this file
 import { readdirSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { runCodeModeServer } from './server.ts';
+import type { LockMode } from './toollock.ts';
 import type { ServiceConfig } from './types.ts';
 
 const dir = fileURLToPath(new URL('../services/', import.meta.url));
 const available = readdirSync(dir)
   .filter((f) => f.endsWith('.ts'))
   .map((f) => f.slice(0, -3));
+const FLAGS = new Set(['--read-only', '--update-lock']);
 const args = process.argv.slice(2);
-const readOnly = args.includes('--read-only') || ['1', 'true'].includes(process.env['CODEMODE_READ_ONLY'] ?? '');
-const arg = args.find((a) => a !== '--read-only');
+const flag = (name: string): boolean => args.includes(name);
+const arg = args.find((a) => !FLAGS.has(a));
 
 if (arg === undefined || arg === '--list') {
-  console.error(`Services: ${available.join(', ') || '(none)'}\nUsage: node src/cli.ts <service>`);
+  console.error(`Services: ${available.join(', ') || '(none)'}\nUsage: node src/cli.ts <service> [--read-only] [--update-lock]`);
   process.exit(arg === undefined ? 1 : 0);
 }
 if (!/^[a-z0-9_-]+$/i.test(arg) || !available.includes(arg)) {
@@ -29,5 +37,31 @@ if (!config?.upstream) {
   console.error(`services/${arg}.ts must default-export a ServiceConfig`);
   process.exit(1);
 }
+
+const readOnly = flag('--read-only') || ['1', 'true'].includes(process.env['CODEMODE_READ_ONLY'] ?? '');
 const access = readOnly ? { ...config.access, readOnly: true } : config.access;
-await runCodeModeServer({ ...config, name: `codemode-${config.name || arg}`, ...(access ? { access } : {}) });
+
+const requested = flag('--update-lock') ? 'update' : (process.env['CODEMODE_LOCK'] ?? 'enforce');
+if (!['enforce', 'warn', 'off', 'update'].includes(requested)) {
+  console.error(`CODEMODE_LOCK must be enforce, warn, off or update (got "${requested}")`);
+  process.exit(1);
+}
+const lock = {
+  path: `${dir}${arg}.lock.json`,
+  mode: requested as LockMode,
+  require: ['1', 'true'].includes(process.env['CODEMODE_REQUIRE_LOCK'] ?? ''),
+};
+const auditFile = process.env['CODEMODE_AUDIT'];
+
+try {
+  await runCodeModeServer({
+    ...config,
+    name: `codemode-${config.name || arg}`,
+    ...(access ? { access } : {}),
+    lock,
+    ...(auditFile ? { auditFile } : {}),
+  });
+} catch (e) {
+  console.error(`[codemode] ${e instanceof Error ? e.message : String(e)}`);
+  process.exit(1);
+}

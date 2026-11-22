@@ -10,6 +10,8 @@ const whitelist = process.env['CODEMODE_WINDOWS_TOOLS']?.trim();
 
 export default {
   name: 'windows',
+  // Shell, files, registry, screenshots and network access, driven by whatever text the model has read.
+  capabilities: { privateData: true, untrustedContent: true, externalComms: true },
   upstream: {
     command: 'uvx',
     args: ['windows-mcp@0.8.5', 'serve', ...(whitelist ? ['--tools', whitelist] : [])],

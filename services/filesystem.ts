@@ -10,6 +10,8 @@ const dirs = (process.env['CODEMODE_FILESYSTEM_DIRS'] ?? '').split(delimiter).fi
 
 export default {
   name: 'filesystem',
+  // Reads and writes the allowed folders only; no way to send anything out.
+  capabilities: { privateData: true, untrustedContent: true, externalComms: false },
   upstream: {
     command: 'npx',
     args: ['-y', '@modelcontextprotocol/server-filesystem@2.4.0', ...(dirs.length > 0 ? dirs : [process.cwd()])],

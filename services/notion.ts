@@ -10,6 +10,8 @@ import type { ServiceConfig } from '../src/types.ts';
 // This wrapper can create, edit and trash pages. Restrict it with `access` (or `--read-only`) if it should only look.
 export default {
   name: 'notion',
+  // Private pages, text others wrote, and pages that others can read; no network access beyond Notion itself.
+  capabilities: { privateData: true, untrustedContent: true, externalComms: false },
   // Only NOTION_TOKEN is handed to the server; the wrapper's other environment variables are not.
   upstream: { command: 'npx', args: ['-y', '@notionhq/notion-mcp-server@2.6.1'], passEnv: ['NOTION_TOKEN'] },
 } satisfies ServiceConfig;

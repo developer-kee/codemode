@@ -8,9 +8,12 @@ import { z } from 'zod';
 import { compactIndex, describeExecuteCode, GET_API_DESCRIPTION, headerBudget, type CompactIndex } from './describe.ts';
 import { filterTools } from './access.ts';
 import { assignIdentifiers, generateApi } from './generate.ts';
+import { classifyError, createAudit } from './audit.ts';
+import { trifectaWarning } from './capabilities.ts';
 import { createLimiter } from './limiter.ts';
 import { capOutput } from './output.ts';
 import { createStore } from './store.ts';
+import { applyLock } from './toollock.ts';
 import { runInSandbox } from './sandbox.ts';
 import { connectUpstream, listAllTools, unwrapResult } from './upstream.ts';
 import type { ServiceConfig } from './types.ts';
@@ -38,10 +41,23 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
   const maxConcurrentCalls = limits?.maxConcurrentCalls ?? 8;
   const maxOutputChars = limits?.maxOutputChars ?? 20_000;
   const store = createStore(limits?.maxStoreChars);
-  const logFile = process.env['CODEMODE_LOG'];
-  if (logFile) console.error(`[codemode] CODEMODE_LOG is set: every script and its result is appended in plain text to ${logFile}`);
+  // Debugging aid, off by default: records every script and its result in plain text. Not an audit log.
+  const debugLog = process.env['CODEMODE_DEBUG_LOG'];
+  if (debugLog) console.error(`[codemode] CODEMODE_DEBUG_LOG is set: every script and its result is appended in plain text to ${debugLog}`);
+  const audit = createAudit(config.auditFile);
+  const warning = trifectaWarning(name, config.capabilities, config.access);
+  if (warning) console.error(`[codemode] warning: ${warning}`);
   const client = await connectUpstream(upstream);
-  const tools = filterTools(await listAllTools(client), config.access);
+  const offered = await listAllTools(client);
+  if (config.lock) {
+    try {
+      applyLock(name, offered, config.lock);
+    } catch (e) {
+      await client.close();
+      throw e;
+    }
+  }
+  const tools = filterTools(offered, config.access);
   const idOf = assignIdentifiers(tools.map((t) => t.name));
   const { dts, names, perTool } = await generateApi(tools, NAMESPACE, idOf);
   const index = compactIndex(tools, headerBudget(instructions), idOf);
@@ -58,10 +74,10 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
     }
   }
 
-  const makeCallTool = () => {
+  const makeCallTool = (scriptId: string) => {
     let calls = 0;
     const limited = createLimiter(maxConcurrentCalls);
-    return async (id: string, input: unknown, signal?: AbortSignal): Promise<unknown> => {
+    const callOnce = async (id: string, input: unknown, signal?: AbortSignal): Promise<unknown> => {
       const toolName = Object.hasOwn(names, id) ? names[id] : undefined;
       if (toolName === undefined) {
         throw new Error(`Unknown tool "${id}". Available: ${Object.keys(names).join(', ')}`);
@@ -76,6 +92,18 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       const res = await limited(() => client.callTool({ name: toolName, arguments: args }, undefined, signal ? { signal } : {}));
       return unwrapResult(res as CallToolResult);
     };
+    const callTool = async (id: string, input: unknown, signal?: AbortSignal): Promise<unknown> => {
+      const started = performance.now();
+      try {
+        const result = await callOnce(id, input, signal);
+        audit.call({ script: scriptId, tool: Object.hasOwn(names, id) ? (names[id] ?? id) : id, args: input, ms: performance.now() - started });
+        return result;
+      } catch (e) {
+        audit.call({ script: scriptId, tool: Object.hasOwn(names, id) ? (names[id] ?? id) : id, args: input, ms: performance.now() - started, error: classifyError(e instanceof Error ? e.message : String(e)) });
+        throw e;
+      }
+    };
+    return { callTool, calls: () => calls };
   };
 
   const server = new McpServer({ name, version: '0.1.0' });
@@ -87,9 +115,12 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       inputSchema: { code: z.string().describe('TypeScript/JavaScript body to run') },
     },
     async ({ code }): Promise<CallToolResult> => {
+      const scriptId = audit.newScriptId();
+      const started = performance.now();
+      const { callTool, calls } = makeCallTool(scriptId);
       const out = await runInSandbox(
         code,
-        { namespace: NAMESPACE, ids: Object.keys(names), callTool: makeCallTool(), syncCall: (id, input) => store.handle(id, input) },
+        { namespace: NAMESPACE, ids: Object.keys(names), callTool, syncCall: (id, input) => store.handle(id, input) },
         limits,
       );
       const parts: string[] = [];
@@ -99,8 +130,8 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       }
       if (out.error !== undefined) parts.push(`error: ${out.error}`);
       const text = capOutput(parts.join('\n\n') || '(no output)', maxOutputChars);
-      // Debugging aid, off by default: CODEMODE_LOG=<file> appends every script and what it returned.
-      if (logFile) appendFileSync(logFile, `${JSON.stringify({ code, error: out.error, text: text.slice(0, 1500) })}\n`);
+      audit.script({ script: scriptId, code, ms: performance.now() - started, calls: calls(), outputChars: text.length, ...(out.error === undefined ? {} : { error: /timed out/i.test(out.error) ? ('timeout' as const) : ('script' as const) }) });
+      if (debugLog) appendFileSync(debugLog, `${JSON.stringify({ code, error: out.error, text: text.slice(0, 1500) })}\n`);
       return {
         isError: out.error !== undefined,
         content: [{ type: 'text', text }],

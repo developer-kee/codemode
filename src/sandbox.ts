@@ -8,6 +8,13 @@ import {
 import { transform } from 'sucrase';
 import type { SandboxApi, SandboxLimits, SandboxResult } from './types.ts';
 
+/**
+ * Guest call-stack limit. It must stay below the stack Node has left for WebAssembly: with a larger limit, runaway
+ * recursion overflows the host stack first (RangeError), which leaves the engine half-freed and aborts it on cleanup.
+ * Measured: up to 384 KB fails cleanly and still allows recursion about 2,000 frames deep; 512 KB does not.
+ */
+const MAX_STACK_BYTES = 320 * 1024;
+
 let modulePromise: Promise<QuickJSWASMModule> | undefined;
 const getModule = (): Promise<QuickJSWASMModule> => (modulePromise ??= newQuickJSWASMModule());
 
@@ -49,7 +56,7 @@ export async function runInSandbox(
   const vm: QuickJSContext = QuickJS.newContext(); // owns its runtime; disposing vm frees both
   const runtime = vm.runtime;
   runtime.setMemoryLimit(memoryBytes);
-  runtime.setMaxStackSize(1024 * 1024);
+  runtime.setMaxStackSize(MAX_STACK_BYTES);
   runtime.setInterruptHandler(shouldInterruptAfterDeadline(Date.now() + timeoutMs));
 
   const logs: string[] = [];
@@ -208,6 +215,11 @@ export async function runInSandbox(
     clearTimeout(timer);
     abort.abort();
     for (const d of deferreds) if (d.alive) d.dispose();
-    vm.dispose();
+    try {
+      vm.dispose();
+    } catch {
+      // The engine refused to free a context (an assertion fired). Its state is unreliable, so use a fresh module next time.
+      modulePromise = undefined;
+    }
   }
 }
