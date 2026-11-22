@@ -1,5 +1,5 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { toIdentifier } from './generate.ts';
+import { assignIdentifiers } from './generate.ts';
 
 /**
  * Claude Code cuts an MCP tool description at about 2,048 characters. Anything past that never reaches the model,
@@ -65,8 +65,7 @@ function firstSentence(text: string | undefined, max: number): string {
 const cap = (line: string, max: number): string => (line.length > max ? `${line.slice(0, max - 1)}…` : line);
 
 /** One line per tool at the given level of detail (1 = types and summary, 2 = parameter names, 3 = name). */
-function lineFor(tool: Tool, level: 1 | 2 | 3): string {
-  const id = toIdentifier(tool.name);
+function lineFor(tool: Tool, level: 1 | 2 | 3, id: string): string {
   if (level === 3) return id;
   const params = paramsOf(tool);
   if (level === 2) {
@@ -87,16 +86,20 @@ export interface CompactIndex {
 }
 
 /** The richest listing of every tool that fits in `budget` characters. */
-export function compactIndex(tools: readonly Tool[], budget: number): CompactIndex {
+export function compactIndex(
+  tools: readonly Tool[],
+  budget: number,
+  idOf: (name: string) => string = assignIdentifiers(tools.map((t) => t.name)),
+): CompactIndex {
   for (const level of [1, 2, 3] as const) {
-    const lines = tools.map((t) => lineFor(t, level));
+    const lines = tools.map((t) => lineFor(t, level, idOf(t.name)));
     const text = level === 3 ? lines.join(', ') : lines.map((l) => `  ${l}`).join('\n');
     if (text.length <= budget) {
-      return { text, level, lines: Object.fromEntries(tools.map((t, i) => [toIdentifier(t.name), lines[i] ?? ''])) };
+      return { text, level, lines: Object.fromEntries(tools.map((t, i) => [idOf(t.name), lines[i] ?? ''])) };
     }
   }
   // Very large catalogue: as many names as fit, then a pointer to `get_api`.
-  const names = tools.map((t) => toIdentifier(t.name));
+  const names = tools.map((t) => idOf(t.name));
   const kept: string[] = [];
   let used = 0;
   for (const n of names) {

@@ -1,4 +1,4 @@
-export { generateApi, toIdentifier } from './generate.ts';
+export { assignIdentifiers, generateApi, toIdentifier } from './generate.ts';
 export { runInSandbox, stripTypes } from './sandbox.ts';
 export { createCodeModeServer, runCodeModeServer } from './server.ts';
 export type { CodeModeServer } from './server.ts';

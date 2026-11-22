@@ -128,7 +128,7 @@ test('access: allow, and deny wins over allow', async () => {
 test('access: deny only', async () => {
   const t = await connect({ access: { deny: ['delete_thing', 'boom'] } });
   try {
-    assert.deepEqual(Object.keys(t.cm.index.lines).sort(), ['add_numbers', 'big_text', 'get_thing']);
+    assert.deepEqual(Object.keys(t.cm.index.lines).sort(), ['add_numbers', 'big_text', 'get_thing', 'has_env']);
   } finally {
     await t.close();
   }

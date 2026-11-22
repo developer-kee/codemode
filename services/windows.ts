@@ -12,6 +12,6 @@ export default {
   name: 'windows',
   upstream: {
     command: 'uvx',
-    args: ['windows-mcp', 'serve', ...(whitelist ? ['--tools', whitelist] : [])],
+    args: ['windows-mcp@0.8.5', 'serve', ...(whitelist ? ['--tools', whitelist] : [])],
   },
 } satisfies ServiceConfig;

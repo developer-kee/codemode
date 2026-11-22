@@ -20,7 +20,7 @@ const tasks: Task[] = specs.map((s) => ({
 const scenarios: BenchVariant = {
   id: 'scenarios',
   title: 'multi-step scenario tasks',
-  direct: { server: 'blender', command: 'uvx', args: ['blender-mcp'] },
+  direct: { server: 'blender', command: 'uvx', args: ['blender-mcp@2.0.0'] },
   systemPrompt:
     'You control a running Blender instance through the tools provided. Complete the task, then reply with one short sentence.',
   notes: ['Both paths expose every tool of the upstream `blender-mcp`.'],

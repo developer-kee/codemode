@@ -14,7 +14,7 @@ const systemPrompt =
 const scenarios: BenchVariant = {
   id: 'scenarios',
   title: 'multi-step scenario tasks, all 20 tools',
-  direct: { server: 'windows', command: 'uvx', args: ['windows-mcp', 'serve'] },
+  direct: { server: 'windows', command: 'uvx', args: ['windows-mcp@0.8.5', 'serve'] },
   // Empty = no whitelist, so the codemode wrapper exposes every upstream tool too.
   codemodeEnv: { CODEMODE_WINDOWS_TOOLS: '' },
   systemPrompt,
@@ -33,7 +33,7 @@ const scenarios: BenchVariant = {
 const scenarios4: BenchVariant = {
   id: 'scenarios-4-tools',
   title: 'multi-step scenario tasks, 4 non-visual tools',
-  direct: { server: 'windows', command: 'uvx', args: ['windows-mcp', 'serve', '--tools', TOOLS_4] },
+  direct: { server: 'windows', command: 'uvx', args: ['windows-mcp@0.8.5', 'serve', '--tools', TOOLS_4] },
   codemodeEnv: { CODEMODE_WINDOWS_TOOLS: TOOLS_4 },
   systemPrompt,
   notes: [

@@ -1,4 +1,4 @@
-﻿import type { ServiceConfig } from '../src/types.ts';
+import type { ServiceConfig } from '../src/types.ts';
 
 // The official Notion MCP server, https://github.com/makenotion/notion-mcp-server (npm: @notionhq/notion-mcp-server),
 // pinned for reproducible results. 23 tools, each with a large schema (about 76,000 characters in total).
@@ -10,5 +10,6 @@
 // This wrapper can create, edit and trash pages. Restrict it with `access` (or `--read-only`) if it should only look.
 export default {
   name: 'notion',
-  upstream: { command: 'npx', args: ['-y', '@notionhq/notion-mcp-server@2.6.1'] },
+  // Only NOTION_TOKEN is handed to the server; the wrapper's other environment variables are not.
+  upstream: { command: 'npx', args: ['-y', '@notionhq/notion-mcp-server@2.6.1'], passEnv: ['NOTION_TOKEN'] },
 } satisfies ServiceConfig;

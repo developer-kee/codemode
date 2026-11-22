@@ -34,4 +34,8 @@ s.registerTool(
   { description: 'Return n characters', inputSchema: { n: z.number() }, annotations: { readOnlyHint: true } },
   ({ n }) => ({ content: [{ type: 'text', text: 'x'.repeat(n) }] }),
 );
+// Reports whether the process was handed CODEMODE_TEST_SECRET: used to prove the wrapper does not leak its environment.
+s.registerTool('has-env', { description: 'Is CODEMODE_TEST_SECRET set?', inputSchema: {} }, () => ({
+  content: [{ type: 'text', text: JSON.stringify({ set: process.env['CODEMODE_TEST_SECRET'] !== undefined }) }],
+}));
 await s.connect(new StdioServerTransport());

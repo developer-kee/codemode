@@ -62,6 +62,8 @@ export async function runInSandbox(
 
   /** Host calls still running; the loop below waits on these. */
   const pending = new Set<Promise<void>>();
+  /** Aborted when the script ends or times out, so upstream calls it left running are cancelled. */
+  const abort = new AbortController();
   const deferreds: QuickJSDeferredPromise[] = [];
   let timer: NodeJS.Timeout | undefined;
 
@@ -91,7 +93,7 @@ export async function runInSandbox(
       deferreds.push(deferred);
       const work = (async (): Promise<void> => {
         try {
-          const out = await api.callTool(id, input);
+          const out = await api.callTool(id, input, abort.signal);
           if (!vm.alive) return;
           const h = vm.newString(JSON.stringify(out ?? null));
           deferred.resolve(h);
@@ -204,6 +206,7 @@ export async function runInSandbox(
     return { logs, error: formatError(message) };
   } finally {
     clearTimeout(timer);
+    abort.abort();
     for (const d of deferreds) if (d.alive) d.dispose();
     vm.dispose();
   }

@@ -1,4 +1,4 @@
-﻿import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { compile } from 'json-schema-to-typescript';
 import type { GeneratedApi } from './types.ts';
 
@@ -8,6 +8,29 @@ type Schema = Parameters<typeof compile>[0];
 export function toIdentifier(name: string): string {
   const id = name.replace(/[^A-Za-z0-9_$]/g, '_');
   return /^[0-9]/.test(id) ? `_${id}` : id;
+}
+
+/** Names that already exist on every object: a tool called `constructor` or `__proto__` must not shadow them. */
+const RESERVED = new Set(Object.getOwnPropertyNames(Object.prototype));
+
+/**
+ * Give every tool a distinct, safe identifier. `read-file` and `read_file` both sanitise to `read_file`; the second
+ * becomes `read_file_2` instead of silently replacing the first, and reserved or double-underscore names are prefixed.
+ * Returns a lookup from upstream tool name to identifier.
+ */
+export function assignIdentifiers(toolNames: readonly string[]): (name: string) => string {
+  const byName = new Map<string, string>();
+  const used = new Set<string>();
+  for (const name of toolNames) {
+    if (byName.has(name)) continue;
+    let base = toIdentifier(name);
+    if (RESERVED.has(base) || base.startsWith('__')) base = `tool_${base.replace(/^_+/, '')}`;
+    let id = base;
+    for (let n = 2; used.has(id); n++) id = `${base}_${n}`;
+    used.add(id);
+    byName.set(name, id);
+  }
+  return (name) => byName.get(name) ?? toIdentifier(name);
 }
 
 function pascal(name: string): string {
@@ -34,14 +57,16 @@ async function compileSchema(raw: object, title: string): Promise<string> {
 export async function generateApi(
   tools: readonly Tool[],
   namespace = 'codemode',
+  idOf: (name: string) => string = assignIdentifiers(tools.map((t) => t.name)),
 ): Promise<GeneratedApi> {
   const decls: string[] = [];
   const members: string[] = [];
-  const names: Record<string, string> = {};
-  const perTool: Record<string, string> = {};
+  // No prototype, so an odd tool name can never reach Object.prototype.
+  const names: Record<string, string> = Object.create(null) as Record<string, string>;
+  const perTool: Record<string, string> = Object.create(null) as Record<string, string>;
 
   for (const tool of tools) {
-    const id = toIdentifier(tool.name);
+    const id = idOf(tool.name);
     names[id] = tool.name;
     const base = pascal(tool.name);
     const declStart = decls.length;

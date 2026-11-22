@@ -17,7 +17,8 @@ const scenarios: BenchVariant = {
     command: 'npx',
     args: ['-y', '@playwright/mcp@0.0.86', '--isolated', ...FLAGS],
   },
-  codemodeEnv: { CODEMODE_PLAYWRIGHT_ARGS: FLAGS.join(' ') },
+  // The direct path always has browser_run_code_unsafe, so the wrapper keeps it too for a like-for-like tool set.
+  codemodeEnv: { CODEMODE_PLAYWRIGHT_ARGS: FLAGS.join(' '), CODEMODE_ALLOW_UNSAFE: '1' },
   systemPrompt:
     'You control a web browser through the tools provided. Only visit the local test site named in the task. Complete the task, then reply with one short sentence.',
   notes: ['Both paths expose the same 25 tools of the pinned `@playwright/mcp@0.0.86`.'],

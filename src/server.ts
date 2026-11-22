@@ -7,7 +7,8 @@ import { Ajv } from 'ajv';
 import { z } from 'zod';
 import { compactIndex, describeExecuteCode, GET_API_DESCRIPTION, headerBudget, type CompactIndex } from './describe.ts';
 import { filterTools } from './access.ts';
-import { generateApi, toIdentifier } from './generate.ts';
+import { assignIdentifiers, generateApi } from './generate.ts';
+import { createLimiter } from './limiter.ts';
 import { capOutput } from './output.ts';
 import { createStore } from './store.ts';
 import { runInSandbox } from './sandbox.ts';
@@ -34,12 +35,16 @@ export interface CodeModeServer {
 export async function createCodeModeServer(config: ServiceConfig): Promise<CodeModeServer> {
   const { name, upstream, limits, instructions = '' } = config;
   const maxToolCalls = limits?.maxToolCalls ?? 100;
+  const maxConcurrentCalls = limits?.maxConcurrentCalls ?? 8;
   const maxOutputChars = limits?.maxOutputChars ?? 20_000;
   const store = createStore(limits?.maxStoreChars);
+  const logFile = process.env['CODEMODE_LOG'];
+  if (logFile) console.error(`[codemode] CODEMODE_LOG is set: every script and its result is appended in plain text to ${logFile}`);
   const client = await connectUpstream(upstream);
   const tools = filterTools(await listAllTools(client), config.access);
-  const { dts, names, perTool } = await generateApi(tools, NAMESPACE);
-  const index = compactIndex(tools, headerBudget(instructions));
+  const idOf = assignIdentifiers(tools.map((t) => t.name));
+  const { dts, names, perTool } = await generateApi(tools, NAMESPACE, idOf);
+  const index = compactIndex(tools, headerBudget(instructions), idOf);
   const description = describeExecuteCode(index, instructions);
 
   // Check arguments against each tool's JSON schema, so a wrong guess gets a precise error instead of an opaque one.
@@ -47,7 +52,7 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
   const validators = new Map<string, ReturnType<Ajv['compile']>>();
   for (const t of tools) {
     try {
-      validators.set(toIdentifier(t.name), ajv.compile(t.inputSchema));
+      validators.set(idOf(t.name), ajv.compile(t.inputSchema));
     } catch {
       /* unsupported schema keyword: skip validation for this tool */
     }
@@ -55,7 +60,8 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
 
   const makeCallTool = () => {
     let calls = 0;
-    return async (id: string, input: unknown): Promise<unknown> => {
+    const limited = createLimiter(maxConcurrentCalls);
+    return async (id: string, input: unknown, signal?: AbortSignal): Promise<unknown> => {
       const toolName = Object.hasOwn(names, id) ? names[id] : undefined;
       if (toolName === undefined) {
         throw new Error(`Unknown tool "${id}". Available: ${Object.keys(names).join(', ')}`);
@@ -67,8 +73,8 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
         const why = ajv.errorsText(validate.errors, { dataVar: 'input' });
         throw new Error(`Invalid arguments for ${id}: ${why}. Expected: ${index.lines[id] ?? id}`);
       }
-      const res = (await client.callTool({ name: toolName, arguments: args })) as CallToolResult;
-      return unwrapResult(res);
+      const res = await limited(() => client.callTool({ name: toolName, arguments: args }, undefined, signal ? { signal } : {}));
+      return unwrapResult(res as CallToolResult);
     };
   };
 
@@ -81,7 +87,6 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       inputSchema: { code: z.string().describe('TypeScript/JavaScript body to run') },
     },
     async ({ code }): Promise<CallToolResult> => {
-      const logFile = process.env['CODEMODE_LOG'];
       const out = await runInSandbox(
         code,
         { namespace: NAMESPACE, ids: Object.keys(names), callTool: makeCallTool(), syncCall: (id, input) => store.handle(id, input) },
@@ -112,7 +117,8 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       },
     },
     ({ names: wanted }): CallToolResult => {
-      const ids = wanted && wanted.length > 0 ? wanted.map(toIdentifier) : Object.keys(perTool);
+      // Accept the upstream name or the function name the index shows.
+      const ids = wanted && wanted.length > 0 ? wanted.map((n) => (Object.hasOwn(perTool, n) ? n : idOf(n))) : Object.keys(perTool);
       const unknown = ids.filter((id) => !Object.hasOwn(perTool, id));
       if (unknown.length > 0) {
         return {
