@@ -1,0 +1,519 @@
+{
+  "date": "2026-11-22",
+  "iterations": 6,
+  "toolCount": 27,
+  "costs": {
+    "rows": [
+      {
+        "tool": "list_calendars",
+        "covered": true,
+        "directChars": 215,
+        "codemodeChars": 14,
+        "onDemandChars": 224
+      },
+      {
+        "tool": "list_events",
+        "covered": true,
+        "directChars": 864,
+        "codemodeChars": 11,
+        "onDemandChars": 804
+      },
+      {
+        "tool": "create_event",
+        "covered": true,
+        "directChars": 1233,
+        "codemodeChars": 12,
+        "onDemandChars": 1064
+      },
+      {
+        "tool": "update_event",
+        "covered": false,
+        "directChars": 4553,
+        "codemodeChars": 12,
+        "onDemandChars": 4247
+      },
+      {
+        "tool": "update_event_raw",
+        "covered": false,
+        "directChars": 928,
+        "codemodeChars": 16,
+        "onDemandChars": 844
+      },
+      {
+        "tool": "delete_event",
+        "covered": false,
+        "directChars": 909,
+        "codemodeChars": 12,
+        "onDemandChars": 856
+      },
+      {
+        "tool": "calendar_query",
+        "covered": true,
+        "directChars": 1792,
+        "codemodeChars": 14,
+        "onDemandChars": 1689
+      },
+      {
+        "tool": "freebusy_query",
+        "covered": true,
+        "directChars": 1684,
+        "codemodeChars": 14,
+        "onDemandChars": 1584
+      },
+      {
+        "tool": "make_calendar",
+        "covered": false,
+        "directChars": 1439,
+        "codemodeChars": 13,
+        "onDemandChars": 1310
+      },
+      {
+        "tool": "update_calendar",
+        "covered": false,
+        "directChars": 1038,
+        "codemodeChars": 15,
+        "onDemandChars": 948
+      },
+      {
+        "tool": "delete_calendar",
+        "covered": false,
+        "directChars": 487,
+        "codemodeChars": 15,
+        "onDemandChars": 463
+      },
+      {
+        "tool": "calendar_multi_get",
+        "covered": false,
+        "directChars": 439,
+        "codemodeChars": 18,
+        "onDemandChars": 370
+      },
+      {
+        "tool": "list_addressbooks",
+        "covered": true,
+        "directChars": 235,
+        "codemodeChars": 17,
+        "onDemandChars": 250
+      },
+      {
+        "tool": "list_contacts",
+        "covered": false,
+        "directChars": 449,
+        "codemodeChars": 13,
+        "onDemandChars": 422
+      },
+      {
+        "tool": "create_contact",
+        "covered": false,
+        "directChars": 806,
+        "codemodeChars": 14,
+        "onDemandChars": 656
+      },
+      {
+        "tool": "update_contact",
+        "covered": false,
+        "directChars": 1646,
+        "codemodeChars": 14,
+        "onDemandChars": 1386
+      },
+      {
+        "tool": "update_contact_raw",
+        "covered": false,
+        "directChars": 645,
+        "codemodeChars": 18,
+        "onDemandChars": 564
+      },
+      {
+        "tool": "delete_contact",
+        "covered": false,
+        "directChars": 950,
+        "codemodeChars": 14,
+        "onDemandChars": 901
+      },
+      {
+        "tool": "addressbook_query",
+        "covered": false,
+        "directChars": 1452,
+        "codemodeChars": 17,
+        "onDemandChars": 1363
+      },
+      {
+        "tool": "addressbook_multi_get",
+        "covered": false,
+        "directChars": 453,
+        "codemodeChars": 21,
+        "onDemandChars": 385
+      },
+      {
+        "tool": "list_todos",
+        "covered": true,
+        "directChars": 362,
+        "codemodeChars": 10,
+        "onDemandChars": 332
+      },
+      {
+        "tool": "create_todo",
+        "covered": false,
+        "directChars": 1079,
+        "codemodeChars": 11,
+        "onDemandChars": 936
+      },
+      {
+        "tool": "update_todo",
+        "covered": false,
+        "directChars": 4393,
+        "codemodeChars": 11,
+        "onDemandChars": 4067
+      },
+      {
+        "tool": "update_todo_raw",
+        "covered": false,
+        "directChars": 975,
+        "codemodeChars": 15,
+        "onDemandChars": 891
+      },
+      {
+        "tool": "delete_todo",
+        "covered": false,
+        "directChars": 900,
+        "codemodeChars": 11,
+        "onDemandChars": 847
+      },
+      {
+        "tool": "todo_query",
+        "covered": false,
+        "directChars": 1392,
+        "codemodeChars": 10,
+        "onDemandChars": 1281
+      },
+      {
+        "tool": "todo_multi_get",
+        "covered": false,
+        "directChars": 335,
+        "codemodeChars": 14,
+        "onDemandChars": 291
+      }
+    ],
+    "directTotalChars": 31653,
+    "codemodeTotalChars": 1234,
+    "descriptionChars": 842,
+    "indexLevel": 3
+  },
+  "latency": {
+    "rows": [
+      {
+        "id": "list_calendars",
+        "tool": "list_calendars",
+        "iterations": 6,
+        "direct": {
+          "median": 46.26579999999922,
+          "p95": 47.00639999999839,
+          "min": 44.57690000000002,
+          "max": 47.00639999999839
+        },
+        "codemode": {
+          "median": 49.04790000000139,
+          "p95": 51.41899999999987,
+          "min": 46.93369999999959,
+          "max": 51.41899999999987
+        },
+        "directChars": 362,
+        "codemodeChars": 370,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "list_events",
+        "tool": "list_events",
+        "iterations": 6,
+        "direct": {
+          "median": 138.64940000000206,
+          "p95": 145.57370000000083,
+          "min": 135.3247999999985,
+          "max": 145.57370000000083
+        },
+        "codemode": {
+          "median": 141.80129999999917,
+          "p95": 145.5025999999998,
+          "min": 134.9770000000026,
+          "max": 145.5025999999998
+        },
+        "directChars": 2398,
+        "codemodeChars": 2406,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "calendar_query",
+        "tool": "calendar_query",
+        "iterations": 6,
+        "direct": {
+          "median": 91.88389999999708,
+          "p95": 95.99179999999978,
+          "min": 88.96800000000076,
+          "max": 95.99179999999978
+        },
+        "codemode": {
+          "median": 93.06790000000183,
+          "p95": 94.0499000000018,
+          "min": 91.39949999999953,
+          "max": 94.0499000000018
+        },
+        "directChars": 3046,
+        "codemodeChars": 3054,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "freebusy_query",
+        "tool": "freebusy_query",
+        "iterations": 6,
+        "direct": {
+          "median": 137.97500000000218,
+          "p95": 142.9617999999973,
+          "min": 134.5547000000006,
+          "max": 142.9617999999973
+        },
+        "codemode": {
+          "median": 139.9399999999987,
+          "p95": 144.38820000000123,
+          "min": 136.97909999999683,
+          "max": 144.38820000000123
+        },
+        "directChars": 643,
+        "codemodeChars": 651,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "create_event",
+        "tool": "create_event",
+        "iterations": 6,
+        "direct": {
+          "median": 115.24359999999797,
+          "p95": 119.240600000001,
+          "min": 103.01450000000114,
+          "max": 119.240600000001
+        },
+        "codemode": {
+          "median": 118.9881000000023,
+          "p95": 124.97220000000016,
+          "min": 104.00300000000061,
+          "max": 124.97220000000016
+        },
+        "directChars": 495,
+        "codemodeChars": 503,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "list_todos",
+        "tool": "list_todos",
+        "iterations": 6,
+        "direct": {
+          "median": 66.38940000000002,
+          "p95": 68.33830000000307,
+          "min": 61.20090000000346,
+          "max": 68.33830000000307
+        },
+        "codemode": {
+          "median": 67.91310000000522,
+          "p95": 69.74040000000241,
+          "min": 64.6594999999943,
+          "max": 69.74040000000241
+        },
+        "directChars": 15,
+        "codemodeChars": 23,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "list_addressbooks",
+        "tool": "list_addressbooks",
+        "iterations": 6,
+        "direct": {
+          "median": 35.94090000000142,
+          "p95": 38.02470000000176,
+          "min": 35.46940000000177,
+          "max": 38.02470000000176
+        },
+        "codemode": {
+          "median": 38.49899999999616,
+          "p95": 41.16479999999865,
+          "min": 37.751100000001315,
+          "max": 41.16479999999865
+        },
+        "directChars": 23,
+        "codemodeChars": 31,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      }
+    ],
+    "sandboxOnly": {
+      "median": 0.8649999999979627,
+      "p95": 1.057199999995646,
+      "min": 0.6860999999989872,
+      "max": 1.057199999995646
+    }
+  },
+  "coveredTools": 7,
+  "skipped": [
+    {
+      "tool": "update_event",
+      "reason": "Needs the etag from a previous read of the event."
+    },
+    {
+      "tool": "update_event_raw",
+      "reason": "Needs the etag from a previous read of the event."
+    },
+    {
+      "tool": "delete_event",
+      "reason": "Needs the etag from a previous read, and the event is gone after the first call."
+    },
+    {
+      "tool": "make_calendar",
+      "reason": "Not repeatable: the calendar exists after the first call."
+    },
+    {
+      "tool": "update_calendar",
+      "reason": "Changes the calendar everything else depends on."
+    },
+    {
+      "tool": "delete_calendar",
+      "reason": "Deletes the calendar everything else depends on."
+    },
+    {
+      "tool": "calendar_multi_get",
+      "reason": "Needs event URLs from a previous listing."
+    },
+    {
+      "tool": "list_contacts",
+      "reason": "Contacts (CardDAV) are outside this calendar benchmark."
+    },
+    {
+      "tool": "create_contact",
+      "reason": "Contacts (CardDAV) are outside this calendar benchmark."
+    },
+    {
+      "tool": "update_contact",
+      "reason": "Contacts (CardDAV) are outside this calendar benchmark."
+    },
+    {
+      "tool": "update_contact_raw",
+      "reason": "Contacts (CardDAV) are outside this calendar benchmark."
+    },
+    {
+      "tool": "delete_contact",
+      "reason": "Contacts (CardDAV) are outside this calendar benchmark."
+    },
+    {
+      "tool": "addressbook_query",
+      "reason": "Contacts (CardDAV) are outside this calendar benchmark."
+    },
+    {
+      "tool": "addressbook_multi_get",
+      "reason": "Contacts (CardDAV) are outside this calendar benchmark."
+    },
+    {
+      "tool": "create_todo",
+      "reason": "Tasks (VTODO) are outside this calendar benchmark."
+    },
+    {
+      "tool": "update_todo",
+      "reason": "Tasks (VTODO) are outside this calendar benchmark."
+    },
+    {
+      "tool": "update_todo_raw",
+      "reason": "Tasks (VTODO) are outside this calendar benchmark."
+    },
+    {
+      "tool": "delete_todo",
+      "reason": "Tasks (VTODO) are outside this calendar benchmark."
+    },
+    {
+      "tool": "todo_query",
+      "reason": "Tasks (VTODO) are outside this calendar benchmark."
+    },
+    {
+      "tool": "todo_multi_get",
+      "reason": "Tasks (VTODO) are outside this calendar benchmark."
+    }
+  ],
+  "cases": [
+    {
+      "id": "list_calendars",
+      "tool": "list_calendars",
+      "args": {},
+      "hasPrompt": true
+    },
+    {
+      "id": "list_events",
+      "tool": "list_events",
+      "args": {
+        "calendar_url": "http://127.0.0.1:5233/bench/work/",
+        "time_range_start": "2026-12-09T00:00:00Z",
+        "time_range_end": "2026-12-10T00:00:00Z"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "calendar_query",
+      "tool": "calendar_query",
+      "args": {
+        "calendar_url": "http://127.0.0.1:5233/bench/work/",
+        "summary_filter": "Demo",
+        "limit": 5
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "freebusy_query",
+      "tool": "freebusy_query",
+      "args": {
+        "time_range_start": "2026-12-09T09:00:00Z",
+        "time_range_end": "2026-12-09T17:00:00Z",
+        "calendar_url": "http://127.0.0.1:5233/bench/work/"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "create_event",
+      "tool": "create_event",
+      "args": {
+        "calendar_url": "http://127.0.0.1:5233/bench/work/",
+        "summary": "Bench event",
+        "start_date": "2026-12-29T10:00:00Z",
+        "end_date": "2026-12-29T11:00:00Z"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "list_todos",
+      "tool": "list_todos",
+      "args": {
+        "calendar_url": "http://127.0.0.1:5233/bench/work/"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "list_addressbooks",
+      "tool": "list_addressbooks",
+      "args": {},
+      "hasPrompt": false
+    }
+  ]
+}

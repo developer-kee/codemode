@@ -7,10 +7,13 @@ Each service wrapped by codemode is benchmarked **separately**. For every servic
 | Blender | [suites/blender/](suites/blender/) | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
 | Windows ([Windows-MCP](https://github.com/CursorTouch/Windows-MCP)) | [suites/windows/](suites/windows/) | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
 | Playwright ([@playwright/mcp](https://github.com/microsoft/playwright-mcp), local test site) | [suites/playwright/](suites/playwright/) | [suites/playwright/RESULTS.md](suites/playwright/RESULTS.md) |
+| Filesystem (reference [MCP server](https://github.com/modelcontextprotocol/servers)) | [suites/filesystem/](suites/filesystem/) | [suites/filesystem/RESULTS.md](suites/filesystem/RESULTS.md) |
+| Calendar ([dav-mcp](https://www.npmjs.com/package/dav-mcp) over a local CalDAV server) | [suites/calendar/](suites/calendar/) | [suites/calendar/RESULTS.md](suites/calendar/RESULTS.md) |
+| Notion ([official MCP server](https://github.com/makenotion/notion-mcp-server)) | [suites/notion/](suites/notion/) | [suites/notion/RESULTS.md](suites/notion/RESULTS.md) (no runs yet) |
 
 [RESULTS.md](RESULTS.md) is the overview: a model comparison matrix, then one row per service, variant and model. All `RESULTS.md` files are generated from the raw runs; do not edit them by hand.
 
-> **Read the warning for a service before running its benchmark.** Blender runs wipe the open scene. Windows runs give the model real PowerShell and file access on your PC (the `scenarios` variant exposes every Windows-MCP tool, including screenshots and input). Playwright drives a headless browser limited to a local test site. The warning is printed when a run starts and is repeated at the top of each service's `RESULTS.md`.
+> **Read the warning for a service before running its benchmark.** Blender runs wipe the open scene. Windows runs give the model real PowerShell and file access on your PC (the `scenarios` variant exposes every Windows-MCP tool, including screenshots and input). Playwright drives a headless browser limited to a local test site. Filesystem is confined to a sandbox folder; Calendar starts a throwaway local Radicale server and never touches a real calendar; Notion **writes to a real workspace** and needs your integration token. The warning is printed when a run starts and is repeated at the top of each service's `RESULTS.md`.
 
 ## Layout
 
@@ -49,7 +52,7 @@ A service offers named variants of the benchmark; every run record carries its `
 
 | Variant | What it runs |
 |---|---|
-| `scenarios` | The multi-step scenario tasks (Blender: table, grid, inspect-modify, audit; Windows: files, inventory, organize; Playwright: catalog-sum, form, top-rated). Both paths expose every upstream tool. |
+| `scenarios` | The multi-step scenario tasks (Blender: table, grid, inspect-modify, audit; Windows: files, inventory, organize; Playwright: catalog-sum, form, top-rated; Filesystem: notes-index, log-triage, organize, retries; Calendar: busiest-day, standup-hours, free-slot, create-events; Notion: status-count, owner-load, write-summary). Both paths expose every upstream tool. |
 | `scenarios-4-tools` | Windows only: the original benchmark that whitelisted `FileSystem,PowerShell,Process,Wait` on both paths (no screen or input tools). Understates the schema overhead of a full install. |
 | `calls` | One model-driven task per upstream tool call, generated from `cases.ts`: a prompt that makes the model call that one tool, checked against the answer or the resulting state. No single tool can dominate the totals. |
 
@@ -149,6 +152,41 @@ Uses [`@playwright/mcp`](https://github.com/microsoft/playwright-mcp) pinned to 
 | `form` | Fill and submit a form (text, email, select, checkbox); the check is what the fixture server received |
 | `top-rated` | A rated list over 6 pages with a "Next page" link: find the one item rated 5.0 (the fixture guarantees it is unique) |
 
+### Filesystem
+
+Uses the reference server `@modelcontextprotocol/server-filesystem@2.4.0` (`npx`, 16 tools). The sandbox is `bench/work/fs-sandbox`, wiped before every run. It sits **inside the benchmark's working directory on purpose**: Claude Code tells MCP servers its working directory as a "root", and this server then uses that root instead of the directories on its command line, so a sandbox anywhere else would be reachable by the codemode path (which sends no roots) but not by the direct path. As a result the direct path can reach all of `bench/work/`, the codemode path only the sandbox.
+
+| Task | What it tests |
+|---|---|
+| `notes-index` | Create a folder tree with exact file contents and an index file |
+| `log-triage` | 20 log files of 60 lines: count ERROR and WARN lines per file, write a sorted CSV, name the worst file. Built to favour code mode: a tool-by-tool model must pull every file into context |
+| `organize` | 40 loose files moved into folders by extension: many small calls for the direct path |
+| `retries` | A nested tree of `.cfg` files: change `retries=3` to `retries=5` in the matching ones only and count them |
+
+### Calendar
+
+Uses [`dav-mcp@5.1.2`](https://www.npmjs.com/package/dav-mcp) (27 tools: calendar, contacts and tasks) against a throwaway [Radicale](https://radicale.org) CalDAV server that the benchmark starts with `uvx` on `127.0.0.1:5233` (`calendar/fixture.ts`; data under `bench/work/radicale/`). It seeds one calendar, "Work", with about 60 December 2026 events, and runs with `TZ=UTC` so times mean the same on both paths. The benchmark refuses to start if port 5233 is already in use. Nothing touches a real calendar.
+
+| Task | What it tests |
+|---|---|
+| `busiest-day` | Count events per day over a month and name the busiest day and its count |
+| `standup-hours` | Sum the lengths of every event with a given title |
+| `free-slot` | Find the earliest free one-hour gap in a day with back-to-back events |
+| `create-events` | Create three events; the check reads them back from the CalDAV server |
+
+In these runs the codemode path called `get_api` first on every task and needed extra scripts on the two counting tasks, so its wall time is 27-56% longer even though its tokens are 64-79% lower. The compact index in the `execute_code` description lists parameter names only, so the model asks for full types; this is a real cost of that design, not noise.
+
+### Notion
+
+Uses the official `@notionhq/notion-mcp-server@2.6.1` (`npx`, 23 tools with about 76,000 characters of definitions, the largest catalogue here). **It writes to a real workspace.** Set `NOTION_TOKEN` (an internal integration token) and `NOTION_BENCH_PAGE_ID` (a page shared with that integration) in your shell; the config refers to the token as `${NOTION_TOKEN}`, which Claude Code and the per-call benchmark expand, so it is never written to a file. The benchmark creates one `codemode bench <timestamp>` page with a 40-row database under that page (about 15 s), trashes older bench pages there, and lets the model create a `Summary` page.
+
+| Task | What it tests |
+|---|---|
+| `status-count` | Count rows by status and find the highest priority among the "Doing" rows |
+| `owner-load` | Group open tasks by owner and name the busiest one |
+| `write-summary` | Create a page with one paragraph per status; the check reads it back through the REST API |
+
+> **Not yet run.** The seeding code follows the Notion API documentation (version 2025-09-03, data sources) but has only been type-checked; expect to adjust request shapes on the first real run. Runners other than Claude Code may not expand `${NOTION_TOKEN}`.
 ## Run it
 
 Prerequisites: Node 24+ with `npm install` done in the repo root; `uvx` available; a logged-in runner — Claude Code (`claude auth login`; the desktop app's login is separate) or an API key in the environment for Claude, and for DSH a signed-in DeepSeek Harness install; plus each service's own prerequisites above.

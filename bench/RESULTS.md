@@ -7,7 +7,7 @@ Method, metric definitions and limitations: [README.md](README.md). Per-service 
 
 | Model | Provider | Runner | Runs | Services |
 |---|---|---|---|---|
-| `claude-sonnet-5-5` | Claude | `claude` | 156 | blender, windows, playwright |
+| `claude-sonnet-5-5` | Claude | `claude` | 288 | blender, windows, playwright, filesystem, calendar |
 | `deepseek-flash` | DeepSeek | `dsh` | 36 | playwright |
 
 ## Compare models
@@ -23,6 +23,10 @@ Each cell is the **token change**, `codemode / direct` total tokens, and passed/
 | Windows (Windows-MCP) | `calls` | **-78%** · 3,538 / 15,825 · 42/42 | not run |
 | Playwright (browser, local test site) | `scenarios` | **-71%** · 8,435 / 29,359 · 18/18 | **-68%** · 18,923 / 60,019 · 18/18 |
 | Playwright (browser, local test site) | `calls` | **-83%** · 3,594 / 21,020 · 18/18 | **-82%** · 3,249 / 17,647 · 18/18 |
+| Filesystem (reference MCP server) | `scenarios` | **-88%** · 6,218 / 53,069 · 24/24 | not run |
+| Filesystem (reference MCP server) | `calls` | **-70%** · 3,356 / 11,249 · 60/60 | not run |
+| Calendar (dav-mcp over CalDAV) | `scenarios` | **-74%** · 9,333 / 35,853 · 24/24 | not run |
+| Calendar (dav-mcp over CalDAV) | `calls` | **-68%** · 8,431 / 26,726 · 24/24 | not run |
 
 ## Detail by model family
 
@@ -39,6 +43,10 @@ Full per-task tables for each model. The comparison above is the quick view; the
 | Windows (Windows-MCP) | `calls` | `claude-sonnet-5-5` | `claude` | 42 (42) | 15,825 | 3,538 | **-78%** | 12.1s | 12.0s | **-1%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
 | Playwright (browser, local test site) | `scenarios` | `claude-sonnet-5-5` | `claude` | 18 (18) | 29,359 | 8,435 | **-71%** | 11.0s | 11.9s | **8%** | [suites/playwright/RESULTS.md](suites/playwright/RESULTS.md) |
 | Playwright (browser, local test site) | `calls` | `claude-sonnet-5-5` | `claude` | 18 (18) | 21,020 | 3,594 | **-83%** | 8.7s | 8.6s | **-1%** | [suites/playwright/RESULTS.md](suites/playwright/RESULTS.md) |
+| Filesystem (reference MCP server) | `scenarios` | `claude-sonnet-5-5` | `claude` | 24 (24) | 53,069 | 6,218 | **-88%** | 20.4s | 10.9s | **-47%** | [suites/filesystem/RESULTS.md](suites/filesystem/RESULTS.md) |
+| Filesystem (reference MCP server) | `calls` | `claude-sonnet-5-5` | `claude` | 60 (60) | 11,249 | 3,356 | **-70%** | 8.5s | 8.5s | **-0%** | [suites/filesystem/RESULTS.md](suites/filesystem/RESULTS.md) |
+| Calendar (dav-mcp over CalDAV) | `scenarios` | `claude-sonnet-5-5` | `claude` | 24 (24) | 35,853 | 9,333 | **-74%** | 9.7s | 13.6s | **40%** | [suites/calendar/RESULTS.md](suites/calendar/RESULTS.md) |
+| Calendar (dav-mcp over CalDAV) | `calls` | `claude-sonnet-5-5` | `claude` | 24 (24) | 26,726 | 8,431 | **-68%** | 8.8s | 11.2s | **27%** | [suites/calendar/RESULTS.md](suites/calendar/RESULTS.md) |
 
 ### DeepSeek
 

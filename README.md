@@ -14,7 +14,7 @@ Two tools instead of the upstream's full set is the point: the model pays for on
 ```
 src/                the wrapper: server, upstream transport, sandbox, API generation, description,
                     argument checks, output cap, shared store
-services/           one file per wrapped MCP server (blender, notion, windows, playwright)
+services/           one file per wrapped MCP server (blender, windows, playwright, filesystem, calendar, notion)
 bench/
   cli/              entrypoints: run, calls, report, validate
   lib/              reusable harness: runners (Claude, DSH), per-call benchmark, report building
@@ -28,7 +28,7 @@ vendor/addon.py     BlenderMCP addon copy for the Blender benchmark
 
 ## Services
 
-Each service is one file in `services/` (`blender`, `notion`, `windows`, `playwright`) that names the upstream and optionally its limits and access rules:
+Each service is one file in `services/` (`blender`, `windows`, `playwright`, `filesystem`, `calendar`, `notion`) that names the upstream and optionally its limits and access rules:
 
 ```ts
 // services/notion.ts
@@ -46,7 +46,7 @@ node src/cli.ts --list
 ```
 
 Credentials go in the MCP client config `env` (e.g. `NOTION_TOKEN`) or, for a URL upstream, `headers`, never in this repo.
-Blender needs Blender open with the BlenderMCP addon connected; Windows and Playwright drive the real desktop or browser, so read their warnings in `bench/README.md` before exposing them.
+Blender needs Blender open with the BlenderMCP addon connected; Windows and Playwright drive the real desktop or browser, Notion writes to a real workspace, and Filesystem and Calendar are confined to a sandbox folder and a local throwaway server, so read each warning in `bench/README.md` before exposing a service.
 
 ## Test
 
@@ -61,7 +61,7 @@ A service file should end with `satisfies ServiceConfig`.
 
 ## Benchmarks
 
-Each service (Blender, Windows, Playwright) is benchmarked separately, in one folder `bench/suites/<service>/` that holds its tasks, per-tool-call cases, raw runs and generated `RESULTS.md`: the upstream MCP server used directly vs the same server behind codemode, same model and tasks. Each service has named variants (`scenarios`, `calls`, and for Windows `scenarios-4-tools`). The harness is model-agnostic: every record stores the model and the runner that drove it (`claude` for Claude Code, `dsh` for DeepSeek Harness headless), `--runner` defaults from the model id, and adding a model to an existing runner needs no report changes — a new harness is one new runner. The generated overview and each service report lead with a **Compare models** matrix: one column per model, showing token change, codemode/direct totals and pass counts, so providers can be compared side by side before the detailed tables.
+Each service (Blender, Windows, Playwright, Filesystem, Calendar and Notion) is benchmarked separately, in one folder `bench/suites/<service>/` that holds its tasks, per-tool-call cases, raw runs and generated `RESULTS.md`: the upstream MCP server used directly vs the same server behind codemode, same model and tasks. Each service has named variants (`scenarios`, `calls`, and for Windows `scenarios-4-tools`). The harness is model-agnostic: every record stores the model and the runner that drove it (`claude` for Claude Code, `dsh` for DeepSeek Harness headless), `--runner` defaults from the model id, and adding a model to an existing runner needs no report changes — a new harness is one new runner. The generated overview and each service report lead with a **Compare models** matrix: one column per model, showing token change, codemode/direct totals and pass counts, so providers can be compared side by side before the detailed tables.
 
 Latest means of total tokens, codemode vs direct (all paths passed their objective checks):
 
@@ -71,6 +71,9 @@ Latest means of total tokens, codemode vs direct (all paths passed their objecti
 | Windows (Windows-MCP) | `claude-sonnet-5-5` (`claude`) | **-65%** (20 tools); **-3%** with only 4 tools | **-78%** |
 | Playwright | `claude-sonnet-5-5` (`claude`) | **-71%** | **-83%** |
 | Playwright | `deepseek-flash` (`dsh`) | **-68%** | **-82%** |
+| Filesystem (reference MCP server) | `claude-sonnet-5-5` (`claude`) | **-88%** | **-70%** |
+| Calendar (dav-mcp over a local CalDAV server) | `claude-sonnet-5-5` (`claude`) | **-74%** (but +40% wall time) | **-68%** (but +27% wall time) |
+| Notion | not run yet: needs `NOTION_TOKEN` and `NOTION_BENCH_PAGE_ID`, and the seeding code is untested against live Notion | | |
 
 Read these with the caveats in [bench/README.md](bench/README.md): 3 runs per task and path, most of the saving is tool-definition overhead, and the two models run under different harnesses, so compare codemode vs direct **within** a row rather than comparing models. Overview and the side-by-side model comparison: [bench/RESULTS.md](bench/RESULTS.md). Rerun with `npm run bench -- --service blender --variant scenarios --runs 3` (needs a logged-in runner; read the service's warning first); `npm run bench -- --service playwright --model deepseek-flash --runs 3` uses the DSH runner, `npm run bench:calls -- --service blender` runs the no-model per-call benchmark, `npm run bench:validate` checks the recorded data, and `npm run bench -- --list` shows every service, variant and runner.
 

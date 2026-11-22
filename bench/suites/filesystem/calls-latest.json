@@ -1,0 +1,540 @@
+{
+  "date": "2026-11-22",
+  "iterations": 8,
+  "toolCount": 16,
+  "costs": {
+    "rows": [
+      {
+        "tool": "read_file",
+        "covered": false,
+        "directChars": 682,
+        "codemodeChars": 33,
+        "onDemandChars": 549
+      },
+      {
+        "tool": "read_text_file",
+        "covered": true,
+        "directChars": 1059,
+        "codemodeChars": 38,
+        "onDemandChars": 942
+      },
+      {
+        "tool": "read_media_file",
+        "covered": false,
+        "directChars": 588,
+        "codemodeChars": 25,
+        "onDemandChars": 724
+      },
+      {
+        "tool": "read_multiple_files",
+        "covered": true,
+        "directChars": 686,
+        "codemodeChars": 30,
+        "onDemandChars": 698
+      },
+      {
+        "tool": "write_file",
+        "covered": true,
+        "directChars": 726,
+        "codemodeChars": 29,
+        "onDemandChars": 682
+      },
+      {
+        "tool": "append_file",
+        "covered": true,
+        "directChars": 847,
+        "codemodeChars": 30,
+        "onDemandChars": 806
+      },
+      {
+        "tool": "edit_file",
+        "covered": true,
+        "directChars": 1518,
+        "codemodeChars": 35,
+        "onDemandChars": 1332
+      },
+      {
+        "tool": "create_directory",
+        "covered": true,
+        "directChars": 703,
+        "codemodeChars": 26,
+        "onDemandChars": 710
+      },
+      {
+        "tool": "list_directory",
+        "covered": true,
+        "directChars": 670,
+        "codemodeChars": 24,
+        "onDemandChars": 669
+      },
+      {
+        "tool": "list_directory_with_sizes",
+        "covered": true,
+        "directChars": 813,
+        "codemodeChars": 44,
+        "onDemandChars": 803
+      },
+      {
+        "tool": "directory_tree",
+        "covered": true,
+        "directChars": 1479,
+        "codemodeChars": 50,
+        "onDemandChars": 1361
+      },
+      {
+        "tool": "move_file",
+        "covered": false,
+        "directChars": 888,
+        "codemodeChars": 34,
+        "onDemandChars": 834
+      },
+      {
+        "tool": "copy_file",
+        "covered": false,
+        "directChars": 658,
+        "codemodeChars": 34,
+        "onDemandChars": 604
+      },
+      {
+        "tool": "search_files",
+        "covered": true,
+        "directChars": 1417,
+        "codemodeChars": 49,
+        "onDemandChars": 1332
+      },
+      {
+        "tool": "get_file_info",
+        "covered": true,
+        "directChars": 649,
+        "codemodeChars": 23,
+        "onDemandChars": 640
+      },
+      {
+        "tool": "list_allowed_directories",
+        "covered": true,
+        "directChars": 406,
+        "codemodeChars": 30,
+        "onDemandChars": 478
+      }
+    ],
+    "directTotalChars": 13789,
+    "codemodeTotalChars": 1402,
+    "descriptionChars": 995,
+    "indexLevel": 2
+  },
+  "latency": {
+    "rows": [
+      {
+        "id": "list_allowed_directories",
+        "tool": "list_allowed_directories",
+        "iterations": 8,
+        "direct": {
+          "median": 0.8280999999997221,
+          "p95": 1.1035000000001673,
+          "min": 0.6211999999995896,
+          "max": 1.1035000000001673
+        },
+        "codemode": {
+          "median": 2.964600000000246,
+          "p95": 3.5174999999999272,
+          "min": 2.5676000000003114,
+          "max": 3.5174999999999272
+        },
+        "directChars": 60,
+        "codemodeChars": 93,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "read_text_file",
+        "tool": "read_text_file",
+        "iterations": 8,
+        "direct": {
+          "median": 2.4261999999998807,
+          "p95": 2.6835000000000946,
+          "min": 2.0541000000002896,
+          "max": 2.6835000000000946
+        },
+        "codemode": {
+          "median": 4.601299999999355,
+          "p95": 5.356300000000374,
+          "min": 3.3065999999998894,
+          "max": 5.356300000000374
+        },
+        "directChars": 10,
+        "codemodeChars": 37,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "read_multiple_files",
+        "tool": "read_multiple_files",
+        "iterations": 8,
+        "direct": {
+          "median": 2.888400000000729,
+          "p95": 3.3524999999999636,
+          "min": 2.395400000000336,
+          "max": 3.3524999999999636
+        },
+        "codemode": {
+          "median": 4.988199999999779,
+          "p95": 5.466500000000451,
+          "min": 4.250300000000607,
+          "max": 5.466500000000451
+        },
+        "directChars": 134,
+        "codemodeChars": 181,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "list_directory",
+        "tool": "list_directory",
+        "iterations": 8,
+        "direct": {
+          "median": 1.3326999999999316,
+          "p95": 1.5257000000001426,
+          "min": 1.0306000000000495,
+          "max": 1.5257000000001426
+        },
+        "codemode": {
+          "median": 2.7854999999999563,
+          "p95": 3.1066000000000713,
+          "min": 2.2485999999998967,
+          "max": 3.1066000000000713
+        },
+        "directChars": 51,
+        "codemodeChars": 81,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "list_directory_with_sizes",
+        "tool": "list_directory_with_sizes",
+        "iterations": 8,
+        "direct": {
+          "median": 2.039699999999357,
+          "p95": 2.552599999999984,
+          "min": 1.8322000000007392,
+          "max": 2.552599999999984
+        },
+        "codemode": {
+          "median": 3.5021999999999025,
+          "p95": 3.882400000000416,
+          "min": 3.1505999999999403,
+          "max": 3.882400000000416
+        },
+        "directChars": 235,
+        "codemodeChars": 268,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "directory_tree",
+        "tool": "directory_tree",
+        "iterations": 8,
+        "direct": {
+          "median": 1.5762999999997191,
+          "p95": 1.8442999999997483,
+          "min": 1.3947000000007392,
+          "max": 1.8442999999997483
+        },
+        "codemode": {
+          "median": 2.808899999999994,
+          "p95": 3.3825000000006185,
+          "min": 2.467200000000048,
+          "max": 3.3825000000006185
+        },
+        "directChars": 293,
+        "codemodeChars": 385,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "search_files",
+        "tool": "search_files",
+        "iterations": 8,
+        "direct": {
+          "median": 2.4447000000000116,
+          "p95": 2.7539999999999054,
+          "min": 2.026600000000144,
+          "max": 2.7539999999999054
+        },
+        "codemode": {
+          "median": 3.9068000000006577,
+          "p95": 4.040900000000875,
+          "min": 3.2489000000005035,
+          "max": 4.040900000000875
+        },
+        "directChars": 16,
+        "codemodeChars": 43,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "get_file_info",
+        "tool": "get_file_info",
+        "iterations": 8,
+        "direct": {
+          "median": 0.9315999999998894,
+          "p95": 1.1406999999999243,
+          "min": 0.8117000000002008,
+          "max": 1.1406999999999243
+        },
+        "codemode": {
+          "median": 1.9777000000003682,
+          "p95": 2.1536000000005515,
+          "min": 1.8065999999998894,
+          "max": 2.1536000000005515
+        },
+        "directChars": 276,
+        "codemodeChars": 310,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "write_file",
+        "tool": "write_file",
+        "iterations": 8,
+        "direct": {
+          "median": 2.05199999999968,
+          "p95": 2.5353000000004613,
+          "min": 1.875,
+          "max": 2.5353000000004613
+        },
+        "codemode": {
+          "median": 3.415100000000166,
+          "p95": 3.8891999999996187,
+          "min": 3.18119999999999,
+          "max": 3.8891999999996187
+        },
+        "directChars": 75,
+        "codemodeChars": 109,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "append_file",
+        "tool": "append_file",
+        "iterations": 8,
+        "direct": {
+          "median": 1.48279999999977,
+          "p95": 1.8241999999991094,
+          "min": 1.3429999999998472,
+          "max": 1.8241999999991094
+        },
+        "codemode": {
+          "median": 2.840400000000045,
+          "p95": 3.1903999999994994,
+          "min": 2.473500000000058,
+          "max": 3.1903999999994994
+        },
+        "directChars": 78,
+        "codemodeChars": 112,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "edit_file",
+        "tool": "edit_file",
+        "iterations": 8,
+        "direct": {
+          "median": 1.7847000000001572,
+          "p95": 1.8926000000001295,
+          "min": 1.6040000000002692,
+          "max": 1.8926000000001295
+        },
+        "codemode": {
+          "median": 3.0645000000004075,
+          "p95": 3.3537999999998647,
+          "min": 2.733799999999974,
+          "max": 3.3537999999998647
+        },
+        "directChars": 321,
+        "codemodeChars": 381,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "create_directory",
+        "tool": "create_directory",
+        "iterations": 8,
+        "direct": {
+          "median": 0.8513000000002648,
+          "p95": 0.9953999999997905,
+          "min": 0.7353000000002794,
+          "max": 0.9953999999997905
+        },
+        "codemode": {
+          "median": 1.9190000000007785,
+          "p95": 2.1567000000004555,
+          "min": 1.6728999999995722,
+          "max": 2.1567000000004555
+        },
+        "directChars": 86,
+        "codemodeChars": 121,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      }
+    ],
+    "sandboxOnly": {
+      "median": 0.7813999999998487,
+      "p95": 1.1790000000000873,
+      "min": 0.6542999999992389,
+      "max": 1.1790000000000873
+    }
+  },
+  "coveredTools": 12,
+  "skipped": [
+    {
+      "tool": "read_file",
+      "reason": "Deprecated alias of read_text_file."
+    },
+    {
+      "tool": "read_media_file",
+      "reason": "Needs an image or audio file; the result is binary data."
+    },
+    {
+      "tool": "move_file",
+      "reason": "Not repeatable: the source is gone after the first call. Covered by the organize scenario."
+    },
+    {
+      "tool": "copy_file",
+      "reason": "Not repeatable: the destination exists after the first call."
+    }
+  ],
+  "cases": [
+    {
+      "id": "list_allowed_directories",
+      "tool": "list_allowed_directories",
+      "args": {},
+      "hasPrompt": true
+    },
+    {
+      "id": "read_text_file",
+      "tool": "read_text_file",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "read_multiple_files",
+      "tool": "read_multiple_files",
+      "args": {
+        "paths": [
+          "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt",
+          "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\b.txt"
+        ]
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "list_directory",
+      "tool": "list_directory",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "list_directory_with_sizes",
+      "tool": "list_directory_with_sizes",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls",
+        "sortBy": "name"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "directory_tree",
+      "tool": "directory_tree",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "search_files",
+      "tool": "search_files",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls",
+        "pattern": "c.txt"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "get_file_info",
+      "tool": "get_file_info",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "write_file",
+      "tool": "write_file",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\out.txt",
+        "content": "written-4821"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "append_file",
+      "tool": "append_file",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\log.txt",
+        "content": "line\n"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "edit_file",
+      "tool": "edit_file",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\edit.txt",
+        "edits": [
+          {
+            "oldText": "AAA",
+            "newText": "BBB"
+          }
+        ],
+        "dryRun": true
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "create_directory",
+      "tool": "create_directory",
+      "args": {
+        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\made\\deep"
+      },
+      "hasPrompt": true
+    }
+  ]
+}
