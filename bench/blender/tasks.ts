@@ -1,11 +1,7 @@
-import type { ObjectSnapshot, SceneSnapshot } from './blender.ts';
+﻿import type { Verdict } from '../lib/types.ts';
+import type { ObjectSnapshot, SceneSnapshot } from './socket.ts';
 
-export interface Verdict {
-  pass: boolean;
-  detail: string;
-}
-
-export interface Task {
+export interface TaskSpec {
   id: string;
   /** Python run in Blender before the agent starts (scene is emptied first). */
   seed?: string;
@@ -77,7 +73,7 @@ const audit = buildAudit();
 const auditExpected = audit.filter((o) => o.needsFix).length;
 const snap2 = (v: number): number => Math.round(v / 2) * 2;
 
-export const tasks: Task[] = [
+export const specs: TaskSpec[] = [
   {
     id: 'table',
     prompt:
@@ -195,3 +191,4 @@ for name, x, y, z, sx, sy, sz in DATA:
     },
   },
 ];
+

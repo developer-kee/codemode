@@ -36,3 +36,4 @@ A service file should end with `satisfies ServiceConfig`.
 
 Direct blender-mcp vs codemode, same model, same tasks, live Blender: method and limitations in [bench/README.md](bench/README.md), results in [bench/RESULTS.md](bench/RESULTS.md). Rerun with `npm run bench -- --runs 3` (wipes the open Blender scene; needs `claude auth login`).
 
+

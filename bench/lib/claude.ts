@@ -1,25 +1,33 @@
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import type { BenchService } from './types.ts';
 
 export type PathId = 'direct' | 'codemode';
 
-const root = fileURLToPath(new URL('..', import.meta.url));
-const workDir = fileURLToPath(new URL('./work/', import.meta.url));
-
-const SYSTEM_PROMPT =
-  'You control a running Blender instance through the tools provided. Complete the task, then reply with one short sentence.';
+const root = fileURLToPath(new URL('../../', import.meta.url));
+/** Empty working directory so no CLAUDE.md or project settings leak into a run. */
+const workDir = fileURLToPath(new URL('../work/', import.meta.url));
 
 /** Same upstream for both paths; only the wrapper differs. */
-function mcpConfig(path: PathId): { server: string; json: object } {
+function mcpConfig(service: BenchService, path: PathId): { server: string; json: object } {
   if (path === 'direct') {
-    return { server: 'blender', json: { mcpServers: { blender: { command: 'uvx', args: ['blender-mcp'] } } } };
+    const d = service.direct;
+    return {
+      server: d.server,
+      json: { mcpServers: { [d.server]: { command: d.command, args: d.args, ...(d.env ? { env: d.env } : {}) } } },
+    };
   }
+  const server = `${service.id}-cm`;
   return {
-    server: 'blender-cm',
+    server,
     json: {
       mcpServers: {
-        'blender-cm': { command: process.execPath, args: [`${root}src/cli.ts`, 'blender'] },
+        [server]: {
+          command: process.execPath,
+          args: [`${root}src/cli.ts`, service.id],
+          ...(service.codemodeEnv ? { env: service.codemodeEnv } : {}),
+        },
       },
     },
   };
@@ -64,6 +72,7 @@ const usageOf = (u: unknown): TurnUsage => {
 };
 
 export function runClaude(opts: {
+  service: BenchService;
   path: PathId;
   model: string;
   prompt: string;
@@ -71,11 +80,11 @@ export function runClaude(opts: {
   timeoutMs: number;
 }): Promise<ClaudeRun> {
   mkdirSync(workDir, { recursive: true });
-  const { server, json } = mcpConfig(opts.path);
-  const mcpFile = `${workDir}mcp-${opts.path}.json`;
-  const sysFile = `${workDir}system.txt`;
+  const { server, json } = mcpConfig(opts.service, opts.path);
+  const mcpFile = `${workDir}mcp-${opts.service.id}-${opts.path}.json`;
+  const sysFile = `${workDir}system-${opts.service.id}.txt`;
   writeFileSync(mcpFile, JSON.stringify(json));
-  writeFileSync(sysFile, SYSTEM_PROMPT);
+  writeFileSync(sysFile, opts.service.systemPrompt);
 
   const q = (s: string): string => `"${s}"`;
   const cmdline = [

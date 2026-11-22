@@ -1,15 +1,15 @@
-// Usage: npm run bench -- [--runs 3] [--model claude-sonnet-5-5] [--tasks table,grid] [--paths direct,codemode] [--budget 2]
-// Needs: Blender open with the BlenderMCP addon connected (localhost:9876). The scene is WIPED before every run.
-import { mkdirSync } from 'node:fs';
+// Usage: npm run bench -- --service <id> [--runs 3] [--model claude-sonnet-5-5] [--tasks a,b] [--paths direct,codemode] [--budget 2]
+//        npm run bench -- --list
+// Each service's warning (side effects, prerequisites) is printed first: read it.
 import { parseArgs } from 'node:util';
-import { fileURLToPath } from 'node:url';
-import { resetScene, seedScene, snapshotScene } from './blender.ts';
-import { runClaude, type PathId } from './claude.ts';
-import { saveRecord, writeReport } from './report.ts';
-import { tasks } from './tasks.ts';
+import { runClaude, type PathId } from './lib/claude.ts';
+import { saveRecord, writeReports } from './lib/report.ts';
+import { getService, services } from './registry.ts';
 
 const { values } = parseArgs({
   options: {
+    service: { type: 'string', default: 'blender' },
+    list: { type: 'boolean', default: false },
     runs: { type: 'string', default: '3' },
     model: { type: 'string', default: 'claude-sonnet-5-5' },
     tasks: { type: 'string', default: '' },
@@ -19,19 +19,31 @@ const { values } = parseArgs({
   },
 });
 
+if (values.list) {
+  for (const s of services) console.log(`${s.id}: ${s.tasks.map((t) => t.id).join(', ')}`);
+  process.exit(0);
+}
+
+const service = getService(values.service);
+if (!service) {
+  console.error(`Unknown service "${values.service}". Available: ${services.map((s) => s.id).join(', ')}`);
+  process.exit(1);
+}
 const runs = Number(values.runs);
-const wantTasks = values.tasks ? values.tasks.split(',') : tasks.map((t) => t.id);
+const wantTasks = values.tasks ? values.tasks.split(',') : service.tasks.map((t) => t.id);
 const wantPaths = values.paths.split(',') as PathId[];
-const selected = tasks.filter((t) => wantTasks.includes(t.id));
+const selected = service.tasks.filter((t) => wantTasks.includes(t.id));
 if (selected.length === 0 || !Number.isInteger(runs) || runs < 1) {
   console.error('Nothing to run: check --tasks and --runs');
   process.exit(1);
 }
 
-mkdirSync(fileURLToPath(new URL('./results/', import.meta.url)), { recursive: true });
+console.log(`WARNING: ${service.warning}\n`);
+await service.preflight();
+
 const batch = new Date().toISOString().replace(/[:.]/g, '-');
-let n = 0;
 const totalRuns = selected.length * wantPaths.length * runs;
+let n = 0;
 
 for (let repeat = 1; repeat <= runs; repeat++) {
   for (const task of selected) {
@@ -39,24 +51,23 @@ for (let repeat = 1; repeat <= runs; repeat++) {
     const order = repeat % 2 === 1 ? wantPaths : [...wantPaths].reverse();
     for (const path of order) {
       n++;
-      await resetScene();
-      if (task.seed) await seedScene(task.seed);
+      await task.prepare();
       const run = await runClaude({
+        service,
         path,
         model: values.model,
         prompt: task.prompt,
         budgetUsd: Number(values.budget),
         timeoutMs: Number(values.timeout) * 1000,
       });
-      const scene = await snapshotScene();
-      const verdict = run.ok ? task.verify(scene, run.answer) : { pass: false, detail: run.error ?? 'run failed' };
-      saveRecord({ batch, task: task.id, model: values.model, repeat, pass: verdict.pass, verdict: verdict.detail, run });
+      const verdict = run.ok ? await task.verify(run.answer) : { pass: false, detail: run.error ?? 'run failed' };
+      saveRecord(service.id, { batch, task: task.id, model: values.model, repeat, pass: verdict.pass, verdict: verdict.detail, run });
       const tokens = run.usage.input + run.usage.cacheWrite + run.usage.cacheRead + run.usage.output;
       console.log(
-        `[${n}/${totalRuns}] ${task.id} ${path} #${repeat}: ${verdict.pass ? 'PASS' : `FAIL (${verdict.detail})`} ` +
-          `turns=${run.turns} tools=${run.toolCalls} tokens=${tokens} cost=$${run.costUsd.toFixed(3)}`,
+        `[${n}/${totalRuns}] ${service.id}/${task.id} ${path} #${repeat}: ${verdict.pass ? 'PASS' : `FAIL (${verdict.detail})`} ` +
+          `turns=${run.turns} tools=${run.toolCalls} tokens=${tokens} cost=$${run.costUsd.toFixed(3)} time=${(run.durationMs / 1000).toFixed(1)}s`,
       );
     }
   }
 }
-console.log(`Report: ${writeReport()}`);
+console.log(`Reports: ${writeReports(services).join(', ')}`);
