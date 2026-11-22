@@ -63,3 +63,21 @@ test('a store error reaches the script as an exception', async () => {
   const out = await runInSandbox('try { store.set("big", "x".repeat(100)); } catch (e) { return String(e.message); }', tiny);
   assert.match(String(out.result), /store is full/);
 });
+
+test('a call a script starts and does not wait for always reaches the host before the script is reported finished', async () => {
+  for (let i = 0; i < 30; i++) {
+    let started = 0;
+    let aborted = false;
+    const slow: SandboxApi = {
+      namespace: 'codemode',
+      ids: ['slow'],
+      callTool: (_id, _input, signal) => {
+        started++;
+        return new Promise((_resolve, reject) => signal?.addEventListener('abort', () => { aborted = true; reject(new Error('aborted')); }));
+      },
+    };
+    await runInSandbox('codemode.slow({}); return 1', slow);
+    assert.equal(started, 1, `run ${i}: the call never reached the host`);
+    assert.equal(aborted, true, `run ${i}: the call was not aborted`);
+  }
+});

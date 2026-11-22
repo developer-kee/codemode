@@ -58,7 +58,8 @@ parentPort?.on('message', (msg: RunMessage) => {
   };
 
   void runInQuickJS(msg.code, api, msg.limits).then((result) => {
-    parentPort?.postMessage({ type: 'done', result });
+    // Same channel as the tool calls, so the host sees every call the script started before it sees the end.
+    callPort.postMessage({ done: true, result });
     callPort.close();
     syncPort.close();
   });

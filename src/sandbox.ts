@@ -51,7 +51,6 @@ export function runInSandbox(code: string, api: SandboxApi, limits: SandboxLimit
       finished = true;
       clearTimeout(watchdog);
       abort.abort(); // cancels upstream calls the script left running
-      worker.off('message', onMessage);
       worker.off('error', onError);
       worker.off('exit', onExit);
       calls.port1.close();
@@ -61,9 +60,6 @@ export function runInSandbox(code: string, api: SandboxApi, limits: SandboxLimit
       resolve(result);
     };
 
-    const onMessage = (m: { type: string; result: SandboxResult }): void => {
-      if (m.type === 'done') finish(m.result, true);
-    };
     const onError = (e: Error): void => finish({ logs: [], error: `The sandbox worker stopped: ${e.message}` }, false);
     const onExit = (exitCode: number): void => finish({ logs: [], error: `The sandbox worker exited (code ${exitCode})` }, false);
     const watchdog = setTimeout(
@@ -71,12 +67,15 @@ export function runInSandbox(code: string, api: SandboxApi, limits: SandboxLimit
       timeoutMs + WATCHDOG_GRACE_MS,
     );
 
-    worker.on('message', onMessage);
     worker.on('error', onError);
     worker.on('exit', onExit);
 
     // Upstream tool calls from the guest.
-    calls.port1.on('message', (req: { n: number; id: string; input: unknown }) => {
+    calls.port1.on('message', (req: { n: number; id: string; input: unknown } | { done: true; result: SandboxResult }) => {
+      if ('done' in req) {
+        finish(req.result, true);
+        return;
+      }
       api.callTool(req.id, req.input, abort.signal).then(
         (value) => {
           if (finished) return;
