@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="960" height="560" role="img" aria-labelledby="t d">
+<title id="t">codemode: the model writes one script instead of calling every tool</title>
+<desc id="d">Top: without codemode, the model sees 77 tool definitions (58,037 tokens) every turn and every result passes through it. Bottom: with codemode the model sees two tools (573 tokens), writes a script that runs in a sandbox against the upstream tools, and only the return value comes back.</desc>
+<style>
+  :root { --bg:#ffffff; --panel:#f6f8fa; --line:#d0d7de; --text:#1f2328; --muted:#59636e; --accent:#0969da; --accentbg:#ddf4ff; --bad:#cf222e; --badbg:#ffebe9; --good:#1a7f37; --goodbg:#dafbe1; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --panel:#161b22; --line:#30363d; --text:#e6edf3; --muted:#9198a1; --accent:#58a6ff; --accentbg:#0c2d6b; --bad:#ff7b72; --badbg:#3d1418; --good:#56d364; --goodbg:#0f2d1a; } }
+  text { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--text); }
+  .bg { fill: var(--bg); }
+  .panel { fill: var(--panel); stroke: var(--line); }
+  .box { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+  .accentbox { fill: var(--accentbg); stroke: var(--accent); stroke-width: 1.5; }
+  .chip { fill: var(--bg); stroke: var(--muted); stroke-width: 1; }
+  .chipgood { fill: var(--goodbg); stroke: var(--good); stroke-width: 1; }
+  .h1 { font-size: 30px; font-weight: 700; }
+  .sub { font-size: 15px; fill: var(--muted); }
+  .lane { font-size: 13px; font-weight: 700; letter-spacing: .08em; fill: var(--muted); }
+  .label { font-size: 15px; font-weight: 600; }
+  .small { font-size: 12.5px; fill: var(--muted); }
+  .bad { font-size: 15px; font-weight: 700; fill: var(--bad); }
+  .good { font-size: 15px; font-weight: 700; fill: var(--good); }
+  .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; fill: var(--text); }
+  .arrow { stroke: var(--muted); stroke-width: 2; fill: none; }
+  .arrowbad { stroke: var(--bad); stroke-width: 2; fill: none; stroke-dasharray: 5 4; }
+  .arrowgood { stroke: var(--good); stroke-width: 2.5; fill: none; }
+</style>
+<defs>
+  <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker>
+  <marker id="ab" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker>
+  <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--good)"/></marker>
+</defs>
+<rect class="bg" width="960" height="560" rx="14"/>
+
+<text class="h1" x="40" y="54">codemode</text>
+<text class="sub" x="40" y="78">The model writes one script instead of calling every MCP tool and reading every result.</text>
+
+<!-- Lane 1: direct -->
+<rect class="panel" x="24" y="98" width="912" height="190" rx="12"/>
+<text class="lane" x="48" y="126">WITHOUT CODEMODE</text>
+<rect class="box" x="48" y="156" width="140" height="84" rx="10"/>
+<text class="label" x="118" y="204" text-anchor="middle">Model</text>
+<path class="arrowbad" d="M192 190 L470 190" marker-start="url(#ab)" marker-end="url(#ab)"/>
+<text class="small" x="331" y="176" text-anchor="middle">every call, every result</text>
+<text class="small" x="331" y="214" text-anchor="middle">goes through the model</text>
+<rect class="chip" x="486" y="150" width="34" height="16" rx="4"/><rect class="chip" x="528" y="150" width="34" height="16" rx="4"/><rect class="chip" x="570" y="150" width="34" height="16" rx="4"/><rect class="chip" x="612" y="150" width="34" height="16" rx="4"/><rect class="chip" x="654" y="150" width="34" height="16" rx="4"/><rect class="chip" x="696" y="150" width="34" height="16" rx="4"/><rect class="chip" x="486" y="174" width="34" height="16" rx="4"/><rect class="chip" x="528" y="174" width="34" height="16" rx="4"/><rect class="chip" x="570" y="174" width="34" height="16" rx="4"/><rect class="chip" x="612" y="174" width="34" height="16" rx="4"/><rect class="chip" x="654" y="174" width="34" height="16" rx="4"/><rect class="chip" x="696" y="174" width="34" height="16" rx="4"/><rect class="chip" x="486" y="198" width="34" height="16" rx="4"/><rect class="chip" x="528" y="198" width="34" height="16" rx="4"/><rect class="chip" x="570" y="198" width="34" height="16" rx="4"/><rect class="chip" x="612" y="198" width="34" height="16" rx="4"/><rect class="chip" x="654" y="198" width="34" height="16" rx="4"/><rect class="chip" x="696" y="198" width="34" height="16" rx="4"/><rect class="chip" x="486" y="222" width="34" height="16" rx="4"/><rect class="chip" x="528" y="222" width="34" height="16" rx="4"/><rect class="chip" x="570" y="222" width="34" height="16" rx="4"/><rect class="chip" x="612" y="222" width="34" height="16" rx="4"/><rect class="chip" x="654" y="222" width="34" height="16" rx="4"/><rect class="chip" x="696" y="222" width="34" height="16" rx="4"/>
+<text class="label" x="486" y="262">77 upstream tools</text>
+<text class="bad" x="846" y="190" text-anchor="middle">58,037 tokens</text>
+<text class="small" x="846" y="210" text-anchor="middle">of tool definitions,</text>
+<text class="small" x="846" y="226" text-anchor="middle">sent on every turn</text>
+
+<!-- Lane 2: codemode -->
+<rect class="panel" x="24" y="304" width="912" height="196" rx="12"/>
+<text class="lane" x="48" y="332">WITH CODEMODE</text>
+<rect class="box" x="48" y="362" width="120" height="84" rx="10"/>
+<text class="label" x="108" y="410" text-anchor="middle">Model</text>
+
+<rect class="accentbox" x="214" y="362" width="168" height="84" rx="10"/>
+<text class="label" x="298" y="394" text-anchor="middle">execute_code</text>
+<text class="label" x="298" y="416" text-anchor="middle">get_api</text>
+<text class="small" x="298" y="436" text-anchor="middle">2 tools · 573 tokens</text>
+<path class="arrow" d="M170 404 L212 404" marker-end="url(#a)"/>
+
+<rect class="box" x="428" y="350" width="190" height="108" rx="10"/>
+<text class="small" x="523" y="370" text-anchor="middle">sandbox · no network, no files</text>
+<text class="code" x="444" y="394">const rows = await</text>
+<text class="code" x="444" y="412">  codemode.query(...);</text>
+<text class="code" x="444" y="430">return rows.filter(...)</text>
+<path class="arrow" d="M384 404 L426 404" marker-end="url(#a)"/>
+
+<rect class="chipgood" x="664" y="366" width="30" height="16" rx="4"/><rect class="chipgood" x="702" y="366" width="30" height="16" rx="4"/><rect class="chipgood" x="740" y="366" width="30" height="16" rx="4"/><rect class="chipgood" x="778" y="366" width="30" height="16" rx="4"/><rect class="chipgood" x="816" y="366" width="30" height="16" rx="4"/><rect class="chipgood" x="854" y="366" width="30" height="16" rx="4"/><rect class="chipgood" x="664" y="390" width="30" height="16" rx="4"/><rect class="chipgood" x="702" y="390" width="30" height="16" rx="4"/><rect class="chipgood" x="740" y="390" width="30" height="16" rx="4"/><rect class="chipgood" x="778" y="390" width="30" height="16" rx="4"/><rect class="chipgood" x="816" y="390" width="30" height="16" rx="4"/><rect class="chipgood" x="854" y="390" width="30" height="16" rx="4"/><rect class="chipgood" x="664" y="414" width="30" height="16" rx="4"/><rect class="chipgood" x="702" y="414" width="30" height="16" rx="4"/><rect class="chipgood" x="740" y="414" width="30" height="16" rx="4"/><rect class="chipgood" x="778" y="414" width="30" height="16" rx="4"/><rect class="chipgood" x="816" y="414" width="30" height="16" rx="4"/><rect class="chipgood" x="854" y="414" width="30" height="16" rx="4"/>
+<text class="small" x="664" y="454">calls the same 77 tools</text>
+<path class="arrow" d="M620 404 L660 404" marker-end="url(#a)"/>
+
+<!-- return path -->
+<path class="arrowgood" d="M523 462 L523 484 L108 484 L108 450" marker-end="url(#ag)"/>
+<text class="good" x="316" y="478" text-anchor="middle">only the return value comes back</text>
+
+<text class="small" x="480" y="526" text-anchor="middle">Notion (hosted), same tasks, same model: 50,589 tokens per task instead of 459,735 (-89%), 64% cheaper, every answer checked by code.</text>
+<text class="small" x="480" y="544" text-anchor="middle">Measured, 3 runs per task. Idea: Cloudflare, "Code Mode". Results for every service in bench/RESULTS.md.</text>
+</svg>
