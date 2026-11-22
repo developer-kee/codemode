@@ -1,0 +1,479 @@
+{
+  "date": "2026-11-22",
+  "iterations": 10,
+  "toolCount": 20,
+  "costs": {
+    "rows": [
+      {
+        "tool": "App",
+        "covered": false,
+        "directChars": 1126,
+        "codemodeChars": 74,
+        "onDemandChars": 712
+      },
+      {
+        "tool": "DisplayInventory",
+        "covered": true,
+        "directChars": 293,
+        "codemodeChars": 22,
+        "onDemandChars": 388
+      },
+      {
+        "tool": "PowerShell",
+        "covered": true,
+        "directChars": 788,
+        "codemodeChars": 33,
+        "onDemandChars": 779
+      },
+      {
+        "tool": "FileSystem",
+        "covered": true,
+        "directChars": 1594,
+        "codemodeChars": 135,
+        "onDemandChars": 1154
+      },
+      {
+        "tool": "Snapshot",
+        "covered": false,
+        "directChars": 1818,
+        "codemodeChars": 123,
+        "onDemandChars": 1459
+      },
+      {
+        "tool": "Screenshot",
+        "covered": false,
+        "directChars": 943,
+        "codemodeChars": 88,
+        "onDemandChars": 724
+      },
+      {
+        "tool": "Click",
+        "covered": false,
+        "directChars": 724,
+        "codemodeChars": 41,
+        "onDemandChars": 569
+      },
+      {
+        "tool": "Type",
+        "covered": false,
+        "directChars": 860,
+        "codemodeChars": 67,
+        "onDemandChars": 601
+      },
+      {
+        "tool": "Scroll",
+        "covered": false,
+        "directChars": 799,
+        "codemodeChars": 57,
+        "onDemandChars": 606
+      },
+      {
+        "tool": "Move",
+        "covered": false,
+        "directChars": 1002,
+        "codemodeChars": 51,
+        "onDemandChars": 708
+      },
+      {
+        "tool": "Shortcut",
+        "covered": false,
+        "directChars": 432,
+        "codemodeChars": 22,
+        "onDemandChars": 368
+      },
+      {
+        "tool": "Wait",
+        "covered": true,
+        "directChars": 411,
+        "codemodeChars": 18,
+        "onDemandChars": 401
+      },
+      {
+        "tool": "WaitFor",
+        "covered": false,
+        "directChars": 788,
+        "codemodeChars": 74,
+        "onDemandChars": 604
+      },
+      {
+        "tool": "Scrape",
+        "covered": false,
+        "directChars": 925,
+        "codemodeChars": 48,
+        "onDemandChars": 793
+      },
+      {
+        "tool": "MultiSelect",
+        "covered": false,
+        "directChars": 637,
+        "codemodeChars": 44,
+        "onDemandChars": 468
+      },
+      {
+        "tool": "MultiEdit",
+        "covered": false,
+        "directChars": 512,
+        "codemodeChars": 29,
+        "onDemandChars": 391
+      },
+      {
+        "tool": "Clipboard",
+        "covered": false,
+        "directChars": 422,
+        "codemodeChars": 26,
+        "onDemandChars": 376
+      },
+      {
+        "tool": "Process",
+        "covered": true,
+        "directChars": 770,
+        "codemodeChars": 56,
+        "onDemandChars": 559
+      },
+      {
+        "tool": "Notification",
+        "covered": false,
+        "directChars": 577,
+        "codemodeChars": 40,
+        "onDemandChars": 545
+      },
+      {
+        "tool": "Registry",
+        "covered": true,
+        "directChars": 892,
+        "codemodeChars": 46,
+        "onDemandChars": 734
+      }
+    ],
+    "directTotalChars": 16313,
+    "codemodeTotalChars": 1978,
+    "descriptionChars": 1567,
+    "indexLevel": 2
+  },
+  "latency": {
+    "rows": [
+      {
+        "id": "PowerShell",
+        "tool": "PowerShell",
+        "iterations": 10,
+        "direct": {
+          "median": 212.65589999999975,
+          "p95": 238.17360000000008,
+          "min": 200.2543000000005,
+          "max": 238.17360000000008
+        },
+        "codemode": {
+          "median": 211.54269999999997,
+          "p95": 239.08300000000054,
+          "min": 200.45299999999952,
+          "max": 239.08300000000054
+        },
+        "directChars": 43,
+        "codemodeChars": 72,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "FileSystem.list",
+        "tool": "FileSystem",
+        "iterations": 10,
+        "direct": {
+          "median": 3.9817999999995664,
+          "p95": 6.228900000000067,
+          "min": 3.5495000000009895,
+          "max": 6.228900000000067
+        },
+        "codemode": {
+          "median": 6.434000000001106,
+          "p95": 8.955900000000838,
+          "min": 5.145500000000538,
+          "max": 8.955900000000838
+        },
+        "directChars": 141,
+        "codemodeChars": 176,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "FileSystem.read",
+        "tool": "FileSystem",
+        "iterations": 10,
+        "direct": {
+          "median": 3.9319000000014057,
+          "p95": 4.3443999999999505,
+          "min": 3.1881000000012136,
+          "max": 4.3443999999999505
+        },
+        "codemode": {
+          "median": 6.173099999999977,
+          "p95": 7.934699999999793,
+          "min": 4.405099999999948,
+          "max": 7.934699999999793
+        },
+        "directChars": 90,
+        "codemodeChars": 124,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "FileSystem.write",
+        "tool": "FileSystem",
+        "iterations": 10,
+        "direct": {
+          "median": 4.374200000000201,
+          "p95": 5.718999999999141,
+          "min": 3.1463999999996304,
+          "max": 5.718999999999141
+        },
+        "codemode": {
+          "median": 6.5759000000016385,
+          "p95": 8.109699999999066,
+          "min": 4.845799999999144,
+          "max": 8.109699999999066
+        },
+        "directChars": 97,
+        "codemodeChars": 130,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "Process.list",
+        "tool": "Process",
+        "iterations": 10,
+        "direct": {
+          "median": 617.1450000000004,
+          "p95": 644.5512999999992,
+          "min": 600.4068000000007,
+          "max": 644.5512999999992
+        },
+        "codemode": {
+          "median": 611.7600999999995,
+          "p95": 647.0263999999988,
+          "min": 594.7233000000015,
+          "max": 647.0263999999988
+        },
+        "directChars": 298,
+        "codemodeChars": 331,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "Registry.get",
+        "tool": "Registry",
+        "iterations": 10,
+        "direct": {
+          "median": 230.44700000000012,
+          "p95": 250.99719999999797,
+          "min": 219.29429999999775,
+          "max": 250.99719999999797
+        },
+        "codemode": {
+          "median": 230.37420000000566,
+          "p95": 265.0188999999955,
+          "min": 219.89380000000165,
+          "max": 265.0188999999955
+        },
+        "directChars": 99,
+        "codemodeChars": 131,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "Wait",
+        "tool": "Wait",
+        "iterations": 10,
+        "direct": {
+          "median": 1002.8348999999944,
+          "p95": 1002.9573000000019,
+          "min": 1002.6241000000009,
+          "max": 1002.9573000000019
+        },
+        "codemode": {
+          "median": 1004.7714000000051,
+          "p95": 1005.332699999999,
+          "min": 1004.5533000000069,
+          "max": 1005.332699999999
+        },
+        "directChars": 21,
+        "codemodeChars": 47,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "DisplayInventory",
+        "tool": "DisplayInventory",
+        "iterations": 10,
+        "direct": {
+          "median": 1.8934000000008382,
+          "p95": 2.1994999999951688,
+          "min": 1.7351000000053318,
+          "max": 2.1994999999951688
+        },
+        "codemode": {
+          "median": 2.910700000000361,
+          "p95": 3.51929999999993,
+          "min": 2.6568000000042957,
+          "max": 3.51929999999993
+        },
+        "directChars": 306,
+        "codemodeChars": 549,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      }
+    ],
+    "sandboxOnly": {
+      "median": 0.7473000000027241,
+      "p95": 1.0570999999981723,
+      "min": 0.685299999997369,
+      "max": 1.0570999999981723
+    }
+  },
+  "coveredTools": 6,
+  "skipped": [
+    {
+      "tool": "App",
+      "reason": "Launches programs and moves windows on your desktop."
+    },
+    {
+      "tool": "Snapshot",
+      "reason": "Captures your screen and UI tree; the image would be sent to the model."
+    },
+    {
+      "tool": "Screenshot",
+      "reason": "Captures your screen; the image would be sent to the model."
+    },
+    {
+      "tool": "Click",
+      "reason": "Sends mouse input to your desktop."
+    },
+    {
+      "tool": "Type",
+      "reason": "Sends keystrokes to your desktop."
+    },
+    {
+      "tool": "Scroll",
+      "reason": "Sends mouse input to your desktop."
+    },
+    {
+      "tool": "Move",
+      "reason": "Moves the mouse on your desktop."
+    },
+    {
+      "tool": "Shortcut",
+      "reason": "Sends key combinations to whatever window has focus."
+    },
+    {
+      "tool": "MultiSelect",
+      "reason": "Sends mouse input to your desktop."
+    },
+    {
+      "tool": "MultiEdit",
+      "reason": "Sends keystrokes to your desktop."
+    },
+    {
+      "tool": "Clipboard",
+      "reason": "Reads your clipboard, which can hold private data."
+    },
+    {
+      "tool": "Notification",
+      "reason": "Pops a visible toast notification on your desktop."
+    },
+    {
+      "tool": "Scrape",
+      "reason": "Fetches an external web page; latency depends on the network, not on the tool."
+    },
+    {
+      "tool": "WaitFor",
+      "reason": "Needs a live UI condition to wait on."
+    }
+  ],
+  "cases": [
+    {
+      "id": "PowerShell",
+      "tool": "PowerShell",
+      "args": {
+        "command": "Write-Output codemode-ok-4821"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "FileSystem.list",
+      "tool": "FileSystem",
+      "args": {
+        "mode": "list",
+        "path": "C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "FileSystem.read",
+      "tool": "FileSystem",
+      "args": {
+        "mode": "read",
+        "path": "C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls\\a.txt"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "FileSystem.write",
+      "tool": "FileSystem",
+      "args": {
+        "mode": "write",
+        "path": "C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls\\out.txt",
+        "content": "written-4821",
+        "overwrite": true
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "Process.list",
+      "tool": "Process",
+      "args": {
+        "mode": "list",
+        "sort_by": "memory",
+        "limit": 5
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "Registry.get",
+      "tool": "Registry",
+      "args": {
+        "mode": "get",
+        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+        "name": "ProductName"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "Wait",
+      "tool": "Wait",
+      "args": {
+        "duration": 1
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "DisplayInventory",
+      "tool": "DisplayInventory",
+      "args": {},
+      "hasPrompt": false
+    }
+  ]
+}

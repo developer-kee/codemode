@@ -18,9 +18,9 @@ Each cell is the **token change**, `codemode / direct` total tokens, and passed/
 |---|---|---|---|
 | Blender | `scenarios` | **-72%** · 8,024 / 28,727 · 24/24 | not run |
 | Blender | `calls` | **-82%** · 3,063 / 17,476 · 18/18 | not run |
-| Windows (Windows-MCP) | `scenarios` | **-63%** · 8,444 / 22,892 · 18/18 | not run |
-| Windows (Windows-MCP) | `scenarios-4-tools` | **8%** · 8,754 / 8,128 · 18/18 | not run |
-| Windows (Windows-MCP) | `calls` | **-78%** · 3,498 / 15,827 · 42/42 | not run |
+| Windows (Windows-MCP) | `scenarios` | **-65%** · 8,101 / 22,860 · 18/18 | not run |
+| Windows (Windows-MCP) | `scenarios-4-tools` | **-3%** · 7,870 / 8,146 · 18/18 | not run |
+| Windows (Windows-MCP) | `calls` | **-78%** · 3,538 / 15,825 · 42/42 | not run |
 | Playwright (browser, local test site) | `scenarios` | **-71%** · 8,435 / 29,359 · 18/18 | **-68%** · 18,923 / 60,019 · 18/18 |
 | Playwright (browser, local test site) | `calls` | **-83%** · 3,594 / 21,020 · 18/18 | **-82%** · 3,249 / 17,647 · 18/18 |
 
@@ -34,9 +34,9 @@ Full per-task tables for each model. The comparison above is the quick view; the
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | Blender | `scenarios` | `claude-sonnet-5-5` | `claude` | 24 (24) | 28,727 | 8,024 | **-72%** | 11.0s | 11.2s | **1%** | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
 | Blender | `calls` | `claude-sonnet-5-5` | `claude` | 18 (18) | 17,476 | 3,063 | **-82%** | 6.8s | 6.8s | **1%** | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
-| Windows (Windows-MCP) | `scenarios` | `claude-sonnet-5-5` | `claude` | 18 (18) | 22,892 | 8,444 | **-63%** | 14.5s | 15.0s | **3%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
-| Windows (Windows-MCP) | `scenarios-4-tools` | `claude-sonnet-5-5` | `claude` | 18 (18) | 8,128 | 8,754 | **8%** | 13.3s | 18.0s | **36%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
-| Windows (Windows-MCP) | `calls` | `claude-sonnet-5-5` | `claude` | 42 (42) | 15,827 | 3,498 | **-78%** | 9.9s | 10.5s | **5%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
+| Windows (Windows-MCP) | `scenarios` | `claude-sonnet-5-5` | `claude` | 18 (18) | 22,860 | 8,101 | **-65%** | 14.8s | 15.1s | **2%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
+| Windows (Windows-MCP) | `scenarios-4-tools` | `claude-sonnet-5-5` | `claude` | 18 (18) | 8,146 | 7,870 | **-3%** | 19.6s | 16.0s | **-19%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
+| Windows (Windows-MCP) | `calls` | `claude-sonnet-5-5` | `claude` | 42 (42) | 15,825 | 3,538 | **-78%** | 12.1s | 12.0s | **-1%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
 | Playwright (browser, local test site) | `scenarios` | `claude-sonnet-5-5` | `claude` | 18 (18) | 29,359 | 8,435 | **-71%** | 11.0s | 11.9s | **8%** | [suites/playwright/RESULTS.md](suites/playwright/RESULTS.md) |
 | Playwright (browser, local test site) | `calls` | `claude-sonnet-5-5` | `claude` | 18 (18) | 21,020 | 3,594 | **-83%** | 8.7s | 8.6s | **-1%** | [suites/playwright/RESULTS.md](suites/playwright/RESULTS.md) |
 
