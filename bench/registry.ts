@@ -1,14 +1,15 @@
 ﻿import { blender } from './blender/index.ts';
-import type { BenchService } from './lib/types.ts';
+import type { BenchService, BenchVariant } from './lib/types.ts';
+import { playwright } from './playwright/index.ts';
 import { windows } from './windows/index.ts';
-import { windowsFull } from './windows-full/index.ts';
-import { makeCallService } from './lib/calls.ts';
-import { suites } from './suites.ts';
 
-/** Add a benchmarked tool here: one folder under bench/<id>/ exporting a BenchService. */
-export const services: BenchService[] = [blender, windows, windowsFull, ...suites.map(makeCallService)];
+/** Add a benchmarked service here: one folder under bench/<id>/ (matching services/<id>.ts) exporting a BenchService. */
+export const services: BenchService[] = [blender, windows, playwright];
 
 export function getService(id: string): BenchService | undefined {
   return services.find((s) => s.id === id);
 }
 
+export function getVariant(service: BenchService, id: string): BenchVariant | undefined {
+  return service.variants.find((v) => v.id === id);
+}

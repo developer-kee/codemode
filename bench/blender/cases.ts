@@ -1,11 +1,7 @@
-import type { CallSuite } from '../lib/calls.ts';
-import { blender } from './index.ts';
+import type { CallDef } from '../lib/types.ts';
 import { blenderExec, resetScene } from './socket.ts';
 
-export const blenderCalls: CallSuite = {
-  id: 'blender',
-  title: 'Blender',
-  base: blender,
+export const blenderCalls: CallDef = {
   async reset() {
     await resetScene();
     await blenderExec(`
@@ -14,7 +10,6 @@ bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))
 bpy.context.active_object.name = "Cube_A"
 `);
   },
-  preflight: blender.preflight,
   cases: [
     {
       id: 'get_addon_status',

@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import type { BenchService } from './types.ts';
+import type { BenchService, BenchVariant } from './types.ts';
 
 export type PathId = 'direct' | 'codemode';
 
@@ -10,9 +10,9 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 const workDir = fileURLToPath(new URL('../work/', import.meta.url));
 
 /** Same upstream for both paths; only the wrapper differs. */
-function mcpConfig(service: BenchService, path: PathId): { server: string; json: object } {
+function mcpConfig(service: BenchService, variant: BenchVariant, path: PathId): { server: string; json: object } {
   if (path === 'direct') {
-    const d = service.direct;
+    const d = variant.direct;
     return {
       server: d.server,
       json: { mcpServers: { [d.server]: { command: d.command, args: d.args, ...(d.env ? { env: d.env } : {}) } } },
@@ -25,8 +25,8 @@ function mcpConfig(service: BenchService, path: PathId): { server: string; json:
       mcpServers: {
         [server]: {
           command: process.execPath,
-          args: [`${root}src/cli.ts`, service.wrapper ?? service.id],
-          ...(service.codemodeEnv ? { env: service.codemodeEnv } : {}),
+          args: [`${root}src/cli.ts`, service.id],
+          ...(variant.codemodeEnv ? { env: variant.codemodeEnv } : {}),
         },
       },
     },
@@ -73,6 +73,7 @@ const usageOf = (u: unknown): TurnUsage => {
 
 export function runClaude(opts: {
   service: BenchService;
+  variant: BenchVariant;
   path: PathId;
   model: string;
   prompt: string;
@@ -80,11 +81,11 @@ export function runClaude(opts: {
   timeoutMs: number;
 }): Promise<ClaudeRun> {
   mkdirSync(workDir, { recursive: true });
-  const { server, json } = mcpConfig(opts.service, opts.path);
-  const mcpFile = `${workDir}mcp-${opts.service.id}-${opts.path}.json`;
-  const sysFile = `${workDir}system-${opts.service.id}.txt`;
+  const { server, json } = mcpConfig(opts.service, opts.variant, opts.path);
+  const mcpFile = `${workDir}mcp-${opts.service.id}-${opts.variant.id}-${opts.path}.json`;
+  const sysFile = `${workDir}system-${opts.service.id}-${opts.variant.id}.txt`;
   writeFileSync(mcpFile, JSON.stringify(json));
-  writeFileSync(sysFile, opts.service.systemPrompt);
+  writeFileSync(sysFile, opts.variant.systemPrompt);
 
   const q = (s: string): string => `"${s}"`;
   const cmdline = [

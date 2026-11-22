@@ -1,4 +1,6 @@
-import type { BenchService } from '../lib/types.ts';
+import { callsVariant } from '../lib/calls.ts';
+import type { BenchService, BenchVariant } from '../lib/types.ts';
+import { playwrightCalls } from './cases.ts';
 import { ORIGIN, startFixture } from './fixture.ts';
 import { tasks } from './tasks.ts';
 
@@ -7,9 +9,9 @@ const FLAGS = ['--browser', 'msedge', '--headless', '--allowed-origins', ORIGIN]
 
 let stopFixture: (() => Promise<void>) | undefined;
 
-export const playwright: BenchService = {
-  id: 'playwright',
-  title: 'Playwright (browser, local test site)',
+const scenarios: BenchVariant = {
+  id: 'scenarios',
+  title: 'multi-step scenario tasks',
   direct: {
     server: 'playwright',
     command: 'npx',
@@ -18,6 +20,13 @@ export const playwright: BenchService = {
   codemodeEnv: { CODEMODE_PLAYWRIGHT_ARGS: FLAGS.join(' ') },
   systemPrompt:
     'You control a web browser through the tools provided. Only visit the local test site named in the task. Complete the task, then reply with one short sentence.',
+  notes: ['Both paths expose the same 24 tools of the pinned `@playwright/mcp@0.0.86`.'],
+  tasks,
+};
+
+export const playwright: BenchService = {
+  id: 'playwright',
+  title: 'Playwright (browser, local test site)',
   warning:
     `Drives a real headless Microsoft Edge (already installed; nothing is downloaded) against a small local site on ${ORIGIN}, ` +
     'and the browser is limited to that origin with --allowed-origins. The server also exposes browser_run_code_unsafe, which runs ' +
@@ -28,7 +37,9 @@ export const playwright: BenchService = {
     'Pass/fail comes from the fixture itself: the form task checks what the server received; the other tasks check the answer against values computed from the fixture data.',
     'Unlike Blender and Windows, these tasks return large page snapshots (the catalog is one big table), so they exercise filtering big tool results in code, which is the case Code Mode is designed for.',
   ],
-  tasks,
+  defaultVariant: 'scenarios',
+  variants: [scenarios, callsVariant(scenarios, playwrightCalls)],
+  calls: playwrightCalls,
   async preflight() {
     stopFixture = await startFixture();
     process.on('exit', () => void stopFixture?.());
