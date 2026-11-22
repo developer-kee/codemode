@@ -4,10 +4,10 @@
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import type { PathId } from './lib/agent.ts';
-import { saveRecord, writeReports } from './lib/report.ts';
-import { getRunner, runnerForModel, runners } from './lib/runners.ts';
-import { getService, getVariant, services } from './registry.ts';
+import type { PathId } from '../lib/runners/agent.ts';
+import { saveRecord, writeReports } from '../lib/report/index.ts';
+import { getRunner, runnerForModel, runners } from '../lib/runners/index.ts';
+import { getService, getVariant, services } from '../registry.ts';
 
 const { values } = parseArgs({
   options: {
@@ -63,7 +63,7 @@ if (selected.length === 0 || !Number.isInteger(runs) || runs < 1) {
   process.exit(1);
 }
 
-const workDir = fileURLToPath(new URL('./work/', import.meta.url));
+const workDir = fileURLToPath(new URL('../work/', import.meta.url));
 console.log(`Runner: ${runner.id} (${runner.description}), model ${values.model}\n`);
 console.log(`WARNING: ${service.warning}\n`);
 if (variant.warning) console.log(`WARNING (${variant.id}): ${variant.warning}\n`);

@@ -9,6 +9,23 @@ Wrap any MCP server as one `execute_code` tool (the "Code Mode" idea from Cloudf
 
 Two tools instead of the upstream's full set is the point: the model pays for one short description, discovers detail only when it needs it, and can filter large results in code before anything reaches the context. For a small catalogue the fixed cost can outweigh the saving; see the 4-tool Windows result in the benchmark table below.
 
+## Layout
+
+```
+src/                the wrapper: server, upstream transport, sandbox, API generation, description,
+                    argument checks, output cap, shared store
+services/           one file per wrapped MCP server (blender, notion, windows, playwright)
+bench/
+  cli/              entrypoints: run, calls, report, validate
+  lib/              reusable harness: runners (Claude, DSH), per-call benchmark, report building
+  services/<id>/    one service's tasks, cases, raw results, archive and generated RESULTS.md
+  legacy/           one-off migration from the pre-layout folders
+docs/landscape.md   comparison with other Code Mode implementations
+test/               unit and end-to-end tests
+scripts/            add-service scaffolder
+vendor/addon.py     BlenderMCP addon copy for the Blender benchmark
+```
+
 ## Services
 
 Each service is one file in `services/` (`blender`, `notion`, `windows`, `playwright`) that names the upstream and optionally its limits and access rules:
@@ -44,7 +61,7 @@ A service file should end with `satisfies ServiceConfig`.
 
 ## Benchmarks
 
-Each service (Blender, Windows, Playwright) is benchmarked separately, in one folder `bench/<service>/` that holds its tasks, per-tool-call cases, raw runs and generated `RESULTS.md`: the upstream MCP server used directly vs the same server behind codemode, same model and tasks. Each service has named variants (`scenarios`, `calls`, and for Windows `scenarios-4-tools`). The harness is model-agnostic: every record stores the model and the runner that drove it (`claude` for Claude Code, `dsh` for DeepSeek Harness headless), `--runner` defaults from the model id, and adding a model to an existing runner needs no report changes — a new harness is one new runner. Reports group runs by model family, then by model, and show the runner.
+Each service (Blender, Windows, Playwright) is benchmarked separately, in one folder `bench/services/<service>/` that holds its tasks, per-tool-call cases, raw runs and generated `RESULTS.md`: the upstream MCP server used directly vs the same server behind codemode, same model and tasks. Each service has named variants (`scenarios`, `calls`, and for Windows `scenarios-4-tools`). The harness is model-agnostic: every record stores the model and the runner that drove it (`claude` for Claude Code, `dsh` for DeepSeek Harness headless), `--runner` defaults from the model id, and adding a model to an existing runner needs no report changes — a new harness is one new runner. Reports group runs by model family, then by model, and show the runner.
 
 Latest means of total tokens, codemode vs direct (all paths passed their objective checks):
 

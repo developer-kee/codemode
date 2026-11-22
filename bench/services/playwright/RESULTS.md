@@ -7,7 +7,7 @@
 - Unlike Blender and Windows, these tasks return large page snapshots (the catalog is one big table), so they exercise filtering big tool results in code, which is the case Code Mode is designed for.
 
 Numbers are means over runs. `Pass` is an objective check of the resulting state, not the model's own claim.
-Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../README.md](../README.md).
+Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../../README.md](../../README.md).
 
 > **Warning:** Drives a real headless Microsoft Edge (already installed; nothing is downloaded) against a small local site on http://127.0.0.1:4817, and the browser is limited to that origin with --allowed-origins. The server also exposes browser_run_code_unsafe, which runs arbitrary Playwright code on this PC, and nothing here removes it. Needs port 4817 free. Edge must be installed.
 
@@ -227,7 +227,7 @@ Wall time, codemode vs direct: **17%** (12.2s vs 10.5s). Wall time covers the wh
 
 ## Per-tool-call benchmark (no model)
 
-One upstream tool call at a time, so no single tool or scenario can hide in an average. The same cases drive three views: what each tool's **definition** costs the model on every turn, how long **one call** takes directly versus through codemode's sandbox, and (optionally) the tokens a model spends making that one call (the `calls` variant in `npm run bench`). Method and caveats: [../README.md](../README.md).
+One upstream tool call at a time, so no single tool or scenario can hide in an average. The same cases drive three views: what each tool's **definition** costs the model on every turn, how long **one call** takes directly versus through codemode's sandbox, and (optionally) the tokens a model spends making that one call (the `calls` variant in `npm run bench`). Method and caveats: [../../README.md](../../README.md).
 
 Generated 2026-11-22. 25 upstream tools, 16 cases over 16 tools, 8 timed iterations per case after one warm-up.
 Reproduce: `npm run bench:calls -- --service playwright --iters 8`.
@@ -267,7 +267,7 @@ What the model is sent for each tool on **every turn**. `Direct` is the tool's n
 
 The biggest single definition is 410 tokens, 9% of the direct total.
 
-**Truncation guard.** Claude Code cuts an MCP tool description at about 2,048 characters; anything past that never reaches the model. The `execute_code` description here is **1,709 characters** (fits), listing every function at detail level 2 (1 = parameter types and summary, 2 = parameter names, 3 = names only, 4 = names cut to fit). An earlier design put the whole typed API in the description; it was cut off and the model never saw the function list (see ../README.md).
+**Truncation guard.** Claude Code cuts an MCP tool description at about 2,048 characters; anything past that never reaches the model. The `execute_code` description here is **1,709 characters** (fits), listing every function at detail level 2 (1 = parameter types and summary, 2 = parameter names, 3 = names only, 4 = names cut to fit). An earlier design put the whole typed API in the description; it was cut off and the model never saw the function list (see ../../README.md).
 
 ### Latency per call (no model)
 

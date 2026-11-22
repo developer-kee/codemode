@@ -1,4 +1,4 @@
-import type { BenchService, BenchVariant } from './types.ts';
+import type { BenchService, BenchVariant } from '../types.ts';
 
 export type PathId = 'direct' | 'codemode';
 

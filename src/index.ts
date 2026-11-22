@@ -1,12 +1,8 @@
-﻿export { generateApi, toIdentifier } from './generate.ts';
+export { generateApi, toIdentifier } from './generate.ts';
 export { runInSandbox, stripTypes } from './sandbox.ts';
-export {
-  createCodeModeServer,
-  runCodeModeServer,
-  connectUpstream,
-  unwrapResult,
-} from './server.ts';
+export { createCodeModeServer, runCodeModeServer } from './server.ts';
 export type { CodeModeServer } from './server.ts';
+export { connectUpstream, listAllTools, unwrapResult } from './upstream.ts';
 export type * from './types.ts';
 export { capOutput } from './output.ts';
 export { filterTools } from './access.ts';

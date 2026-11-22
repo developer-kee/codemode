@@ -1,7 +1,7 @@
 {
     "name": "codemode",
     "version": "0.1.0",
-    "description": "Code Mode for MCP: wrap any MCP server as one execute_code tool. Each service is a file in services/.",
+    "description": "Code Mode for MCP: wrap any MCP server as execute_code + get_api. Each service is a file in services/.",
     "type": "module",
     "main": "src/index.ts",
     "exports": {
@@ -12,10 +12,10 @@
         "test": "tsc && node --test test/*.test.ts",
         "add": "node scripts/add-service.ts",
         "start": "node src/cli.ts",
-        "bench": "node bench/run.ts",
-        "bench:report": "node bench/report.ts",
-        "bench:calls": "node bench/calls.ts",
-        "bench:validate": "node bench/validate.ts"
+        "bench": "node bench/cli/run.ts",
+        "bench:report": "node bench/cli/report.ts",
+        "bench:calls": "node bench/cli/calls.ts",
+        "bench:validate": "node bench/cli/validate.ts"
     },
     "license": "MIT",
     "dependencies": {

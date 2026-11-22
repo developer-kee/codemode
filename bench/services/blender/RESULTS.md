@@ -6,7 +6,7 @@
 - The upstream `blender-mcp` sends its own telemetry on both paths; it was left on to keep the paths identical.
 
 Numbers are means over runs. `Pass` is an objective check of the resulting state, not the model's own claim.
-Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../README.md](../README.md).
+Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../../README.md](../../README.md).
 
 > **Warning:** Every run WIPES the open Blender scene. Needs Blender open with the BlenderMCP addon connected (localhost:9876).
 

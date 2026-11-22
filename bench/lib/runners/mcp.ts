@@ -1,8 +1,9 @@
 import { fileURLToPath } from 'node:url';
-import type { BenchService, BenchVariant } from './types.ts';
+import type { BenchService, BenchVariant } from '../types.ts';
 import type { PathId } from './agent.ts';
 
-const root = fileURLToPath(new URL('../../', import.meta.url));
+/** Repository root, from `bench/lib/runners/mcp.ts`. */
+const root = fileURLToPath(new URL('../../../', import.meta.url));
 
 /** How one path's MCP server is launched. Both runners use this, so the two paths stay comparable. */
 export interface McpLaunch {

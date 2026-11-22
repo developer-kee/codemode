@@ -4,7 +4,7 @@
 - Windows-MCP sends its own anonymous telemetry on both paths; it was left on to keep the paths identical.
 
 Numbers are means over runs. `Pass` is an objective check of the resulting state, not the model's own claim.
-Variants: `scenarios`, `scenarios-4-tools`, `calls`. Method, metric definitions and limitations: [../README.md](../README.md).
+Variants: `scenarios`, `scenarios-4-tools`, `calls`. Method, metric definitions and limitations: [../../README.md](../../README.md).
 
 > **Warning:** Gives the model real PowerShell and file access to this PC. Tasks are written to stay inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows, which is deleted and recreated before every run, but a model can still run arbitrary commands. Run on a machine you are happy to do that on. The `scenarios` and `calls` variants expose every tool, including screenshots and input: see their warning.
 

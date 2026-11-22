@@ -1,11 +1,11 @@
 // Usage: npm run bench:calls -- --service <id> [--iters 10]
 // Per-tool-call benchmark with no model: definition cost per tool, and one-call latency direct vs codemode.
-// Writes bench/<id>/calls-latest.json and rebuilds the reports. For the model-driven version (tokens per call)
+// Writes bench/services/<id>/calls-latest.json and rebuilds the reports. For the model-driven version (tokens per call)
 // run `npm run bench -- --service <id> --variant calls`.
 import { parseArgs } from 'node:util';
-import { connectBoth, makeCallsData, measureLatency, staticCosts } from './lib/calls.ts';
-import { callsFile, saveCalls, writeReports } from './lib/report.ts';
-import { getService, getVariant, services } from './registry.ts';
+import { connectBoth, makeCallsData, measureLatency, staticCosts } from '../lib/calls/index.ts';
+import { callsFile, saveCalls, writeReports } from '../lib/report/index.ts';
+import { getService, getVariant, services } from '../registry.ts';
 
 const { values } = parseArgs({
   options: {

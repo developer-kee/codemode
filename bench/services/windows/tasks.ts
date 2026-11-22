@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import type { Task, Verdict } from '../lib/types.ts';
+import type { Task, Verdict } from '../../lib/types.ts';
 
 /** Every task works only inside this folder; the harness wipes and recreates it before each run. */
 export const SANDBOX = `${tmpdir()}\\codemode-bench-windows`;

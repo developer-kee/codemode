@@ -3,7 +3,7 @@
 // generated reports. No MCP server is started and no model is called, so this is free and safe to run often.
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { CLAUDE_CODE_DESCRIPTION_CAP } from './lib/calls.ts';
+import { CLAUDE_CODE_DESCRIPTION_CAP } from '../lib/calls/static.ts';
 import {
   buildOverview,
   buildServiceReport,
@@ -11,12 +11,14 @@ import {
   loadCalls,
   loadRecords,
   modelFamily,
+  overviewFile,
+  reportFile,
   runnerOf,
   type RunRecord,
-} from './lib/report.ts';
-import { runners } from './lib/runners.ts';
-import { services } from './registry.ts';
-import type { BenchService, BenchVariant } from './lib/types.ts';
+} from '../lib/report/index.ts';
+import { runners } from '../lib/runners/index.ts';
+import { services } from '../registry.ts';
+import type { BenchService, BenchVariant } from '../lib/types.ts';
 
 type Level = 'error' | 'warn';
 interface Issue {
@@ -32,7 +34,7 @@ const add = (level: Level, scope: string, message: string): void => {
 const error = (scope: string, message: string): void => add('error', scope, message);
 const warn = (scope: string, message: string): void => add('warn', scope, message);
 
-const benchRoot = fileURLToPath(new URL('./', import.meta.url));
+const benchRoot = fileURLToPath(new URL('../', import.meta.url));
 const readText = (path: string): string | undefined => (existsSync(path) ? readFileSync(path, 'utf8') : undefined);
 /** Reports are written with LF; a checkout can turn them into CRLF. Compare on LF only. */
 const lf = (s: string): string => s.replace(/\r\n/g, '\n');
@@ -61,7 +63,7 @@ function checkVariant(service: BenchService, variant: BenchVariant): void {
 function checkServiceDefinition(service: BenchService): void {
   const scope = service.id;
   if (!/^[a-z0-9_-]+$/.test(service.id)) error(scope, 'service id must be lower-case letters, digits, "-" or "_"');
-  if (!existsSync(`${benchRoot}${service.id}/`)) error(scope, 'missing bench folder');
+  if (!existsSync(`${benchRoot}services/${service.id}/`)) error(scope, 'missing service folder under bench/services/');
   if (!existsSync(`${benchRoot}../services/${service.id}.ts`)) warn(scope, `no services/${service.id}.ts (the wrapper CLI has no such service)`);
   const variantIds = new Set<string>();
   for (const v of service.variants) {
@@ -228,11 +230,11 @@ function checkCalls(service: BenchService): void {
 
 function checkReports(service: BenchService): void {
   const expected = lf(buildServiceReport(service));
-  const actual = readText(`${benchRoot}${service.id}/RESULTS.md`);
+  const actual = readText(reportFile(service.id));
   if (actual === undefined) {
-    error(`${service.id}/RESULTS.md`, 'missing generated report');
+    error(`services/${service.id}/RESULTS.md`, 'missing generated report');
   } else if (lf(actual) !== expected) {
-    error(`${service.id}/RESULTS.md`, 'is out of date; run npm run bench:report');
+    error(`services/${service.id}/RESULTS.md`, 'is out of date; run npm run bench:report');
   }
 }
 
@@ -251,7 +253,7 @@ function main(): void {
   }
 
   const expected = lf(buildOverview(services));
-  const actual = readText(`${benchRoot}RESULTS.md`);
+  const actual = readText(overviewFile);
   if (actual === undefined) error('RESULTS.md', 'missing generated overview');
   else if (lf(actual) !== expected) error('RESULTS.md', 'overview is out of date; run npm run bench:report');
 

@@ -1,8 +1,8 @@
 // One-off: move the old per-variant result folders into the one-folder-per-service layout.
 //
-//   node bench/migrate.ts --dry                 show what would happen, change nothing
-//   node bench/migrate.ts                       do it
-//   node bench/migrate.ts --root <dir>          operate on a copy of bench/ (for testing)
+//   node bench/legacy/migrate.ts --dry          show what would happen, change nothing
+//   node bench/legacy/migrate.ts                do it
+//   node bench/legacy/migrate.ts --root <dir>   operate on a copy of bench/ (for testing)
 //
 // Old folder            ->  new folder / variant
 //   blender             ->  blender   / scenarios
@@ -17,14 +17,14 @@
 // (rebuild with `npm run bench:report`; `npm run bench:calls` writes the new calls-latest.json).
 // Safe to run twice: a second run finds nothing to do. Stop any running benchmark first.
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 const { values } = parseArgs({
   options: {
     dry: { type: 'boolean', default: false },
-    root: { type: 'string', default: dirname(fileURLToPath(import.meta.url)) },
+    root: { type: 'string', default: resolve(dirname(fileURLToPath(import.meta.url)), '..') },
   },
 });
 const root = values.root;
@@ -36,11 +36,11 @@ interface Mapping {
   variant: string;
 }
 const mappings: Mapping[] = [
-  { from: 'blender', to: 'blender', variant: 'scenarios' },
-  { from: 'blender-calls', to: 'blender', variant: 'calls' },
-  { from: 'windows-full', to: 'windows', variant: 'scenarios' },
-  { from: 'windows', to: 'windows', variant: 'scenarios-4-tools' },
-  { from: 'windows-calls', to: 'windows', variant: 'calls' },
+  { from: 'blender', to: join('services', 'blender'), variant: 'scenarios' },
+  { from: 'blender-calls', to: join('services', 'blender'), variant: 'calls' },
+  { from: 'windows-full', to: join('services', 'windows'), variant: 'scenarios' },
+  { from: 'windows', to: join('services', 'windows'), variant: 'scenarios-4-tools' },
+  { from: 'windows-calls', to: join('services', 'windows'), variant: 'calls' },
 ];
 
 let actions = 0;

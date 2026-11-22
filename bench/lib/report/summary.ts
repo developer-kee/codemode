@@ -1,61 +1,10 @@
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import type { AgentRun, PathId } from './agent.ts';
-import { buildCallsSections, type CallsData } from './calls.ts';
-import type { BenchService, BenchVariant } from './types.ts';
-
-export interface RunRecord {
-  batch: string;
-  /** Which variant of the service was run. Records written before variants existed have none and count as `scenarios`. */
-  variant: string;
-  task: string;
-  model: string;
-  /** Runner id that drove the model. Absent on early records, which all used `claude`. */
-  runner?: string;
-  repeat: number;
-  pass: boolean;
-  verdict: string;
-  /** Git revision of this repo when the run was made, so results can be tied to the wrapper design. */
-  rev?: string;
-  run: AgentRun;
-}
-
-/** The variant of records that carry none (everything recorded before variants existed). */
-export const LEGACY_VARIANT = 'scenarios';
-
-const benchRoot = fileURLToPath(new URL('../', import.meta.url));
-export const resultsDir = (serviceId: string): string => `${benchRoot}${serviceId}/results/`;
-export const callsFile = (serviceId: string): string => `${benchRoot}${serviceId}/calls-latest.json`;
-const reportFile = (serviceId: string): string => `${benchRoot}${serviceId}/RESULTS.md`;
-const overviewFile = `${benchRoot}RESULTS.md`;
-
-export function saveRecord(serviceId: string, rec: RunRecord): void {
-  mkdirSync(resultsDir(serviceId), { recursive: true });
-  appendFileSync(`${resultsDir(serviceId)}${rec.batch}.jsonl`, `${JSON.stringify(rec)}\n`);
-}
-
-export function loadRecords(serviceId: string): RunRecord[] {
-  const dir = resultsDir(serviceId);
-  const records: RunRecord[] = [];
-  if (!existsSync(dir)) return records;
-  for (const f of readdirSync(dir).filter((n) => n.endsWith('.jsonl')).sort()) {
-    for (const line of readFileSync(`${dir}${f}`, 'utf8').split('\n')) {
-      if (!line.trim()) continue;
-      const rec = JSON.parse(line) as Omit<RunRecord, 'variant'> & { variant?: string };
-      records.push({ ...rec, variant: rec.variant ?? LEGACY_VARIANT });
-    }
-  }
-  return records;
-}
-
-export function saveCalls(serviceId: string, data: CallsData): void {
-  writeFileSync(callsFile(serviceId), `${JSON.stringify(data, null, 2)}\n`);
-}
-
-export function loadCalls(serviceId: string): CallsData | undefined {
-  const file = callsFile(serviceId);
-  return existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8')) as CallsData) : undefined;
-}
+// Report building: per-service RESULTS.md and the cross-service overview.
+import { writeFileSync } from 'node:fs';
+import type { AgentRun, PathId } from '../runners/agent.ts';
+import { buildCallsSections } from '../calls/report.ts';
+import type { BenchService, BenchVariant } from '../types.ts';
+import { familiesIn, modelFamily, runnersOf } from './families.ts';
+import { loadCalls, loadRecords, overviewFile, reportFile, type RunRecord } from './records.ts';
 
 const mean = (xs: number[]): number => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
 const fmt = (n: number): string => Math.round(n).toLocaleString('en-US');
@@ -68,46 +17,6 @@ function costCell(recs: RunRecord[]): string {
   if (costs.length === 0 || costs.some((c) => c === undefined)) return 'n/a';
   return `$${mean(costs as number[]).toFixed(3)}`;
 }
-
-/** Family display names for common model prefixes; anything else is capitalised from its own prefix. */
-const FAMILY_NAMES: Record<string, string> = {
-  claude: 'Claude',
-  deepseek: 'DeepSeek',
-  gpt: 'OpenAI',
-  openai: 'OpenAI',
-  o1: 'OpenAI',
-  o3: 'OpenAI',
-  gemini: 'Google',
-  gemma: 'Google',
-  llama: 'Meta',
-  qwen: 'Qwen',
-  mistral: 'Mistral',
-  kimi: 'Moonshot',
-  grok: 'xAI',
-};
-/** Families that sort first; any other family follows alphabetically. */
-const FAMILY_ORDER = ['Claude', 'DeepSeek', 'Other'];
-
-/** The family of a model id, from its leading alphanumeric token (`claude-sonnet-5-5` -> `Claude`). */
-export function modelFamily(model: string): string {
-  const key = model.trim().toLowerCase().match(/^[a-z0-9]+/)?.[0] ?? '';
-  if (!key) return 'Other';
-  return FAMILY_NAMES[key] ?? key.charAt(0).toUpperCase() + key.slice(1);
-}
-
-/** Families present in `records`, in report order. */
-export function familiesIn(records: RunRecord[]): string[] {
-  const present = [...new Set(records.map((r) => modelFamily(r.model)))];
-  const rank = (f: string): number => {
-    const i = FAMILY_ORDER.indexOf(f);
-    return i < 0 ? FAMILY_ORDER.length : i;
-  };
-  return present.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
-}
-
-/** Runner that produced a record. Records without one predate `--runner` and all used `claude`. */
-export const runnerOf = (r: RunRecord): string => r.runner ?? 'claude';
-const runnersOf = (records: RunRecord[]): string[] => [...new Set(records.map(runnerOf))];
 
 function row(label: string, recs: RunRecord[]): string {
   if (recs.length === 0) return `| ${label} | - | - | - | - | - | - | - | - | - | - |`;
@@ -215,7 +124,7 @@ export function buildServiceReport(service: BenchService): string {
     ...service.notes.map((n) => `- ${n}`),
     '',
     'Numbers are means over runs. `Pass` is an objective check of the resulting state, not the model\'s own claim.',
-    `Variants: ${service.variants.map((v) => `\`${v.id}\``).join(', ')}. Method, metric definitions and limitations: [../README.md](../README.md).`,
+    `Variants: ${service.variants.map((v) => `\`${v.id}\``).join(', ')}. Method, metric definitions and limitations: [../../README.md](../../README.md).`,
     '',
     `> **Warning:** ${service.warning}`,
     '',
@@ -293,7 +202,7 @@ export function buildOverview(all: BenchService[]): string {
     );
     for (const svc of all) {
       const recs = loadRecords(svc.id);
-      const link = `[${svc.id}/RESULTS.md](${svc.id}/RESULTS.md)`;
+      const link = `[services/${svc.id}/RESULTS.md](services/${svc.id}/RESULTS.md)`;
       for (const variant of svc.variants) {
         const vr = recs.filter((r) => r.variant === variant.id && modelFamily(r.model) === family);
         for (const model of [...new Set(vr.map((r) => r.model))]) {

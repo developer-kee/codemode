@@ -1,4 +1,4 @@
-import type { CallDef } from '../lib/types.ts';
+import type { CallDef } from '../../lib/types.ts';
 import { blenderExec, resetScene } from './socket.ts';
 
 export const blenderCalls: CallDef = {
