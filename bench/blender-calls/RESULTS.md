@@ -18,43 +18,43 @@ Reproduce: `npm run bench -- --service blender-calls --runs 3`. Method, metric d
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
-| get_addon_status | 1/1 / 1/1 | 17,745 | 3,475 | **-80%** | 6.9s | 7.0s | **1%** | $0.015 | $0.013 |
-| get_scene_info | 1/1 / 1/1 | 17,345 | 3,535 | **-80%** | 6.9s | 7.3s | **5%** | $0.014 | $0.006 |
-| execute_blender_code | 1/1 / 1/1 | 17,337 | 3,497 | **-80%** | 6.8s | 6.4s | **-6%** | $0.013 | $0.005 |
+| get_addon_status | 3/3 / 3/3 | 17,749 | 3,002 | **-83%** | 7.0s | 6.6s | **-5%** | $0.007 | $0.006 |
+| get_scene_info | 3/3 / 3/3 | 17,347 | 3,098 | **-82%** | 6.7s | 7.0s | **5%** | $0.008 | $0.004 |
+| execute_blender_code | 3/3 / 3/3 | 17,333 | 3,088 | **-82%** | 6.7s | 6.9s | **3%** | $0.008 | $0.005 |
 
-Token change ranges from **-80%** (get_addon_status) to **-80%** (get_scene_info).
+Token change ranges from **-83%** (get_addon_status) to **-82%** (get_scene_info).
 
 ### Task: get_addon_status
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 8,478 | 53 | 1,582 | 16,110 | 17,745 | $0.015 | 6.9s |
-| codemode | 1/1 | 2.0 | 1.0 | 1,587 | 121 | 1,769 | 1,585 | 3,475 | $0.013 | 7.0s |
+| direct | 3/3 | 2.0 | 1.0 | 8,478 | 53 | 238 | 17,458 | 17,749 | $0.007 | 7.0s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,347 | 125 | 600 | 2,277 | 3,002 | $0.006 | 6.6s |
 
 ### Task: get_scene_info
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 8,485 | 158 | 1,070 | 16,117 | 17,345 | $0.014 | 6.9s |
-| codemode | 1/1 | 2.0 | 1.0 | 1,594 | 143 | 476 | 2,916 | 3,535 | $0.006 | 7.3s |
+| direct | 3/3 | 2.0 | 1.0 | 8,485 | 116 | 172 | 17,058 | 17,347 | $0.008 | 6.7s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,354 | 121 | 239 | 2,738 | 3,098 | $0.004 | 7.0s |
 
 ### Task: execute_blender_code
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 8,491 | 148 | 1,066 | 16,123 | 17,337 | $0.013 | 6.8s |
-| codemode | 1/1 | 2.0 | 1.0 | 1,600 | 119 | 456 | 2,922 | 3,497 | $0.005 | 6.4s |
+| direct | 3/3 | 2.0 | 1.0 | 8,491 | 147 | 29 | 17,157 | 17,333 | $0.008 | 6.7s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,360 | 148 | 277 | 2,663 | 3,088 | $0.005 | 6.9s |
 
 ### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 3/3 | 2.0 | 1.0 | 8,485 | 120 | 1,239 | 16,117 | 17,476 | $0.014 | 6.9s |
-| codemode | 3/3 | 2.0 | 1.0 | 1,594 | 128 | 900 | 2,474 | 3,502 | $0.008 | 6.9s |
+| direct | 9/9 | 2.0 | 1.0 | 8,485 | 105 | 146 | 17,225 | 17,476 | $0.008 | 6.8s |
+| codemode | 9/9 | 2.0 | 1.0 | 1,354 | 131 | 372 | 2,559 | 3,063 | $0.005 | 6.8s |
 
-Total tokens, codemode vs direct: **-80%** (3,502 vs 17,476).
+Total tokens, codemode vs direct: **-82%** (3,063 vs 17,476).
 
-Wall time, codemode vs direct: **-0%** (6.9s vs 6.9s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
+Wall time, codemode vs direct: **1%** (6.8s vs 6.8s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
 
 ## Task prompts
 

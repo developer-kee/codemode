@@ -18,75 +18,75 @@ Reproduce: `npm run bench -- --service windows-calls --runs 3`. Method, metric d
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
-| PowerShell | 1/1 / 1/1 | 15,681 | 8,429 | **-46%** | 9.9s | 13.3s | **34%** | $0.009 | $0.021 |
-| FileSystem.list | 1/1 / 1/1 | 15,886 | 8,796 | **-45%** | 8.9s | 12.3s | **38%** | $0.011 | $0.015 |
-| FileSystem.read | 1/1 / 1/1 | 15,858 | 3,837 | **-76%** | 9.3s | 9.6s | **3%** | $0.010 | $0.007 |
-| FileSystem.write | 1/1 / 1/1 | 16,009 | 8,947 | **-44%** | 10.1s | 12.9s | **27%** | $0.012 | $0.016 |
-| Process.list | 1/1 / 1/1 | 15,878 | 3,801 | **-76%** | 10.0s | 11.0s | **10%** | $0.011 | $0.007 |
-| Registry.get | 1/1 / 1/1 | 15,880 | 3,785 | **-76%** | 11.5s | 10.6s | **-7%** | $0.011 | $0.006 |
-| Wait | 1/1 / 1/1 | 15,580 | 13,926 | **-11%** | 9.7s | 15.1s | **55%** | $0.008 | $0.019 |
+| PowerShell | 3/3 / 3/3 | 15,678 | 3,451 | **-78%** | 10.6s | 10.6s | **1%** | $0.006 | $0.007 |
+| FileSystem.list | 3/3 / 3/3 | 15,886 | 3,617 | **-77%** | 9.4s | 9.8s | **4%** | $0.007 | $0.005 |
+| FileSystem.read | 3/3 / 3/3 | 15,858 | 3,523 | **-78%** | 9.5s | 10.1s | **7%** | $0.007 | $0.005 |
+| FileSystem.write | 3/3 / 3/3 | 16,028 | 3,609 | **-77%** | 9.7s | 10.4s | **7%** | $0.008 | $0.005 |
+| Process.list | 3/3 / 3/3 | 15,874 | 3,525 | **-78%** | 10.3s | 11.2s | **8%** | $0.008 | $0.005 |
+| Registry.get | 3/3 / 3/3 | 15,882 | 3,512 | **-78%** | 10.5s | 10.5s | **-0%** | $0.007 | $0.004 |
+| Wait | 3/3 / 3/3 | 15,584 | 3,249 | **-79%** | 9.7s | 10.6s | **9%** | $0.006 | $0.003 |
 
-Token change ranges from **-76%** (Registry.get) to **-11%** (Wait).
+Token change ranges from **-79%** (Wait) to **-77%** (FileSystem.list).
 
 ### Task: PowerShell
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 7,716 | 92 | 537 | 15,052 | 15,681 | $0.009 | 9.9s |
-| codemode | 1/1 | 4.0 | 3.0 | 1,677 | 334 | 2,370 | 5,725 | 8,429 | $0.021 | 13.3s |
+| direct | 3/3 | 2.0 | 1.0 | 7,716 | 92 | 31 | 15,555 | 15,678 | $0.006 | 10.6s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,535 | 144 | 713 | 2,594 | 3,451 | $0.007 | 10.6s |
 
 ### Task: FileSystem.list
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 7,737 | 140 | 673 | 15,073 | 15,886 | $0.011 | 8.9s |
-| codemode | 1/1 | 4.0 | 3.0 | 1,698 | 383 | 1,136 | 7,277 | 8,796 | $0.015 | 12.3s |
+| direct | 3/3 | 2.0 | 1.0 | 7,737 | 140 | 56 | 15,690 | 15,886 | $0.007 | 9.4s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,556 | 170 | 339 | 3,109 | 3,617 | $0.005 | 9.8s |
 
 ### Task: FileSystem.read
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 7,741 | 140 | 641 | 15,077 | 15,858 | $0.010 | 9.3s |
-| codemode | 1/1 | 2.0 | 1.0 | 1,702 | 167 | 568 | 3,102 | 3,837 | $0.007 | 9.6s |
+| direct | 3/3 | 2.0 | 1.0 | 7,741 | 140 | 42 | 15,676 | 15,858 | $0.007 | 9.5s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,560 | 150 | 312 | 3,062 | 3,523 | $0.005 | 10.1s |
 
 ### Task: FileSystem.write
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 7,756 | 215 | 702 | 15,092 | 16,009 | $0.012 | 10.1s |
-| codemode | 1/1 | 4.0 | 3.0 | 1,717 | 436 | 1,155 | 7,356 | 8,947 | $0.016 | 12.9s |
+| direct | 3/3 | 2.0 | 1.0 | 7,756 | 231 | 43 | 15,754 | 16,028 | $0.008 | 9.7s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,575 | 188 | 239 | 3,182 | 3,609 | $0.005 | 10.4s |
 
 ### Task: Process.list
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 7,705 | 151 | 686 | 15,041 | 15,878 | $0.011 | 10.0s |
-| codemode | 1/1 | 2.0 | 1.0 | 1,666 | 206 | 529 | 3,066 | 3,801 | $0.007 | 11.0s |
+| direct | 3/3 | 2.0 | 1.0 | 7,705 | 149 | 215 | 15,509 | 15,874 | $0.008 | 10.3s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,524 | 159 | 338 | 3,029 | 3,525 | $0.005 | 11.2s |
 
 ### Task: Registry.get
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 7,740 | 151 | 653 | 15,076 | 15,880 | $0.011 | 11.5s |
-| codemode | 1/1 | 2.0 | 1.0 | 1,701 | 159 | 525 | 3,101 | 3,785 | $0.006 | 10.6s |
+| direct | 3/3 | 2.0 | 1.0 | 7,740 | 150 | 43 | 15,689 | 15,882 | $0.007 | 10.5s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,559 | 145 | 226 | 3,140 | 3,512 | $0.004 | 10.5s |
 
 ### Task: Wait
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 1/1 | 2.0 | 1.0 | 7,700 | 58 | 486 | 15,036 | 15,580 | $0.008 | 9.7s |
-| codemode | 1/1 | 6.0 | 5.0 | 1,661 | 429 | 1,450 | 12,047 | 13,926 | $0.019 | 15.1s |
+| direct | 3/3 | 2.0 | 1.0 | 7,700 | 58 | 27 | 15,499 | 15,584 | $0.006 | 9.7s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,519 | 78 | 197 | 2,974 | 3,249 | $0.003 | 10.6s |
 
 ### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 7/7 | 2.0 | 1.0 | 7,728 | 135 | 625 | 15,064 | 15,825 | $0.010 | 9.9s |
-| codemode | 7/7 | 3.4 | 2.4 | 1,689 | 302 | 1,105 | 5,953 | 7,360 | $0.013 | 12.1s |
+| direct | 21/21 | 2.0 | 1.0 | 7,728 | 137 | 65 | 15,625 | 15,827 | $0.007 | 9.9s |
+| codemode | 21/21 | 2.0 | 1.0 | 1,547 | 148 | 338 | 3,013 | 3,498 | $0.005 | 10.5s |
 
-Total tokens, codemode vs direct: **-53%** (7,360 vs 15,825).
+Total tokens, codemode vs direct: **-78%** (3,498 vs 15,827).
 
-Wall time, codemode vs direct: **22%** (12.1s vs 9.9s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
+Wall time, codemode vs direct: **5%** (10.5s vs 9.9s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
 
 ## Task prompts
 

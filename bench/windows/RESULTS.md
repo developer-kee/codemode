@@ -15,43 +15,43 @@ Reproduce: `npm run bench -- --service windows --runs 3`. Method, metric definit
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
-| files | 3/3 / 3/3 | 5,638 | 4,407 | **-22%** | 13.6s | 14.0s | **3%** | $0.011 | $0.010 |
-| inventory | 3/3 / 3/3 | 9,334 | 9,633 | **3%** | 16.2s | 17.1s | **5%** | $0.016 | $0.020 |
-| organize | 3/3 / 3/3 | 9,426 | 7,593 | **-19%** | 14.7s | 18.8s | **28%** | $0.015 | $0.017 |
+| files | 3/3 / 3/3 | 5,592 | 11,647 | **108%** | 11.3s | 24.8s | **120%** | $0.007 | $0.029 |
+| inventory | 3/3 / 3/3 | 9,338 | 7,662 | **-18%** | 14.8s | 13.8s | **-7%** | $0.012 | $0.022 |
+| organize | 3/3 / 3/3 | 9,455 | 6,953 | **-26%** | 13.7s | 15.5s | **13%** | $0.012 | $0.019 |
 
-Token change ranges from **-22%** (files) to **3%** (inventory).
+Token change ranges from **-26%** (organize) to **108%** (files).
 
 ### Task: files
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 3/3 | 2.0 | 1.0 | 2,274 | 346 | 660 | 4,632 | 5,638 | $0.011 | 13.6s |
-| codemode | 3/3 | 2.0 | 1.0 | 1,663 | 398 | 583 | 3,427 | 4,407 | $0.010 | 14.0s |
+| direct | 3/3 | 2.0 | 1.0 | 2,274 | 330 | 4 | 5,258 | 5,592 | $0.007 | 11.3s |
+| codemode | 3/3 | 4.7 | 3.7 | 1,365 | 968 | 1,992 | 8,687 | 11,647 | $0.029 | 24.8s |
 
 ### Task: inventory
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 3/3 | 3.0 | 2.0 | 2,289 | 463 | 1,113 | 7,758 | 9,334 | $0.016 | 16.2s |
-| codemode | 3/3 | 3.0 | 2.0 | 1,678 | 548 | 1,635 | 7,450 | 9,633 | $0.020 | 17.1s |
+| direct | 3/3 | 3.0 | 2.0 | 2,289 | 468 | 421 | 8,449 | 9,338 | $0.012 | 14.8s |
+| codemode | 3/3 | 3.0 | 2.0 | 1,380 | 634 | 1,824 | 5,203 | 7,662 | $0.022 | 13.8s |
 
 ### Task: organize
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 3/3 | 3.0 | 2.0 | 2,247 | 399 | 1,103 | 7,924 | 9,426 | $0.015 | 14.7s |
-| codemode | 3/3 | 3.0 | 2.0 | 1,636 | 520 | 1,327 | 5,746 | 7,593 | $0.017 | 18.8s |
+| direct | 3/3 | 3.0 | 2.0 | 2,247 | 425 | 468 | 8,562 | 9,455 | $0.012 | 13.7s |
+| codemode | 3/3 | 3.0 | 2.0 | 1,338 | 532 | 1,517 | 4,904 | 6,953 | $0.019 | 15.5s |
 
 ### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 9/9 | 2.7 | 1.7 | 2,270 | 403 | 958 | 6,771 | 8,133 | $0.014 | 14.8s |
-| codemode | 9/9 | 2.7 | 1.7 | 1,659 | 489 | 1,181 | 5,541 | 7,211 | $0.016 | 16.6s |
+| direct | 9/9 | 2.7 | 1.7 | 2,270 | 408 | 298 | 7,423 | 8,128 | $0.010 | 13.3s |
+| codemode | 9/9 | 3.6 | 2.6 | 1,361 | 711 | 1,778 | 6,265 | 8,754 | $0.023 | 18.0s |
 
-Total tokens, codemode vs direct: **-11%** (7,211 vs 8,133).
+Total tokens, codemode vs direct: **8%** (8,754 vs 8,128).
 
-Wall time, codemode vs direct: **12%** (16.6s vs 14.8s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
+Wall time, codemode vs direct: **36%** (18.0s vs 13.3s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
 
 ## Task prompts
 
