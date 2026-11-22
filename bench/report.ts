@@ -24,20 +24,20 @@ const fmt = (n: number): string => Math.round(n).toLocaleString('en-US');
 const total = (r: ClaudeRun): number => r.usage.input + r.usage.cacheWrite + r.usage.cacheRead + r.usage.output;
 
 function row(label: string, recs: RunRecord[]): string {
-  if (recs.length === 0) return `| ${label} | - | - | - | - | - | - | - | - | - |`;
+  if (recs.length === 0) return `| ${label} | - | - | - | - | - | - | - | - | - | - |`;
   const f = (g: (r: RunRecord) => number): number => mean(recs.map(g));
   const passes = recs.filter((r) => r.pass).length;
   return (
     `| ${label} | ${passes}/${recs.length} | ${f((r) => r.run.turns).toFixed(1)} | ${f((r) => r.run.toolCalls).toFixed(1)} ` +
     `| ${fmt(f((r) => r.run.firstTurnContext))} | ${fmt(f((r) => r.run.usage.output))} ` +
     `| ${fmt(f((r) => r.run.usage.input + r.run.usage.cacheWrite))} | ${fmt(f((r) => r.run.usage.cacheRead))} ` +
-    `| ${fmt(f((r) => total(r.run)))} | $${f((r) => r.run.costUsd).toFixed(3)} |`
+    `| ${fmt(f((r) => total(r.run)))} | $${f((r) => r.run.costUsd).toFixed(3)} | ${(f((r) => r.run.durationMs) / 1000).toFixed(1)}s |`
   );
 }
 
 const header =
-  '| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost |\n' +
-  '|---|---|---|---|---|---|---|---|---|---|';
+  '| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |\n' +
+  '|---|---|---|---|---|---|---|---|---|---|---|';
 
 export function buildReport(): string {
   const records: RunRecord[] = [];
@@ -80,6 +80,14 @@ export function buildReport(): string {
     const c = sums['codemode'] ?? 0;
     if (d > 0 && c > 0) {
       out.push('', `Total tokens, codemode vs direct: **${(((c - d) / d) * 100).toFixed(0)}%** (${fmt(c)} vs ${fmt(d)}).`);
+    }
+    const t = (p: PathId): number => mean(mr.filter((r) => r.run.path === p).map((r) => r.run.durationMs)) / 1000;
+    if (t('direct') > 0 && t('codemode') > 0) {
+      out.push(
+        '',
+        `Wall time, codemode vs direct: **${(((t('codemode') - t('direct')) / t('direct')) * 100).toFixed(0)}%** (${t('codemode').toFixed(1)}s vs ${t('direct').toFixed(1)}s). ` +
+          'Wall time covers the whole headless run: MCP server start-up, model latency per turn, and Blender execution.',
+      );
     }
     out.push('');
   }

@@ -70,11 +70,16 @@ export interface SceneSnapshot {
 export function snapshotScene(): Promise<SceneSnapshot> {
   return blenderJson<SceneSnapshot>(`
 import bpy, json
+from mathutils import Vector
+def center(o):
+    # World-space bounding-box centre: independent of where the model put the object's origin.
+    pts = [o.matrix_world @ Vector(v) for v in o.bound_box]
+    return [sum(p[i] for p in pts) / 8 for i in range(3)]
 objs = []
 for o in bpy.data.objects:
     objs.append({
         "name": o.name, "type": o.type,
-        "location": [round(v, 4) for v in o.matrix_world.translation],
+        "location": [round(v, 4) for v in center(o)],
         "scale": [round(v, 4) for v in o.scale],
         "dimensions": [round(v, 4) for v in o.dimensions],
         "materials": [s.material.name for s in o.material_slots if s.material],

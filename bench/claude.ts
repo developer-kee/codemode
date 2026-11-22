@@ -47,6 +47,8 @@ export interface ClaudeRun {
   usage: TurnUsage;
   costUsd: number;
   durationMs: number;
+  /** Time spent waiting on the model API, as reported by the CLI (absent in older records). */
+  apiMs?: number;
 }
 
 type Json = Record<string, unknown>;
@@ -143,6 +145,7 @@ export function runClaude(opts: {
           run.usage = usageOf(ev['usage']);
           run.costUsd = num(ev['total_cost_usd']);
           run.turns = num(ev['num_turns']);
+          run.apiMs = num(ev['duration_api_ms']);
           run.answer = typeof ev['result'] === 'string' ? ev['result'] : '';
           run.ok = ev['is_error'] !== true;
           if (!run.ok) run.error = String(ev['subtype'] ?? 'error');

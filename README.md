@@ -31,3 +31,8 @@ Blender needs Blender open with the BlenderMCP addon connected.
 TypeScript 7, strict (incl. noUncheckedIndexedAccess, exactOptionalPropertyTypes, erasableSyntaxOnly). Node 24 runs the .ts files directly, so there is no build step; `npm run typecheck` runs tsc.
 A service file should end with `satisfies ServiceConfig`.
 
+
+## Benchmarks
+
+Direct blender-mcp vs codemode, same model, same tasks, live Blender: see [bench/RESULTS.md](bench/RESULTS.md). Rerun with `npm run bench -- --runs 3` (wipes the open Blender scene; needs `claude auth login`).
+
