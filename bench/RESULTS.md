@@ -27,13 +27,28 @@ Reproduce: `npm run bench -- --runs 3`.
 | direct | 3/3 | 3.0 | 2.0 | 8,549 | 373 | 688 | 26,719 | 27,780 | $0.018 | 9.9s |
 | codemode | 3/3 | 3.0 | 2.0 | 1,655 | 409 | 1,026 | 5,724 | 7,160 | $0.014 | 9.3s |
 
+### Task: audit
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 3.0 | 2.0 | 8,641 | 976 | 3,649 | 29,744 | 34,369 | $0.045 | 13.9s |
+| codemode | 3/3 | 3.0 | 2.0 | 1,747 | 988 | 4,104 | 8,427 | 13,519 | $0.042 | 13.7s |
+
 ### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 9/9 | 3.0 | 2.0 | 8,586 | 627 | 742 | 26,854 | 28,223 | $0.022 | 11.4s |
-| codemode | 9/9 | 2.4 | 1.4 | 1,692 | 610 | 853 | 4,537 | 5,999 | $0.016 | 10.3s |
+| direct | 12/12 | 3.0 | 2.0 | 8,600 | 714 | 1,469 | 27,577 | 29,760 | $0.028 | 12.0s |
+| codemode | 12/12 | 2.6 | 1.6 | 1,706 | 705 | 1,666 | 5,509 | 7,879 | $0.022 | 11.1s |
 
-Total tokens, codemode vs direct: **-79%** (5,999 vs 28,223).
+Total tokens, codemode vs direct: **-74%** (7,879 vs 29,760).
 
-Wall time, codemode vs direct: **-9%** (10.3s vs 11.4s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and Blender execution.
+Wall time, codemode vs direct: **-7%** (11.1s vs 12.0s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and Blender execution.
+
+## How to read this
+
+- Most of the token saving comes from tool definitions: direct sends ten Blender tool schemas on every turn, codemode sends one (see "First-turn context").
+- In both paths the model mostly used the same underlying tool (run Python in Blender), so these tasks do not exercise chaining several different upstream tools in one script. That is where codemode should help most, and it is not measured here.
+- The asset libraries in the test Blender were switched off, so search/import tasks (non-deterministic and network-bound) are not included.
+- The typed `codemode.*` API lives in the tool description. Claude Code may shorten long MCP tool descriptions; this has not been verified here, and the model may have seen only part of the API.
+- 3 runs per task and path, one model, one machine: treat small differences (especially wall time) as noise.

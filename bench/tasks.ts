@@ -23,6 +23,60 @@ const byName = (scene: SceneSnapshot): Map<string, ObjectSnapshot> =>
 const fail = (detail: string): Verdict => ({ pass: false, detail });
 const ok: Verdict = { pass: true, detail: 'ok' };
 
+// --- "audit" task data: 40 objects, deterministic, with known off-grid and below-ground cases. ---
+interface AuditObj {
+  name: string;
+  x: number;
+  y: number;
+  z: number; // bounding-box centre
+  sx: number;
+  sy: number;
+  sz: number;
+  needsFix: boolean;
+}
+
+function buildAudit(): AuditObj[] {
+  let s = 12345;
+  const rnd = (): number => {
+    s = (s * 1103515245 + 12345) % 2147483648;
+    return s / 2147483648;
+  };
+  const cats: [string, number, number, number][] = [
+    ['Crate', 1, 1, 1],
+    ['Barrel', 0.8, 0.8, 1.2],
+    ['Lamp', 0.2, 0.2, 3],
+    ['Pillar', 0.6, 0.6, 4],
+    ['Sign', 1.5, 0.1, 1],
+  ];
+  const out: AuditObj[] = [];
+  for (const [cat, sx, sy, sz] of cats) {
+    for (let i = 1; i <= 8; i++) {
+      const gx = Math.floor(rnd() * 10) * 2;
+      const gy = Math.floor(rnd() * 10) * 2;
+      const jx = i % 3 === 0 ? 0 : Math.round((rnd() * 1.4 - 0.7) * 100) / 100;
+      const jy = i % 3 === 0 ? 0 : Math.round((rnd() * 1.4 - 0.7) * 100) / 100;
+      const mode = i % 4; // 0 on ground, 1 floating, 2 below ground, 3 on ground
+      const lift = mode === 1 ? 0.6 : mode === 2 ? -0.4 : 0;
+      const o: AuditObj = {
+        name: `${cat}_${i}`,
+        x: gx + jx,
+        y: gy + jy,
+        z: sz / 2 + lift,
+        sx,
+        sy,
+        sz,
+        needsFix: jx !== 0 || jy !== 0 || mode === 2,
+      };
+      out.push(o);
+    }
+  }
+  return out;
+}
+
+const audit = buildAudit();
+const auditExpected = audit.filter((o) => o.needsFix).length;
+const snap2 = (v: number): number => Math.round(v / 2) * 2;
+
 export const tasks: Task[] = [
   {
     id: 'table',
@@ -103,6 +157,41 @@ for i in range(1, 5):
       }
       if (scene.objects.length !== 12) return fail(`objects=${scene.objects.length}`);
       return /\b12\b|twelve/i.test(answer) ? ok : fail(`answer lacks count: ${answer.slice(0, 80)}`);
+    },
+  },
+  {
+    id: 'audit',
+    seed: `
+import bpy
+DATA = ${JSON.stringify(audit.map((o) => [o.name, o.x, o.y, o.z, o.sx, o.sy, o.sz]))}
+for name, x, y, z, sx, sy, sz in DATA:
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(x, y, z))
+    ob = bpy.context.active_object
+    ob.scale = (sx, sy, sz)
+    ob.name = name
+`,
+    prompt:
+      'The Blender scene holds 40 objects in five groups by name prefix: Crate, Barrel, Lamp, Pillar and Sign. ' +
+      'Audit and fix them. First, find how many objects each group has. Then: snap every object\'s x and y to the nearest multiple of 2 ' +
+      '(an object already on a multiple stays put); and any object that sinks below the ground plane (z = 0) must be raised straight up ' +
+      'so its lowest point sits exactly on z = 0. Do not touch the height of objects that are not below ground. ' +
+      'Reply with one short sentence that gives the number of objects you had to adjust.',
+    verify(scene, answer) {
+      const objs = byName(scene);
+      if (scene.objects.length !== 40) return fail(`objects=${scene.objects.length}`);
+      for (const o of audit) {
+        const got = objs.get(o.name);
+        if (!got) return fail(`${o.name} missing`);
+        if (!near(got.location[0], snap2(o.x)) || !near(got.location[1], snap2(o.y))) {
+          return fail(`${o.name} xy ${got.location[0]},${got.location[1]} want ${snap2(o.x)},${snap2(o.y)}`);
+        }
+        const bottom = o.z - o.sz / 2;
+        const wantZ = bottom < -0.001 ? o.sz / 2 : o.z;
+        if (!near(got.location[2], wantZ)) return fail(`${o.name} z ${got.location[2]} want ${wantZ}`);
+      }
+      return new RegExp(`\\b${auditExpected}\\b`).test(answer)
+        ? ok
+        : fail(`answer lacks count ${auditExpected}: ${answer.slice(0, 80)}`);
     },
   },
 ];

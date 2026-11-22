@@ -91,6 +91,16 @@ export function buildReport(): string {
     }
     out.push('');
   }
+  out.push(
+    '## How to read this',
+    '',
+    '- Most of the token saving comes from tool definitions: direct sends ten Blender tool schemas on every turn, codemode sends one (see "First-turn context").',
+    '- In both paths the model mostly used the same underlying tool (run Python in Blender), so these tasks do not exercise chaining several different upstream tools in one script. That is where codemode should help most, and it is not measured here.',
+    '- The asset libraries in the test Blender were switched off, so search/import tasks (non-deterministic and network-bound) are not included.',
+    '- The typed `codemode.*` API lives in the tool description. Claude Code may shorten long MCP tool descriptions; this has not been verified here, and the model may have seen only part of the API.',
+    '- 3 runs per task and path, one model, one machine: treat small differences (especially wall time) as noise.',
+    '',
+  );
   const failures = records.filter((r) => !r.pass);
   if (failures.length) {
     out.push('## Failed runs', '', '| Task | Path | Repeat | Reason |', '|---|---|---|---|');
