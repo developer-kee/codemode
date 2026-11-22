@@ -14,6 +14,11 @@ export interface StdioUpstream {
 export interface HttpUpstream {
   url: string;
   headers?: Record<string, string>;
+  /**
+   * The server signs in with OAuth. `service` names the saved sign-in (see `oauth.ts`); create it once with
+   * `npm run login -- <service>`. Tokens are kept outside the repo and never appear in the service file.
+   */
+  oauth?: { service: string };
 }
 
 export type Upstream = StdioUpstream | HttpUpstream;

@@ -1,0 +1,467 @@
+{
+  "version": 1,
+  "tools": {
+    "notion-calendar-cancel-events": {
+      "description": "1d75a5adc866a3cd333e631b2a126379cb998b58eb7f5a9396634676bc25c53f",
+      "inputSchema": "041560f2480e9bb2b10f0ed82724a2e47ea2cd1c8aed4bacbb8ef1851ce009ea",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "bbca3f90a8f37a2e09188309470b131134c395dbc4eccad15de06d2c2f94f06a"
+    },
+    "notion-calendar-create-events": {
+      "description": "0bdee3b508b47367698661e9157338aaf9574d5b3e382f6f2120a00f27841aff",
+      "inputSchema": "2e57d96a79c88ca8a1fd057f8808b58e7bdfc193c3b67a5ce6f0de29721dc459",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "bbca3f90a8f37a2e09188309470b131134c395dbc4eccad15de06d2c2f94f06a"
+    },
+    "notion-calendar-list-calendar-resources": {
+      "description": "8915d1fc7e2ecc6270b49db6f3a1b18547e41ac95d7d53454377947d1d2acef3",
+      "inputSchema": "e47cbbcc65f908586e606e60568c39aa30bc7661563bd4ec943f6e937fb7f2c2",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "a7be21859302c7a062cc3437c6c63b67c76a1595814a0e85bd68688a6eac5680"
+    },
+    "notion-calendar-list-calendars": {
+      "description": "0357378cc79f0431bc9ca348f26ed5f206e8c7c9ebb3969b86da1276f6b30106",
+      "inputSchema": "22aed9b462a8f661049e8e99d5d87036673cfc88594f1af2c59df2b3b832b8ec",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "a7be21859302c7a062cc3437c6c63b67c76a1595814a0e85bd68688a6eac5680"
+    },
+    "notion-calendar-list-contacts": {
+      "description": "9c96e3840cc0d7053686c016f21ccf05d660b0bd1b7c6d28b25d37bed4d979f9",
+      "inputSchema": "46a5056fb19728ac2c20da06e1c1d8b2fa154835952545b1decb6464b18fc0cc",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "a7be21859302c7a062cc3437c6c63b67c76a1595814a0e85bd68688a6eac5680"
+    },
+    "notion-calendar-list-coworkers-events": {
+      "description": "7d18f04ca5bfc4e904abf5f23538fa4a80b21f51e55043f0b467e7ac603c81be",
+      "inputSchema": "8087bb84c88c08618bfc497da7e297baa5e56b8f7e6d4bbbb4792fcee77415ee",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "a7be21859302c7a062cc3437c6c63b67c76a1595814a0e85bd68688a6eac5680"
+    },
+    "notion-calendar-list-events": {
+      "description": "482b75ee682a3bf7aef15dbec4e4ccb22948aa02c49b4e362a29a41aa3bb8dd4",
+      "inputSchema": "5d4abdfae1243e7c76dd2e96f07c86df5cb506b0dcbcc2c7858f21f319f7927a",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "a7be21859302c7a062cc3437c6c63b67c76a1595814a0e85bd68688a6eac5680"
+    },
+    "notion-calendar-update-events": {
+      "description": "3df3ee5584407678803d630da840f181802512e0c0ad2f4a5217d6ab694d1886",
+      "inputSchema": "57b792128433cb3b1982829721a61070b2fc2d65a3af76746c8f68984aabaca0",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "bbca3f90a8f37a2e09188309470b131134c395dbc4eccad15de06d2c2f94f06a"
+    },
+    "notion-complete-mcp-setup": {
+      "description": "af1d001573ee048888c2eba1117209461360754e0cc412e116c436a84f84a67b",
+      "inputSchema": "b56ced7af74e38dba9ce18b034fbb81d1f78650db0ebe496616aeb7bb3d80a9c",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "notion-convert-page-to-skill": {
+      "description": "b3c4ee71dd72c9083cb6acbc514817086cc83e9b5c6d031cde8329c66e765e74",
+      "inputSchema": "2973917eb50c8f4902ecc0408b944dd6bf28b10b3bff87a954ad4ef01482a68e",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "notion-convert-to-meetings-database": {
+      "description": "db8f5fcf0254c66e317123da7bd7835974e3e383c29fe5fe533dc1be34db34c1",
+      "inputSchema": "233a9fe22229a29d88abc618a48794147edff580571fa0ce01a0768b01c970fc",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-create-attachment": {
+      "description": "02d785a47835e59d9829800616776b76d10be9060ecf537220d159865a336f78",
+      "inputSchema": "260049f01bffc90b565a25ab6d864d4cddff79d094e3044d56b92cebf5344a37",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "99300d9e2937ba92c763822593cb3ba8ec634d1813f3ab37fad3d6d0432268f9"
+    },
+    "notion-create-comment": {
+      "description": "a27bfa82df8ec85e761183c6fe43c4ea6982c42d710ed8b315873413c30d6a64",
+      "inputSchema": "5b6b4441f1a227719fb9f3a1f84416391ae3eb4c79d3bf7f7c2a2267535918f6",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-create-database": {
+      "description": "1fa83ac7d0fc0d41e355f8816a3986e544d030499e5bddb7a4f4088f08c10379",
+      "inputSchema": "2953ed1925aeadaabc098092cf225ec82199477f3e76beec7878308561867dda",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-create-file-upload": {
+      "description": "abb94a6f953b48f9271a3e2620cb19cdf2a264e3ec12b4268923d5c0dbec0129",
+      "inputSchema": "dc6f76d4239378ab8b87d9c974ebac46a0659b9bf1324b0756451ed083ff5a6c",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "99300d9e2937ba92c763822593cb3ba8ec634d1813f3ab37fad3d6d0432268f9"
+    },
+    "notion-create-folder": {
+      "description": "6dec4f39f89f02771474befd14c8e25a9d8f73b514161247dc092479c1173b35",
+      "inputSchema": "a95397d61b2ad30c593d3004beac121c67de8b2cfa3d976dff0b10a431fd1ab5",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-create-meeting-note": {
+      "description": "f8e1c7947f3dd01acf9eca714be55f36b922acab53ed83e8eee151254dd37ac4",
+      "inputSchema": "a5c2fab7b5e275a57076750be3addfd27873794c3c5e764c4070e714b2bc2ffa",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "99300d9e2937ba92c763822593cb3ba8ec634d1813f3ab37fad3d6d0432268f9"
+    },
+    "notion-create-pages": {
+      "description": "e0c715c608295290ce180b9c0d53caf288916cbe0d742b16f2d0724052d77441",
+      "inputSchema": "7a40ef0fde765ab345c291992aab4063685fe2d0dc7a4226d8eb3d4b65206e0f",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-create-suggested-edit": {
+      "description": "33542bd9fb46aee4479aede1482c92a04c67ae0ea580cbbfe68481916903e5a8",
+      "inputSchema": "b41088965250ec7a7f243051b5de127d182d0a7dcd851aab16198c832e5cccd1",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-create-view": {
+      "description": "f62b06924a5fdf670bd6c67419431f854d0b6a8e1146d6a793a58d24a88950db",
+      "inputSchema": "1b0b4e7fd8fcd4f3fa34d7baed6bad6d2451ef65d27f99f0539179fa5198fbbf",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-delete-comment": {
+      "description": "127d28b7c922598fb4d6c7380d699a5c5d4d32b5aacfba214aba44265b2efda2",
+      "inputSchema": "59e2c7880b76cd63e7d9c5476b22b7445d2fb1981fa6e9936ec87e47ef250203",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-delete-databases": {
+      "description": "ed603b6b27809d862200ae4191dc5c64c338b84d9e58aa39a433fd8ab8ed638b",
+      "inputSchema": "a047846f15d5f5838d67da2a1b9ec1b4e72d6bbda0003b2064724a1de14a4821",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-delete-pages": {
+      "description": "8970cfaadeb811794e8e517f42693646b9f2dba1a98e0b2af26a3b32dbcbe9cd",
+      "inputSchema": "b7c69950752d1b18ddce280582afbdb741322ecdfdcbf42adf3c855a1cd475c5",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-download-attachment": {
+      "description": "f55d0b27d68bfd901fd3d1d531335d43fd061efd74715cbe48cc44375f1da799",
+      "inputSchema": "8d9a55c8cf250fb93b4d91917c19b6f69c453801eb818a84800c9d1d00bb5e02",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-download-skill": {
+      "description": "7403531242d7ddf483179378a14211d4fe963e715f00263335c53c8ad4729d58",
+      "inputSchema": "05cae74345df97caf9f04e7249bcbee587ef0eb3b414e7f47add7b169e11e6f5",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-duplicate-page": {
+      "description": "309b53e8be10a9519ee1e2a97f2b3592d8ffb3127a81c1f1182583ae71844a66",
+      "inputSchema": "3fc178cd4365dde9d10394ba922ae7ec8fbd4812ef2ec6475bf07381b4236f17",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-fetch": {
+      "description": "ac27ec52dd3d13cee6a1c1962555804a13162c4975b6c4f1da1c0ce142583e5b",
+      "inputSchema": "a3cfedfd43d8e4388254be3455e59f5cd0d4f5b0c3c4bc6408a5e632531e6e79",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-async-task": {
+      "description": "86b98311bf73a17718e8e9c683f81aebb0657b968aef161f7e07110b12b11db1",
+      "inputSchema": "a6fca74c6b2ef0766523354d3034e0c2bf8408471cdaa7fae9c31e0c26774982",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-comments": {
+      "description": "a4b67588c3d2cd163d8a82e76f0a45cbf52c2fa6f3d2c7f63d81679f3bbc0c64",
+      "inputSchema": "e488257e47d256c8e8d271533a44da2cf2de015a2ee9ae2fd9aaa5db67d63af3",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-enabled-skills": {
+      "description": "e524f156608ce0e3283f5e56360ef0383ca61a63077c2869993c647c010c958a",
+      "inputSchema": "c1de62c67d3248f74d8b4c8b9100b2680fa7caf2d0700de2f844c140f8e09715",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-file-download-urls": {
+      "description": "c6d2d315df402ada908b1830ddfa583ff1839278519b0fa86ddeb03df6215af9",
+      "inputSchema": "5bd2c3a7c4787282751f00a87cf5871a644d523b4dddbf8f12602a24e7094e79",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-groups": {
+      "description": "5b831effb212e4443351e61759b773dd4dc2c594e942d05ec6031ea9c6ecb5aa",
+      "inputSchema": "17448f13fac8c86e4e799701ac3b6eb43b20fc06ed41226868cacd78ae3b23de",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-self": {
+      "description": "e55ceeb8d575729bc6602cc57b49f066a4bfba31777e94bf3aa9d3a125835848",
+      "inputSchema": "c1de62c67d3248f74d8b4c8b9100b2680fa7caf2d0700de2f844c140f8e09715",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-session-status": {
+      "description": "1b65ff41f6370a239f0a885bc09bcca7e16ebc04eef7c165c46244e4782c9213",
+      "inputSchema": "8ac8ae9bf0e94c9657808c1e322d99297b8efc438b36d7f874785c58bc28bc39",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "2e7fcf324b2df2692aecf8a5e83d1c37d2768dd32128caf778a19c3603ed8e0e"
+    },
+    "notion-get-setup-guide": {
+      "description": "924d3cd97ce098900682e8cc521c913ead10b3153bda1ade093e287e0a63eb10",
+      "inputSchema": "c1de62c67d3248f74d8b4c8b9100b2680fa7caf2d0700de2f844c140f8e09715",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-sidebar-tabs": {
+      "description": "29155a426b4d61a23316b2b13a6a17f57202febe540850a6c8801aea7e9f35c4",
+      "inputSchema": "c1de62c67d3248f74d8b4c8b9100b2680fa7caf2d0700de2f844c140f8e09715",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-suggested-edit": {
+      "description": "3b5581c3ebe9a9adc511ba03ecd9747fa6df6b8001ac96f0fac0bd0236fcb6e8",
+      "inputSchema": "5b1a30e6bcd5f1cac3b4688a38eb418810a7c473aebf12458f6b0b3dfa1b43dd",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-teams": {
+      "description": "d58e3bde0d0ed93a3c234ef3948e92f754fd0aa2f8d6b9febb7959c8b25b4f04",
+      "inputSchema": "e87051aa05b4bb8e35d850f7e29d442f417e7a87fa86d3f3dce21d436b50cb4c",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-tool-access": {
+      "description": "a08411dd1b3ed01e490649ce520d3a9105d1398779128175ef246f1dac1f4fae",
+      "inputSchema": "1f712c61363d19084b07a4f50df4a23595c96abcf0842b4d1ee5f0ad05a1418c",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-users": {
+      "description": "21bfeb60e5b15270e04e2cbeec1609615250d2523dc55d07f44d1b191211aa24",
+      "inputSchema": "d5dad4dce83cff25f2eead916ea23b140e237273d7ef13d57dcc459d4d07e445",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-get-version-changes": {
+      "description": "a248d1a082f844ba42e453e2d83ddb0a05d6ccdf8914d80a8816c304fa324a5c",
+      "inputSchema": "2243e237fca3a83548f0cbb0a186ea43a612fa416b52f2413ab219ae5abaad2c",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-link-meeting-note-to-calendar-event": {
+      "description": "ca78a7670afa6f227fe0df0db50cd60adf1360ff28b05271356340ad11fddd55",
+      "inputSchema": "1e52605ded0cb75d2078bc0b0fe2fbd40e7465b951bdfa504c9ef29ae9b4e4f9",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "dcaac5a4c621d25a66775ac4a0115d8c69a9742eb7c877a25fdf67ae14871828"
+    },
+    "notion-list-favorite-pages": {
+      "description": "127f945d976f4930e7fce6799dc56e3c7663b0d1b5c129432816e91de726cc5b",
+      "inputSchema": "2ad6d0e72a9536ba7f02c1ce95c79fd3330ded3042b30a970dd7656bc968852a",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-list-page-backlinks": {
+      "description": "57ca886df96a8d33d1fd2e9f18f9912ef2cb2adaaf5e3223a1c423b78f0f6b36",
+      "inputSchema": "483bf6b15d374cb90bf688fa26d0c438bac1bbdad5bc030c1e9e30a6f7c61995",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-list-private-pages": {
+      "description": "89369edc84a4f17d207f8e3370364a23f1cb6a653cf47db294ae7f7e99687c7c",
+      "inputSchema": "2ad6d0e72a9536ba7f02c1ce95c79fd3330ded3042b30a970dd7656bc968852a",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-list-recent-pages": {
+      "description": "16057e402cc92e938722989786cce8b1a388ca94057c2719ad74372f9c3156b8",
+      "inputSchema": "2ad6d0e72a9536ba7f02c1ce95c79fd3330ded3042b30a970dd7656bc968852a",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-list-session-events": {
+      "description": "e1ca4544d7a79d93a8c510da94d457f40ffcd9a182e75a30775b12951b0049e2",
+      "inputSchema": "dfda563c4ceb51f51d57b5e5144cfc788536e3c2c154e57860c9325be1a6f1aa",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "2e7fcf324b2df2692aecf8a5e83d1c37d2768dd32128caf778a19c3603ed8e0e"
+    },
+    "notion-list-shared-pages": {
+      "description": "7d4d33c9eb08deeaac895bc0eaad79276bb7b8fa09bd4697bb1a37e58fb735b3",
+      "inputSchema": "2ad6d0e72a9536ba7f02c1ce95c79fd3330ded3042b30a970dd7656bc968852a",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-memory-search": {
+      "description": "c710279ab221466795039261d1e7cc967eb511f247a892146adf960f15d896f9",
+      "inputSchema": "12da5e864e2c4ce8d99597bfa4223a2e166f1db250608a40ddbc43de21c25b33",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-move-pages": {
+      "description": "fb5f6b0ec2bae41fc4c515178b46fa0bebadf358eeaf1297cf02c5a3bbea1036",
+      "inputSchema": "4f279c4594108c80d7cf76916a4636220b90cf1c91a8c3eb0a73d4f818137a16",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "eac8ce4ef2f806dc71b6ab74b1b7f45db5d763fc21c243fac665161bb8d6fb60"
+    },
+    "notion-query-data-sources": {
+      "description": "d2522e3ec4eef476fc16dee9a2c0c8b1c1be007f34d5025cd4408be3a32a7bde",
+      "inputSchema": "9dde439e1fa4327841e476eda36182afce8add19df1f9534cb62bb4b12115a0e",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-query-meeting-notes": {
+      "description": "d3880a416df5b896b729f18bdad300fd43ad2ceb36abfd009d011fe511c7fdc5",
+      "inputSchema": "e2e9ce698c906250f9cc83ad89ae50497c3eb8613471ae4a7c18b9889c0ec07c",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-query-multiple-data-sources": {
+      "description": "3f10508599cc07ecde66030adbaf0b80fe9bbd48e5dcfaa696a82067667767bd",
+      "inputSchema": "e088a360a5bfe68ed920aa8fe906362c999db525781d84d269b0d1b89dd98959",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-query-sessions": {
+      "description": "f002f519499529589b0fed0597a11b66fd586c6c05372e359bb252ea8ee238b4",
+      "inputSchema": "9cb38faa068c55f12021b42c45e586f067512b532c0aab86928ac6854e512160",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-read-session-event": {
+      "description": "1991a687f91db47deb12f04621823935963107ccac61cd8a29aa64cbba846bd4",
+      "inputSchema": "7b730d7cbce0607de050cd04565d34549a1b911d67def836fd0f9302bbc904d6",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "2e7fcf324b2df2692aecf8a5e83d1c37d2768dd32128caf778a19c3603ed8e0e"
+    },
+    "notion-resolve-suggested-edit": {
+      "description": "635bd612fa2140157effa8187bb59166b63d57f79ead22d1fc4e5fe69bfc1240",
+      "inputSchema": "ee948efbfb791f4b74038276b47ebcdeada7f87585c19c3f4d2d01a5eab783e2",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-restore-pages": {
+      "description": "12fa53cb3d6bd613944a6a9a9d576cda69df7fa967fde5047a80eb41f78e4d50",
+      "inputSchema": "9ae06d9340a8f969fa519675059e429762cf006f9242a8171c266f58d95aecfe",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "notion-restore-version": {
+      "description": "75194c4117ab5a49dc750c7d1e972c0e0f9e15238b0409497538e4ba56b13687",
+      "inputSchema": "db875c23191c652a637c71441658c1318dcf53b6cc08082bc7f36ee4f8900833",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-search": {
+      "description": "6fe06894cacceb1bdd71bc6e5ce0d912f6364c2e5772cb4dacb77c461b8b7aa1",
+      "inputSchema": "b2fdd806fd6b6fb005655b3bc30c4d2d435ac4f30ac3a61b1c89cde48d99e192",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "139076388a98d13d07bb3df5c31e17088f4e37e0af35e2d89a7d5b112ee0e214"
+    },
+    "notion-search-agents": {
+      "description": "79225bfe3faaf9d66881407bc169ddfbd0df42398fb3fd4e87dbee953e5e39f5",
+      "inputSchema": "fea9b9498e623cfe39ae19705d868b8aecde9ed417e4ce9228f18ea3c0f635c8",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-search-sessions": {
+      "description": "abaad5ade83f2eb3406c620e27c26fd19951aa296356ccae91d3b09d0426d134",
+      "inputSchema": "0166da749017060fddca65c77983d28ededaf0e84898e502a4f4b37642e014fe",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-send-message-to-session": {
+      "description": "7085bb5eafa4688cb17819c6bfed84a93a785adca2fcc16351518e4a7b17dbdc",
+      "inputSchema": "d78d4b6cba6dddc2ebbdfe5d3297563b47c6c461dc78f9a2ac1ed095a82f6283",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-set-comment-reaction": {
+      "description": "1d2c853ca3b788f6e6379bd35847316fbe77f1e8f3604f612b1466bf7e350e7f",
+      "inputSchema": "7d73e7d1bed389066f133ec5675436103ad22698bb10fe699fa81fc73b3a1322",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "notion-set-discussion-resolved": {
+      "description": "044090b63943ca2a05d7481f274beffd1d857878587b29f571d7095cdf543b0c",
+      "inputSchema": "9f49a68965aafdcbe3a345f08b93ca28921656f70b96ce4fd2de2b53fb27299e",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "notion-spawn-session": {
+      "description": "7b4b1ea8b286ddd14e03b348be2e3a7c704d41c5267c5033d6ec0dc65bcf1030",
+      "inputSchema": "766f840d68c6d6bd1d5017a8ddf56e3666eb0d67d36747a8cccf2288b86f28be",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-stop-session": {
+      "description": "72fad9b373d74971beab0b1b0b0983707c9f537ac8db569b807b2634eeb52b83",
+      "inputSchema": "8ac8ae9bf0e94c9657808c1e322d99297b8efc438b36d7f874785c58bc28bc39",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-update-comment": {
+      "description": "f7db7190a9d46d4e17091f8ce6756f7e60271a90e79e45aaaca52be131ee027a",
+      "inputSchema": "7aa4b9191364cc1c21cde3aaed38d7505785b037accb08e61494acbcdbdb5ad4",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-update-data-source": {
+      "description": "cb3134a5babe456e0330d07653df4678761c23fe25ff6cb080209427ff190a6f",
+      "inputSchema": "b06fd69da9c1958a6281992b1a751b2ffbb58518fd972b80948f788b0b8024bd",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-update-folder": {
+      "description": "4ca507e9643382cd815d7ec04476f10138b9137e5f50753e1b88cf01de0f5514",
+      "inputSchema": "6a89ca03eb2bedb748f4557ffc8f0177b1490f2cf712d25824240283573b2bb7",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-update-page": {
+      "description": "28a1a2d17f5d1c3508f48fefb72bd1c4f08cda72d9f776c6b7a3844900f445f9",
+      "inputSchema": "637bd00dcabbfbc0dcfe6f661563ca06fcbaa78db1e117df8f4c559c3af95820",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-update-page-favorites": {
+      "description": "b07113b45fcd7ec62484ef56b3feb34db22c0093903956af92e1fcb0642f514b",
+      "inputSchema": "5cf3d1ec97e4f3669bbb8239e5a6e6e17e438317f0df339649bb488abb880308",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "notion-update-sidebar-tabs": {
+      "description": "07c71799ad9c9c61e800defb34c97d892317013235a227b1a4ac2794b8c1689f",
+      "inputSchema": "bb0518e4d320eb5fb115c0fb7ced522dfe6e1cecf680e0f31e5cf2496eda10ab",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-update-skill-settings": {
+      "description": "beeb2e8bf677f2c9fbcbe2a0a1f3f8532844865bb23dd02354e11cd4a7bfa7b4",
+      "inputSchema": "2b5724bd71384552790b46465b7425626cdbe349a22770dd9d88f2fa397fd22c",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "notion-update-view": {
+      "description": "170cdd1d887a073ef434c805bf063f7d8233b23250ccbadd50e3edeae4965a05",
+      "inputSchema": "bc8c12529966ba21d387a025f3f7e6e010940879d4e6bf8751a30d485c619006",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "notion-upload-skill": {
+      "description": "2a69d84ffacf45dc8e14cdef034f66515daa1f0b3b390c78b74021f683c34ee0",
+      "inputSchema": "de3f9db2782147f52caeb5d3a78f5da3c82e90caf302b39ffe956f98d51011ff",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "notion-view-version": {
+      "description": "2da772ca2ad4fc63ab2dbab59a3818978ee0d4ebc7adfe382f765f07acf2ae0e",
+      "inputSchema": "45fa49cf92462bca306af5e010fd7daf620a92a96d6e651533a3e6874f6bd626",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "notion-wait-session": {
+      "description": "e1669f88d48561cbe1827bfee84bc308909077c003dd2de918ad6a3c83dfa8ca",
+      "inputSchema": "8dbfae726b21847691c8e11e0a1f249a56b06a8a141dbf3a032b7e879de90de8",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "2e7fcf324b2df2692aecf8a5e83d1c37d2768dd32128caf778a19c3603ed8e0e"
+    }
+  }
+}

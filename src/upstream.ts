@@ -3,6 +3,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { getDefaultEnvironment, StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
+import { FileOAuthProvider } from './oauth.ts';
 import type { Upstream } from './types.ts';
 
 const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
@@ -37,6 +38,9 @@ export async function connectUpstream(upstream: Upstream): Promise<Client> {
     'url' in upstream
       ? new StreamableHTTPClientTransport(assertSecureUrl(upstream.url), {
           requestInit: { headers: upstream.headers ?? {} },
+          ...(upstream.oauth
+            ? { authProvider: new FileOAuthProvider({ service: upstream.oauth.service, serverUrl: assertSecureUrl(upstream.url).href }) }
+            : {}),
         })
       : new StdioClientTransport({
           command: upstream.command,
