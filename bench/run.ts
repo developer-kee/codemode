@@ -102,3 +102,5 @@ for (let repeat = 1; repeat <= runs; repeat++) {
   }
 }
 console.log(`Reports: ${writeReports(services).join(', ')}`);
+// Some services keep handles open (the Playwright fixture server), which would stop node from exiting.
+process.exit(0);

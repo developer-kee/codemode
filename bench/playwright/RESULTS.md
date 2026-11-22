@@ -10,7 +10,54 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 > **Warning:** Drives a real headless Microsoft Edge (already installed; nothing is downloaded) against a small local site on http://127.0.0.1:4817, and the browser is limited to that origin with --allowed-origins. The server also exposes browser_run_code_unsafe, which runs arbitrary Playwright code on this PC, and nothing here removes it. Needs port 4817 free. Edge must be installed.
 
-_No runs recorded yet._
+## Variant: `scenarios`, multi-step scenario tasks
+
+- Both paths expose the same 24 tools of the pinned `@playwright/mcp@0.0.86`.
+
+Reproduce: `npm run bench -- --service playwright --variant scenarios --runs 3`.
+
+### Model: `claude-sonnet-5-5`
+
+#### Per-task summary
+
+| Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
+|---|---|---|---|---|---|---|---|---|---|
+| catalog-sum | 1/1 / 0/1 | 34,125 | 39,728 | **16%** | 12.5s | 24.8s | **98%** | $0.070 | $0.072 |
+| form | 1/1 / 0/1 | 25,100 | 31,243 | **24%** | 11.1s | 23.5s | **112%** | $0.023 | $0.043 |
+
+Token change ranges from **16%** (catalog-sum) to **24%** (form).
+
+#### Task: catalog-sum
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 1/1 | 4.0 | 3.0 | 7,608 | 461 | 9,329 | 24,335 | 34,125 | $0.070 | 12.5s |
+| codemode | 0/1 | 9.0 | 8.0 | 1,597 | 1,733 | 6,081 | 31,914 | 39,728 | $0.072 | 24.8s |
+
+#### Task: form
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 1/1 | 5.0 | 4.0 | 7,603 | 407 | 1,583 | 23,110 | 25,100 | $0.023 | 11.1s |
+| codemode | 0/1 | 10.0 | 9.0 | 1,592 | 1,225 | 2,726 | 27,292 | 31,243 | $0.043 | 23.5s |
+
+#### All tasks
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 2/2 | 4.5 | 3.5 | 7,606 | 434 | 5,456 | 23,723 | 29,613 | $0.046 | 11.8s |
+| codemode | 0/2 | 9.5 | 8.5 | 1,595 | 1,479 | 4,404 | 29,603 | 35,486 | $0.057 | 24.2s |
+
+Total tokens, codemode vs direct: **20%** (35,486 vs 29,613).
+
+Wall time, codemode vs direct: **105%** (24.2s vs 11.8s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
+
+#### Failed runs
+
+| Task | Path | Repeat | Reason |
+|---|---|---|---|
+| catalog-sum | codemode | 1 | answer lacks 1355.75: I couldn't get the total. The browser tool began failing with "memory access out of bounds" errors |
+| form | codemode | 1 | no submission recorded |
 
 ## Task prompts
 

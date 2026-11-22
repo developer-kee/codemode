@@ -7,7 +7,12 @@ const s = new McpServer({ name: 'fake', version: '1.0.0' });
 s.registerTool(
   'add-numbers',
   { description: 'Add two numbers', inputSchema: { a: z.number(), b: z.number() } },
-  ({ a, b }) => ({ content: [{ type: 'text', text: JSON.stringify({ sum: a + b }) }] }),
+  async ({ a, b }) => {
+    // Slow enough that the sandbox is suspended on this call while its job pump ticks (regression: the pump used to
+    // run guest jobs mid-call and corrupt the WASM stack, which only showed up with real, slow upstreams).
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    return { content: [{ type: 'text', text: JSON.stringify({ sum: a + b }) }] };
+  },
 );
 s.registerTool('boom', { description: 'Always fails', inputSchema: {} }, () => ({
   isError: true,

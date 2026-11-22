@@ -54,6 +54,8 @@ export interface SandboxApi {
   /** Identifiers exposed on the namespace. */
   ids: readonly string[];
   callTool(id: string, input: unknown): Promise<unknown>;
+  /** Host functions that finish immediately (the sandbox `store`); `handled: false` when `id` is not one. */
+  syncCall?(id: string, input: unknown): { handled: false } | { handled: true; value: unknown };
 }
 
 export interface SandboxResult {
@@ -70,4 +72,5 @@ export interface GeneratedApi {
   /** Identifier -> the declarations that tool contributes to `dts` (its types plus its member). */
   perTool: Record<string, string>;
 }
+
 

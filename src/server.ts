@@ -1,4 +1,5 @@
-﻿import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+﻿import { appendFileSync } from 'node:fs';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -107,8 +108,6 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
   const makeCallTool = () => {
     let calls = 0;
     return async (id: string, input: unknown): Promise<unknown> => {
-      const stored = store.handle(id, input);
-      if (stored.handled) return stored.value;
       const toolName = Object.hasOwn(names, id) ? names[id] : undefined;
       if (toolName === undefined) {
         throw new Error(`Unknown tool "${id}". Available: ${Object.keys(names).join(', ')}`);
@@ -134,9 +133,10 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       inputSchema: { code: z.string().describe('TypeScript/JavaScript body to run') },
     },
     async ({ code }): Promise<CallToolResult> => {
+      const logFile = process.env['CODEMODE_LOG'];
       const out = await runInSandbox(
         code,
-        { namespace: NAMESPACE, ids: Object.keys(names), callTool: makeCallTool() },
+        { namespace: NAMESPACE, ids: Object.keys(names), callTool: makeCallTool(), syncCall: (id, input) => store.handle(id, input) },
         limits,
       );
       const parts: string[] = [];
@@ -145,9 +145,12 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
         parts.push(`result: ${typeof out.result === 'string' ? out.result : JSON.stringify(out.result, null, 2)}`);
       }
       if (out.error !== undefined) parts.push(`error: ${out.error}`);
+      const text = capOutput(parts.join('\n\n') || '(no output)', maxOutputChars);
+      // Debugging aid, off by default: CODEMODE_LOG=<file> appends every script and what it returned.
+      if (logFile) appendFileSync(logFile, `${JSON.stringify({ code, error: out.error, text: text.slice(0, 1500) })}\n`);
       return {
         isError: out.error !== undefined,
-        content: [{ type: 'text', text: capOutput(parts.join('\n\n') || '(no output)', maxOutputChars) }],
+        content: [{ type: 'text', text }],
       };
     },
   );
@@ -184,3 +187,4 @@ export async function runCodeModeServer(config: ServiceConfig): Promise<void> {
     void close().finally(() => process.exit(0));
   });
 }
+

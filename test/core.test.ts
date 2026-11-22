@@ -63,6 +63,28 @@ test('compactIndex: always fits the budget and always names every tool when it c
   assert.ok(compactIndex(syntheticTools(400), 1500).level >= 3);
 });
 
+test('sandbox: several slow upstream calls in one script, then another script, still work', async () => {
+  const { server, close } = await createCodeModeServer({
+    name: 'slow',
+    upstream: { command: process.execPath, args: [fake] },
+  });
+  const [a, b] = InMemoryTransport.createLinkedPair();
+  await server.connect(b);
+  const client = new Client({ name: 't', version: '1' });
+  await client.connect(a);
+  const script =
+    'let t = 0; for (let i = 1; i <= 5; i++) { t += (await codemode.add_numbers({ a: i, b: i })).sum; } ' +
+    'const both = await Promise.all([codemode.add_numbers({ a: 1, b: 1 }), codemode.add_numbers({ a: 2, b: 2 })]); ' +
+    'return t + both[0].sum + both[1].sum;';
+  for (let round = 0; round < 3; round++) {
+    const r = (await client.callTool({ name: 'execute_code', arguments: { code: script } })) as CallToolResult;
+    assert.equal(r.isError, false, firstText(r));
+    assert.match(firstText(r), /result: 36/); // 2+4+6+8+10 + 2 + 4
+  }
+  await client.close();
+  await close();
+});
+
 test('end to end: one execute_code call chains upstream tools', async () => {
   const { server, dts, close } = await createCodeModeServer({
     name: 'fake-codemode',
