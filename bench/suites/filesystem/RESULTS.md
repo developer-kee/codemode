@@ -8,6 +8,16 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 > **Warning:** Gives the model read and write access to <path>, which is deleted and recreated before every run, and to nothing else: the server is started with that single allowed directory. Nothing is downloaded except the pinned npm package.
 
+## TL;DR
+
+Codemode compared with the same server used directly. Left number is codemode, right is direct.
+
+- **`scenarios`, `claude-sonnet-5-5`:** tokens **-88%** (6,218 vs 53,069), time **-47%** (10.9s vs 20.4s), cost **-89%** ($0.016 vs $0.149), passed 12/12 vs 12/12.
+- **`calls`, `claude-sonnet-5-5`:** tokens **-70%** (3,356 vs 11,249), time **-0%** (8.5s vs 8.5s), cost **-8%** ($0.006 vs $0.007), passed 30/30 vs 30/30.
+- **Tool definitions sent every turn:** 351 vs 3,447 tokens (-90%), 16 tools.
+- **Latency of one call (no model):** median overhead +1 ms across 12 cases.
+- **Verdict (`scenarios`):** Saves a lot of tokens and is faster (tokens -88%, time -47%).
+
 ## Models
 
 Detailed results below are grouped by model family. Each family is produced by one runner and uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.

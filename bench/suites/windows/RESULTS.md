@@ -8,6 +8,17 @@ Variants: `scenarios`, `scenarios-4-tools`, `calls`. Method, metric definitions 
 
 > **Warning:** Gives the model real PowerShell and file access to this PC. Tasks are written to stay inside <path>, which is deleted and recreated before every run, but a model can still run arbitrary commands. Run on a machine you are happy to do that on. The `scenarios` and `calls` variants expose every tool, including screenshots and input: see their warning.
 
+## TL;DR
+
+Codemode compared with the same server used directly. Left number is codemode, right is direct.
+
+- **`scenarios`, `claude-sonnet-5-5`:** tokens **-65%** (8,101 vs 22,860), time **+2%** (15.1s vs 14.8s), cost **-8%** ($0.022 vs $0.024), passed 9/9 vs 9/9.
+- **`scenarios-4-tools`, `claude-sonnet-5-5`:** tokens **-3%** (7,870 vs 8,146), time **-19%** (16.0s vs 19.6s), cost **+42%** ($0.023 vs $0.016), passed 9/9 vs 9/9.
+- **`calls`, `claude-sonnet-5-5`:** tokens **-78%** (3,538 vs 15,825), time **-1%** (12.0s vs 12.1s), cost **-40%** ($0.005 vs $0.008), passed 21/21 vs 21/21.
+- **Tool definitions sent every turn:** 495 vs 4,078 tokens (-88%), 20 tools.
+- **Latency of one call (no model):** median overhead +2 ms across 8 cases.
+- **Verdict (`scenarios`):** Saves a lot of tokens with similar time (tokens -65%, time +2%).
+
 ## Models
 
 Detailed results below are grouped by model family. Each family is produced by one runner and uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.

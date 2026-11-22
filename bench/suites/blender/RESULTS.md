@@ -10,6 +10,16 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 > **Warning:** Every run WIPES the open Blender scene. Needs Blender open with the BlenderMCP addon connected (localhost:9876).
 
+## TL;DR
+
+Codemode compared with the same server used directly. Left number is codemode, right is direct.
+
+- **`scenarios`, `claude-sonnet-5-5`:** tokens **-71%** (8,108 vs 27,678), time **0%** (11.6s vs 11.5s), cost **-24%** ($0.024 vs $0.032), passed 12/12 vs 12/12.
+- **`calls`, `claude-sonnet-5-5`:** tokens **-82%** (3,090 vs 17,468), time **-1%** (7.0s vs 7.1s), cost **-58%** ($0.004 vs $0.010), passed 9/9 vs 9/9.
+- **Tool definitions sent every turn:** 422 vs 4,432 tokens (-90%), 10 tools.
+- **Latency of one call (no model):** median overhead +2 ms across 4 cases.
+- **Verdict (`scenarios`):** Saves a lot of tokens with similar time (tokens -71%, time +0%).
+
 ## Models
 
 Detailed results below are grouped by model family. Each family is produced by one runner and uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.

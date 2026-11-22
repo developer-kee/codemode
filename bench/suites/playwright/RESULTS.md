@@ -11,6 +11,18 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 > **Warning:** Drives a real headless Microsoft Edge (already installed; nothing is downloaded) against a small local site on http://127.0.0.1:4817, and the browser is limited to that origin with --allowed-origins. The server also exposes browser_run_code_unsafe, which runs arbitrary Playwright code on this PC, and nothing here removes it. Needs port 4817 free. Edge must be installed.
 
+## TL;DR
+
+Codemode compared with the same server used directly. Left number is codemode, right is direct.
+
+- **`scenarios`, `claude-sonnet-5-5`:** tokens **-71%** (8,435 vs 29,359), time **+8%** (11.9s vs 11.0s), cost **-26%** ($0.020 vs $0.027), passed 9/9 vs 9/9.
+- **`scenarios`, `deepseek-flash`:** tokens **-68%** (18,923 vs 60,019), time **+13%** (22.2s vs 19.6s), passed 9/9 vs 9/9.
+- **`calls`, `claude-sonnet-5-5`:** tokens **-83%** (3,594 vs 21,020), time **-1%** (8.6s vs 8.7s), cost **-53%** ($0.006 vs $0.012), passed 9/9 vs 9/9.
+- **`calls`, `deepseek-flash`:** tokens **-82%** (3,249 vs 17,647), time **+17%** (12.2s vs 10.5s), passed 9/9 vs 9/9.
+- **Tool definitions sent every turn:** 531 vs 4,626 tokens (-89%), 25 tools.
+- **Latency of one call (no model):** median overhead +1 ms across 16 cases.
+- **Verdict (`scenarios`):** Saves a lot of tokens with similar time (tokens -69%, time +11%).
+
 ## Models
 
 Detailed results below are grouped by model family. Each family is produced by one runner and uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.

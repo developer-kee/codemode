@@ -8,6 +8,13 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 > **Warning:** WRITES to a real Notion workspace. Needs NOTION_TOKEN (an internal integration token) and NOTION_BENCH_PAGE_ID (a page shared with that integration). It creates a "codemode bench <timestamp>" page with a 40-row database under that page (about 15 s), trashes older "codemode bench" pages there, and lets the model create a "Summary" page. It touches nothing outside that page. Use a test workspace. UNTESTED against live Notion: the seeding code follows the API documentation but has never run.
 
+## TL;DR
+
+Codemode compared with the same server used directly. Left number is codemode, right is direct.
+
+- **Model runs:** none recorded yet.
+- **Verdict (`scenarios`):** No runs yet, so nothing is measured.
+
 _No runs recorded yet._
 
 ## Task prompts

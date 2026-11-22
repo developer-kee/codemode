@@ -1,7 +1,9 @@
 // Report building: per-service RESULTS.md and the cross-service overview.
 import { writeFileSync } from 'node:fs';
 import type { AgentRun, PathId } from '../runners/agent.ts';
+import type { CallsData } from '../calls/data.ts';
 import { buildCallsSections } from '../calls/report.ts';
+import { estimateTokens } from '../calls/static.ts';
 import type { BenchService, BenchVariant } from '../types/index.ts';
 import { familiesIn, modelFamily, modelsIn, runnersOf } from './families.ts';
 import { loadCalls, loadRecords, overviewFile, reportFile, type RunRecord } from './records.ts';
@@ -202,8 +204,104 @@ function modelSection(variant: BenchVariant, model: string, mr: RunRecord[], h: 
   return out;
 }
 
+const MAX_TLDR_RUN_LINES = 4;
+
+/** `pct` with an explicit `+` on increases, so a reader cannot take 42% for a saving. */
+const chg = (from: number, to: number): string => {
+  const p = pct(from, to);
+  return p === 'n/a' || p.startsWith('-') || p === '0%' ? p : `+${p}`;
+};
+
+/** Cost change line, only when every run reported a cost. */
+function costClause(d: RunRecord[], c: RunRecord[]): string {
+  const cell = (recs: RunRecord[]): number | undefined => {
+    const costs = recs.map((r) => r.run.costUsd);
+    return costs.length > 0 && costs.every((x) => x !== undefined) ? mean(costs as number[]) : undefined;
+  };
+  const dc = cell(d);
+  const cc = cell(c);
+  return dc === undefined || cc === undefined ? '' : `, cost **${chg(dc, cc)}** ($${cc.toFixed(3)} vs $${dc.toFixed(3)})`;
+}
+
+/** One sentence from fixed rules on the pooled numbers, so it cannot say more than the data does. */
+function verdict(tokenChange: number | undefined, timeChange: number | undefined, passFewer: boolean, definitionChange: number | undefined): string {
+  if (tokenChange === undefined || timeChange === undefined) {
+    return definitionChange === undefined
+      ? 'No runs yet, so nothing is measured.'
+      : `Tool definitions shrink by ${Math.abs(definitionChange).toFixed(0)}%, but no model runs are recorded, so the effect on tokens, time and correctness is not measured.`;
+  }
+  if (passFewer) return 'Codemode passed fewer runs than direct. Read the failed runs below before trusting the savings.';
+  const tokens = tokenChange <= -30 ? 'Saves a lot of tokens' : tokenChange <= -10 ? 'Saves some tokens' : tokenChange < 10 ? 'No real token saving' : 'Uses more tokens';
+  const time = timeChange > 20 ? 'and is slower' : timeChange < -20 ? 'and is faster' : 'with similar time';
+  return `${tokens} ${time} (tokens ${tokenChange.toFixed(0)}%, time ${timeChange > 0 ? '+' : ''}${timeChange.toFixed(0)}%).`;
+}
+
+/**
+ * The short version at the top of a service report. Every number comes from the recorded runs or the calls data; the
+ * verdict is a fixed rule on those numbers (`verdict` above), not an opinion.
+ */
+function tldr(service: BenchService, records: RunRecord[], calls: CallsData | undefined): string[] {
+  const runLines: string[] = [];
+  for (const variant of service.variants) {
+    const vr = records.filter((r) => r.variant === variant.id);
+    for (const model of modelsIn(vr)) {
+      const mr = vr.filter((r) => r.model === model);
+      const d = mr.filter((r) => r.run.path === 'direct');
+      const c = mr.filter((r) => r.run.path === 'codemode');
+      const s = summary(mr);
+      if (d.length === 0 || c.length === 0) continue;
+      runLines.push(
+        `- **\`${variant.id}\`, \`${model}\`:** tokens **${chg(s.d, s.c)}** (${fmt(s.c)} vs ${fmt(s.d)}), ` +
+          `time **${chg(s.dt, s.ct)}** (${s.ct.toFixed(1)}s vs ${s.dt.toFixed(1)}s)${costClause(d, c)}, ` +
+          `passed ${c.filter((r) => r.pass).length}/${c.length} vs ${d.filter((r) => r.pass).length}/${d.length}.`,
+      );
+    }
+  }
+  const out = ['## TL;DR', '', 'Codemode compared with the same server used directly. Left number is codemode, right is direct.', ''];
+  out.push(...runLines.slice(0, MAX_TLDR_RUN_LINES));
+  if (runLines.length > MAX_TLDR_RUN_LINES) out.push(`- ${runLines.length - MAX_TLDR_RUN_LINES} more variant and model rows are in the tables below.`);
+  if (runLines.length === 0) out.push('- **Model runs:** none recorded yet.');
+
+  let definitionChange: number | undefined;
+  if (calls) {
+    const { directTotalChars, codemodeTotalChars } = calls.costs;
+    definitionChange = directTotalChars === 0 ? undefined : ((codemodeTotalChars - directTotalChars) / directTotalChars) * 100;
+    out.push(
+      `- **Tool definitions sent every turn:** ${fmt(estimateTokens(codemodeTotalChars))} vs ${fmt(estimateTokens(directTotalChars))} tokens ` +
+        `(${chg(directTotalChars, codemodeTotalChars)}), ${calls.toolCount} tools.`,
+    );
+    const clean = calls.latency.rows.filter((r) => r.errors.direct === 0 && r.errors.codemode === 0);
+    if (clean.length > 0) {
+      const diffs = clean.map((r) => r.codemode.median - r.direct.median).sort((a, b) => a - b);
+      const mid = diffs[Math.floor(diffs.length / 2)] ?? 0;
+      const failed = calls.latency.rows.length - clean.length;
+      out.push(
+        `- **Latency of one call (no model):** median overhead ${mid > 0 ? '+' : ''}${mid.toFixed(0)} ms across ${clean.length} cases` +
+          `${failed > 0 ? `; ${failed} more had failed calls and are left out` : ''}.`,
+      );
+    }
+  }
+
+  const main = records.filter((r) => r.variant === service.defaultVariant);
+  const pooled = summary(main);
+  const dMain = main.filter((r) => r.run.path === 'direct');
+  const cMain = main.filter((r) => r.run.path === 'codemode');
+  const measured = pooled.d > 0 && pooled.c > 0;
+  out.push(
+    `- **Verdict (\`${service.defaultVariant}\`):** ${verdict(
+      measured ? ((pooled.c - pooled.d) / pooled.d) * 100 : undefined,
+      measured ? ((pooled.ct - pooled.dt) / pooled.dt) * 100 : undefined,
+      cMain.filter((r) => r.pass).length / Math.max(1, cMain.length) < dMain.filter((r) => r.pass).length / Math.max(1, dMain.length),
+      definitionChange,
+    )}`,
+    '',
+  );
+  return out;
+}
+
 export function buildServiceReport(service: BenchService): string {
   const records = loadRecords(service.id);
+  const callsData = loadCalls(service.id);
   const out: string[] = [
     `# Benchmark: ${service.title}, direct MCP vs codemode`,
     '',
@@ -214,6 +312,7 @@ export function buildServiceReport(service: BenchService): string {
     '',
     `> **Warning:** ${portablePaths(service.warning)}`,
     '',
+    ...tldr(service, records, callsData),
   ];
   if (records.length === 0) out.push('_No runs recorded yet._', '');
   // Quick provider comparison first, then the detailed per-family sections.
@@ -248,8 +347,7 @@ export function buildServiceReport(service: BenchService): string {
       }
     }
   }
-  const calls = loadCalls(service.id);
-  if (calls) out.push(...buildCallsSections(service.id, calls));
+  if (callsData) out.push(...buildCallsSections(service.id, callsData));
   out.push('## Task prompts', '', 'Identical text is sent on both paths. Prompts never name tools.', '');
   for (const variant of service.variants) {
     out.push(

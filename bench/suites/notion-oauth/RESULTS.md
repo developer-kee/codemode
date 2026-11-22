@@ -7,6 +7,15 @@ Variants: `calls`. Method, metric definitions and limitations: [../../README.md]
 
 > **Warning:** READS the signed-in Notion account (listing and searching pages, users, teams, calendars). It writes nothing. Needs `npm run login -- notion/oauth` first. Results hold sizes and timings only, never page or user content, but the calls themselves do read your workspace.
 
+## TL;DR
+
+Codemode compared with the same server used directly. Left number is codemode, right is direct.
+
+- **Model runs:** none recorded yet.
+- **Tool definitions sent every turn:** 450 vs 26,892 tokens (-98%), 39 tools.
+- **Latency of one call (no model):** median overhead -4 ms across 17 cases.
+- **Verdict (`calls`):** Tool definitions shrink by 98%, but no model runs are recorded, so the effect on tokens, time and correctness is not measured.
+
 _No runs recorded yet._
 
 ## Per-tool-call benchmark (no model)
