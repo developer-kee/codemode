@@ -1,10 +1,13 @@
 ﻿import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { ClaudeRun, PathId } from './claude.ts';
-import type { BenchService } from './types.ts';
+import { buildCallsSections, type CallsData } from './calls.ts';
+import type { BenchService, BenchVariant } from './types.ts';
 
 export interface RunRecord {
   batch: string;
+  /** Which variant of the service was run. Records written before variants existed have none and count as `scenarios`. */
+  variant: string;
   task: string;
   model: string;
   repeat: number;
@@ -15,8 +18,12 @@ export interface RunRecord {
   run: ClaudeRun;
 }
 
+/** The variant of records that carry none (everything recorded before variants existed). */
+export const LEGACY_VARIANT = 'scenarios';
+
 const benchRoot = fileURLToPath(new URL('../', import.meta.url));
 export const resultsDir = (serviceId: string): string => `${benchRoot}${serviceId}/results/`;
+export const callsFile = (serviceId: string): string => `${benchRoot}${serviceId}/calls-latest.json`;
 const reportFile = (serviceId: string): string => `${benchRoot}${serviceId}/RESULTS.md`;
 const overviewFile = `${benchRoot}RESULTS.md`;
 
@@ -31,10 +38,21 @@ export function loadRecords(serviceId: string): RunRecord[] {
   if (!existsSync(dir)) return records;
   for (const f of readdirSync(dir).filter((n) => n.endsWith('.jsonl')).sort()) {
     for (const line of readFileSync(`${dir}${f}`, 'utf8').split('\n')) {
-      if (line.trim()) records.push(JSON.parse(line) as RunRecord);
+      if (!line.trim()) continue;
+      const rec = JSON.parse(line) as Omit<RunRecord, 'variant'> & { variant?: string };
+      records.push({ ...rec, variant: rec.variant ?? LEGACY_VARIANT });
     }
   }
   return records;
+}
+
+export function saveCalls(serviceId: string, data: CallsData): void {
+  writeFileSync(callsFile(serviceId), `${JSON.stringify(data, null, 2)}\n`);
+}
+
+export function loadCalls(serviceId: string): CallsData | undefined {
+  const file = callsFile(serviceId);
+  return existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8')) as CallsData) : undefined;
 }
 
 const mean = (xs: number[]): number => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -70,124 +88,150 @@ function summary(recs: RunRecord[]): { d: number; c: number; dt: number; ct: num
   };
 }
 
+/** Per-model tables for one variant: per-task summary, per-task detail, all tasks, failures. `h` is the heading level of the model section. */
+function modelSection(variant: BenchVariant, model: string, mr: RunRecord[], h: string): string[] {
+  const out: string[] = [`${h} Model: \`${model}\``, ''];
+  const sub = `${h}#`;
+  // One row per task: no single task can hide inside the averages below.
+  const taskIds = variant.tasks.filter((t) => mr.some((r) => r.task === t.id));
+  if (taskIds.length > 1) {
+    out.push(
+      `${sub} Per-task summary`,
+      '',
+      '| Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |',
+      '|---|---|---|---|---|---|---|---|---|---|',
+    );
+    const deltas: { id: string; tok: number }[] = [];
+    for (const t of taskIds) {
+      const tr = mr.filter((r) => r.task === t.id);
+      const d = tr.filter((r) => r.run.path === 'direct');
+      const c = tr.filter((r) => r.run.path === 'codemode');
+      if (d.length === 0 || c.length === 0) continue;
+      const dTok = mean(d.map((r) => total(r.run)));
+      const cTok = mean(c.map((r) => total(r.run)));
+      const dMs = mean(d.map((r) => r.run.durationMs)) / 1000;
+      const cMs = mean(c.map((r) => r.run.durationMs)) / 1000;
+      deltas.push({ id: t.id, tok: ((cTok - dTok) / dTok) * 100 });
+      out.push(
+        `| ${t.id} | ${d.filter((r) => r.pass).length}/${d.length} / ${c.filter((r) => r.pass).length}/${c.length} ` +
+          `| ${fmt(dTok)} | ${fmt(cTok)} | **${pct(dTok, cTok)}** | ${dMs.toFixed(1)}s | ${cMs.toFixed(1)}s | **${pct(dMs, cMs)}** ` +
+          `| $${mean(d.map((r) => r.run.costUsd)).toFixed(3)} | $${mean(c.map((r) => r.run.costUsd)).toFixed(3)} |`,
+      );
+    }
+    if (deltas.length > 1) {
+      const best = deltas.reduce((a, b) => (b.tok < a.tok ? b : a));
+      const worst = deltas.reduce((a, b) => (b.tok > a.tok ? b : a));
+      out.push('', `Token change ranges from **${best.tok.toFixed(0)}%** (${best.id}) to **${worst.tok.toFixed(0)}%** (${worst.id}).`);
+    }
+    out.push('');
+  }
+  for (const task of variant.tasks) {
+    const tr = mr.filter((r) => r.task === task.id);
+    if (tr.length === 0) continue;
+    out.push(`${sub} Task: ${task.id}`, '', header);
+    for (const p of paths) out.push(row(p, tr.filter((r) => r.run.path === p)));
+    out.push('');
+  }
+  out.push(`${sub} All tasks`, '', header);
+  for (const p of paths) out.push(row(p, mr.filter((r) => r.run.path === p)));
+  const s = summary(mr);
+  if (s.d > 0 && s.c > 0) {
+    out.push(
+      '',
+      `Total tokens, codemode vs direct: **${pct(s.d, s.c)}** (${fmt(s.c)} vs ${fmt(s.d)}).`,
+      '',
+      `Wall time, codemode vs direct: **${pct(s.dt, s.ct)}** (${s.ct.toFixed(1)}s vs ${s.dt.toFixed(1)}s). ` +
+        'Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool\'s own execution.',
+    );
+  }
+  out.push('');
+  const failures = mr.filter((r) => !r.pass);
+  if (failures.length) {
+    out.push(`${sub} Failed runs`, '', '| Task | Path | Repeat | Reason |', '|---|---|---|---|');
+    for (const r of failures) {
+      out.push(`| ${r.task} | ${r.run.path} | ${r.repeat} | ${(r.run.error ?? r.verdict).replace(/\|/g, '/').slice(0, 120)} |`);
+    }
+    out.push('');
+  }
+  return out;
+}
+
 export function buildServiceReport(service: BenchService): string {
   const records = loadRecords(service.id);
-  const models = [...new Set(records.map((r) => r.model))];
   const out: string[] = [
     `# Benchmark: ${service.title}, direct MCP vs codemode`,
     '',
     ...service.notes.map((n) => `- ${n}`),
     '',
     'Numbers are means over runs. `Pass` is an objective check of the resulting state, not the model\'s own claim.',
-    `Reproduce: \`npm run bench -- --service ${service.id} --runs 3\`. Method, metric definitions and limitations: [../README.md](../README.md).`,
+    `Variants: ${service.variants.map((v) => `\`${v.id}\``).join(', ')}. Method, metric definitions and limitations: [../README.md](../README.md).`,
     '',
     `> **Warning:** ${service.warning}`,
     '',
   ];
   if (records.length === 0) out.push('_No runs recorded yet._', '');
-  for (const model of models) {
-    const mr = records.filter((r) => r.model === model);
-    out.push(`## Model: \`${model}\``, '');
-    // One row per task: no single task can hide inside the averages below.
-    const taskIds = service.tasks.filter((t) => mr.some((r) => r.task === t.id));
-    if (taskIds.length > 1) {
-      out.push(
-        '### Per-task summary',
-        '',
-        '| Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |',
-        '|---|---|---|---|---|---|---|---|---|---|',
-      );
-      const deltas: { id: string; tok: number }[] = [];
-      for (const t of taskIds) {
-        const tr = mr.filter((r) => r.task === t.id);
-        const d = tr.filter((r) => r.run.path === 'direct');
-        const c = tr.filter((r) => r.run.path === 'codemode');
-        if (d.length === 0 || c.length === 0) continue;
-        const dTok = mean(d.map((r) => total(r.run)));
-        const cTok = mean(c.map((r) => total(r.run)));
-        const dMs = mean(d.map((r) => r.run.durationMs)) / 1000;
-        const cMs = mean(c.map((r) => r.run.durationMs)) / 1000;
-        deltas.push({ id: t.id, tok: ((cTok - dTok) / dTok) * 100 });
-        out.push(
-          `| ${t.id} | ${d.filter((r) => r.pass).length}/${d.length} / ${c.filter((r) => r.pass).length}/${c.length} ` +
-            `| ${fmt(dTok)} | ${fmt(cTok)} | **${pct(dTok, cTok)}** | ${dMs.toFixed(1)}s | ${cMs.toFixed(1)}s | **${pct(dMs, cMs)}** ` +
-            `| $${mean(d.map((r) => r.run.costUsd)).toFixed(3)} | $${mean(c.map((r) => r.run.costUsd)).toFixed(3)} |`,
-        );
-      }
-      if (deltas.length > 1) {
-        const best = deltas.reduce((a, b) => (b.tok < a.tok ? b : a));
-        const worst = deltas.reduce((a, b) => (b.tok > a.tok ? b : a));
-        out.push('', `Token change ranges from **${best.tok.toFixed(0)}%** (${best.id}) to **${worst.tok.toFixed(0)}%** (${worst.id}).`);
-      }
-      out.push('');
+  for (const variant of service.variants) {
+    const vr = records.filter((r) => r.variant === variant.id);
+    if (vr.length === 0) continue;
+    out.push(
+      `## Variant: \`${variant.id}\`, ${variant.title}`,
+      '',
+      ...variant.notes.map((n) => `- ${n}`),
+      '',
+      `Reproduce: \`npm run bench -- --service ${service.id} --variant ${variant.id} --runs 3\`.`,
+      '',
+    );
+    if (variant.warning) out.push(`> **Warning:** ${variant.warning}`, '');
+    for (const model of [...new Set(vr.map((r) => r.model))]) {
+      out.push(...modelSection(variant, model, vr.filter((r) => r.model === model), '###'));
     }
-    for (const task of service.tasks) {
-      const tr = mr.filter((r) => r.task === task.id);
-      if (tr.length === 0) continue;
-      out.push(`### Task: ${task.id}`, '', header);
-      for (const p of paths) out.push(row(p, tr.filter((r) => r.run.path === p)));
-      out.push('');
-    }
-    out.push('### All tasks', '', header);
-    for (const p of paths) out.push(row(p, mr.filter((r) => r.run.path === p)));
-    const s = summary(mr);
-    if (s.d > 0 && s.c > 0) {
-      out.push(
-        '',
-        `Total tokens, codemode vs direct: **${pct(s.d, s.c)}** (${fmt(s.c)} vs ${fmt(s.d)}).`,
-        '',
-        `Wall time, codemode vs direct: **${pct(s.dt, s.ct)}** (${s.ct.toFixed(1)}s vs ${s.dt.toFixed(1)}s). ` +
-          'Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool\'s own execution.',
-      );
-    }
-    out.push('');
   }
-  out.push(
-    '## Task prompts',
-    '',
-    'Identical text is sent on both paths.',
-    '',
-    ...service.tasks.map((t) => `- **${t.id}**${t.seeded ? ' (pre-seeded)' : ''}: ${t.prompt}`),
-    '',
-  );
-  const failures = records.filter((r) => !r.pass);
-  if (failures.length) {
-    out.push('## Failed runs', '', '| Task | Path | Repeat | Reason |', '|---|---|---|---|');
-    for (const r of failures) {
-      out.push(`| ${r.task} | ${r.run.path} | ${r.repeat} | ${(r.run.error ?? r.verdict).replace(/\|/g, '/').slice(0, 120)} |`);
-    }
-    out.push('');
+  const calls = loadCalls(service.id);
+  if (calls) out.push(...buildCallsSections(service.id, calls));
+  out.push('## Task prompts', '', 'Identical text is sent on both paths. Prompts never name tools.', '');
+  for (const variant of service.variants) {
+    out.push(
+      `### \`${variant.id}\``,
+      '',
+      ...variant.tasks.map((t) => `- **${t.id}**${t.seeded ? ' (pre-seeded)' : ''}: ${t.prompt}`),
+      '',
+    );
   }
   return out.join('\n');
 }
 
 export function buildOverview(all: BenchService[]): string {
   const out: string[] = [
-    '# Benchmarks by tool',
+    '# Benchmarks by service',
     '',
-    'Each tool is benchmarked separately: the same model, prompts and checks on two paths, the upstream MCP server used directly versus the same server behind codemode (`execute_code`).',
-    'Method, metric definitions and limitations: [README.md](README.md). Per-tool detail and raw runs are linked below.',
+    'Each service is benchmarked separately: the same model, prompts and checks on two paths, the upstream MCP server used directly versus the same server behind codemode (`execute_code`). A service has several variants (the scenario tasks, one tool call per task, ...), listed as separate rows.',
+    'Method, metric definitions and limitations: [README.md](README.md). Per-service detail and raw runs are linked below.',
     '',
-    '| Tool | Model | Runs (pass) | Total tokens: direct | codemode | Change | Wall time: direct | codemode | Change | Detail |',
-    '|---|---|---|---|---|---|---|---|---|---|',
+    '| Service | Variant | Model | Runs (pass) | Total tokens: direct | codemode | Change | Wall time: direct | codemode | Change | Detail |',
+    '|---|---|---|---|---|---|---|---|---|---|---|',
   ];
   for (const svc of all) {
     const recs = loadRecords(svc.id);
-    const models = [...new Set(recs.map((r) => r.model))];
-    if (models.length === 0) out.push(`| ${svc.title} | - | no runs yet | - | - | - | - | - | - | [${svc.id}/RESULTS.md](${svc.id}/RESULTS.md) |`);
-    for (const model of models) {
-      const mr = recs.filter((r) => r.model === model);
-      const s = summary(mr);
-      const passes = mr.filter((r) => r.pass).length;
-      out.push(
-        `| ${svc.title} | \`${model}\` | ${mr.length} (${passes}) | ${fmt(s.d)} | ${fmt(s.c)} | **${pct(s.d, s.c)}** ` +
-          `| ${s.dt.toFixed(1)}s | ${s.ct.toFixed(1)}s | **${pct(s.dt, s.ct)}** | [${svc.id}/RESULTS.md](${svc.id}/RESULTS.md) |`,
-      );
+    const link = `[${svc.id}/RESULTS.md](${svc.id}/RESULTS.md)`;
+    let any = false;
+    for (const variant of svc.variants) {
+      const vr = recs.filter((r) => r.variant === variant.id);
+      for (const model of [...new Set(vr.map((r) => r.model))]) {
+        any = true;
+        const mr = vr.filter((r) => r.model === model);
+        const s = summary(mr);
+        const passes = mr.filter((r) => r.pass).length;
+        out.push(
+          `| ${svc.title} | \`${variant.id}\` | \`${model}\` | ${mr.length} (${passes}) | ${fmt(s.d)} | ${fmt(s.c)} | **${pct(s.d, s.c)}** ` +
+            `| ${s.dt.toFixed(1)}s | ${s.ct.toFixed(1)}s | **${pct(s.dt, s.ct)}** | ${link} |`,
+        );
+      }
     }
+    if (!any) out.push(`| ${svc.title} | - | - | no runs yet | - | - | - | - | - | - | ${link} |`);
   }
   out.push(
     '',
-    'Figures are means across all tasks and runs for that tool. Small differences, especially in wall time, are within noise at this sample size. Tools are not comparable with each other: tasks and tool counts differ.',
+    'Figures are means across all tasks and runs of that variant. Small differences, especially in wall time, are within noise at this sample size. Services and variants are not comparable with each other: tasks and tool counts differ.',
     '',
   );
   return out.join('\n');
@@ -203,4 +247,3 @@ export function writeReports(all: BenchService[]): string[] {
   written.push(overviewFile);
   return written;
 }
-

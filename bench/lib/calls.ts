@@ -2,7 +2,7 @@
 //
 //   static   what each tool's definition costs the model on every turn (direct) vs its slice of the typed API (codemode)
 //   latency  one call at a time, direct vs through codemode's sandbox, many iterations, no model involved
-//   model    one prompt per tool call, run through the normal harness (see makeCallService); optional, costs tokens
+//   model    one prompt per tool call, run through the normal harness as the `calls` variant (see callsVariant); optional, costs tokens
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 import type { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -10,58 +10,23 @@ import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { generateApi, toIdentifier } from '../../src/generate.ts';
 import { compactIndex, describeExecuteCode, GET_API_DESCRIPTION, headerBudget } from '../../src/describe.ts';
 import { connectUpstream } from '../../src/server.ts';
-import type { BenchService, Task, Verdict } from './types.ts';
+import type { BenchService, BenchVariant, CallCase, CallDef, SkippedTool, Task, Verdict } from './types.ts';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
-
-export interface CallCase {
-  /** Unique, e.g. `FileSystem.list` when one tool has several modes. */
-  id: string;
-  /** Upstream tool name. */
-  tool: string;
-  /** Arguments for the deterministic (no-model) latency measurement. */
-  args: Record<string, unknown>;
-  /** Calls made on each side before timing starts, for tools that need state (e.g. open a page before a snapshot). */
-  before?: { tool: string; args: Record<string, unknown> }[];
-  /** Model-driven run: a prompt that makes the model make this one call. Omit to measure latency only. */
-  prompt?: string;
-  /** Model-driven run: pattern the model's answer must match. */
-  expect?: RegExp;
-  /** Model-driven run: custom check, for cases where the answer alone isn't proof. */
-  check?(answer: string): Promise<Verdict>;
-}
-
-export interface SkippedTool {
-  tool: string;
-  reason: string;
-}
-
-/** Per-tool-call benchmark definition for one MCP. */
-export interface CallSuite {
-  id: string;
-  title: string;
-  /** Provides the upstream launch command and the codemode wrapper to compare. */
-  base: BenchService;
-  cases: CallCase[];
-  /** Tools deliberately not benchmarked, with the reason. Everything else must have a case. */
-  skipped: SkippedTool[];
-  /** Put the tool's world into the known state the cases expect. */
-  reset(): Promise<void>;
-  preflight(): Promise<void>;
-}
 
 // ------------------------------------------------------------------------------------------------
 // Model-driven: turn cases into tasks for the normal harness (run.ts), one task per tool call.
 // ------------------------------------------------------------------------------------------------
 
-export function makeCallService(suite: CallSuite): BenchService {
-  const tasks: Task[] = suite.cases
+/** The `calls` variant of a service: one task per case that has a prompt, on the same upstream setup as `base`. */
+export function callsVariant(base: BenchVariant, def: CallDef): BenchVariant {
+  const tasks: Task[] = def.cases
     .filter((c) => c.prompt !== undefined && (c.expect !== undefined || c.check !== undefined))
     .map((c) => ({
       id: c.id,
       prompt: c.prompt ?? '',
       seeded: true,
-      prepare: () => suite.reset(),
+      prepare: () => def.reset(),
       async verify(answer: string): Promise<Verdict> {
         if (c.check) return c.check(answer);
         return c.expect?.test(answer)
@@ -70,14 +35,13 @@ export function makeCallService(suite: CallSuite): BenchService {
       },
     }));
   return {
-    ...suite.base,
-    id: `${suite.id}-calls`,
-    wrapper: suite.base.wrapper ?? suite.base.id,
-    title: `${suite.title}, one tool call per task`,
+    ...base,
+    id: 'calls',
+    title: 'one tool call per task',
     notes: [
-      `Each task asks for exactly one upstream tool call (${tasks.length} of ${suite.cases.length} cases have a model prompt), so no single tool can dominate the totals and each tool is visible on its own row.`,
+      `Each task asks for exactly one upstream tool call (${tasks.length} of ${def.cases.length} cases have a model prompt), so no single tool can dominate the totals and each tool is visible on its own row.`,
       'Same cases as the deterministic latency benchmark (`npm run bench:calls`), so a tool can be followed from definition cost, to raw latency, to model tokens.',
-      ...suite.base.notes,
+      ...base.notes,
     ],
     tasks,
   };
@@ -191,7 +155,7 @@ async function timed(fn: () => Promise<CallToolResult>): Promise<{ ms: number; c
 }
 
 export async function measureLatency(
-  suite: CallSuite,
+  def: CallDef,
   direct: Client,
   codemode: Client,
   iterations: number,
@@ -205,8 +169,8 @@ export async function measureLatency(
     }) as Promise<CallToolResult>;
 
   const rows: LatencyRow[] = [];
-  for (const c of suite.cases) {
-    await suite.reset();
+  for (const c of def.cases) {
+    await def.reset();
     for (const b of c.before ?? []) {
       await direct.callTool({ name: b.tool, arguments: b.args });
       await codemode.callTool({
@@ -256,43 +220,70 @@ export async function measureLatency(
 // Connections
 // ------------------------------------------------------------------------------------------------
 
-export async function connectBoth(base: BenchService): Promise<{ direct: Client; codemode: Client }> {
+export async function connectBoth(service: BenchService, variant: BenchVariant): Promise<{ direct: Client; codemode: Client }> {
   const direct = await connectUpstream({
-    command: base.direct.command,
-    args: base.direct.args,
-    ...(base.direct.env ? { env: base.direct.env } : {}),
+    command: variant.direct.command,
+    args: variant.direct.args,
+    ...(variant.direct.env ? { env: variant.direct.env } : {}),
   });
   const codemode = await connectUpstream({
     command: process.execPath,
-    args: [`${root}src/cli.ts`, base.wrapper ?? base.id],
-    ...(base.codemodeEnv ? { env: base.codemodeEnv } : {}),
+    args: [`${root}src/cli.ts`, service.id],
+    ...(variant.codemodeEnv ? { env: variant.codemodeEnv } : {}),
   });
   return { direct, codemode };
 }
 
 // ------------------------------------------------------------------------------------------------
-// Report
+// Result file (`<service>/calls-latest.json`) and its report sections
 // ------------------------------------------------------------------------------------------------
+
+/** What `bench:calls` writes: everything the report needs, so RESULTS.md can be rebuilt without rerunning. */
+export interface CallsData {
+  date: string;
+  iterations: number;
+  /** Upstream tools offered. */
+  toolCount: number;
+  costs: StaticCosts;
+  latency: LatencyResult;
+  /** Tools with at least one case. */
+  coveredTools: number;
+  skipped: SkippedTool[];
+  cases: { id: string; tool: string; args: Record<string, unknown>; hasPrompt: boolean }[];
+}
+
+export function makeCallsData(
+  def: CallDef,
+  costs: StaticCosts,
+  latency: LatencyResult,
+  meta: { date: string; iterations: number; toolCount: number },
+): CallsData {
+  return {
+    ...meta,
+    costs,
+    latency,
+    coveredTools: new Set(def.cases.map((c) => c.tool)).size,
+    skipped: def.skipped,
+    cases: def.cases.map((c) => ({ id: c.id, tool: c.tool, args: c.args, hasPrompt: c.prompt !== undefined })),
+  };
+}
 
 const ms = (n: number): string => (n < 10 ? n.toFixed(1) : String(Math.round(n)));
 const signed = (n: number): string => (n < 0 ? '-' : '+') + ms(Math.abs(n));
 const tok = (chars: number): string => estimateTokens(chars).toLocaleString('en-US');
 
-export function buildCallsReport(
-  suite: CallSuite,
-  costs: StaticCosts,
-  latency: LatencyResult,
-  meta: { date: string; iterations: number; toolCount: number },
-): string {
+/** Report sections for the deterministic per-call benchmark, ready to append to a service's RESULTS.md. */
+export function buildCallsSections(serviceId: string, data: CallsData): string[] {
+  const { costs, latency } = data;
   const out: string[] = [
-    `# Per-tool-call benchmark: ${suite.title}`,
+    '## Per-tool-call benchmark (no model)',
     '',
-    'One upstream tool call at a time, so no single tool or scenario can hide in an average. The same cases drive three views: what each tool\'s **definition** costs the model on every turn, how long **one call** takes directly versus through codemode\'s sandbox, and (optionally) the tokens a model spends making that one call (the `<tool>-calls` service in `npm run bench`). Method and caveats: [../README.md](../README.md).',
+    'One upstream tool call at a time, so no single tool or scenario can hide in an average. The same cases drive three views: what each tool\'s **definition** costs the model on every turn, how long **one call** takes directly versus through codemode\'s sandbox, and (optionally) the tokens a model spends making that one call (the `calls` variant in `npm run bench`). Method and caveats: [../README.md](../README.md).',
     '',
-    `Generated ${meta.date}. ${meta.toolCount} upstream tools, ${suite.cases.length} cases over ${new Set(suite.cases.map((c) => c.tool)).size} tools, ${meta.iterations} timed iterations per case after one warm-up.`,
-    `Reproduce: \`npm run bench:calls -- --service ${suite.id} --iters ${meta.iterations}\`.`,
+    `Generated ${data.date}. ${data.toolCount} upstream tools, ${data.cases.length} cases over ${data.coveredTools} tools, ${data.iterations} timed iterations per case after one warm-up.`,
+    `Reproduce: \`npm run bench:calls -- --service ${serviceId} --iters ${data.iterations}\`.`,
     '',
-    '## Definition cost per tool',
+    '### Definition cost per tool',
     '',
     'What the model is sent for each tool on **every turn**. `Direct` is the tool\'s name, description and input schema as JSON. `Codemode, always sent` is that tool\'s line in the `execute_code` description (name, parameters, one-line summary). `On demand` is its full TypeScript declaration, which the model only receives if it calls `get_api`. Tokens are estimated as characters / 4: good for comparing rows with each other, not an exact count.',
     '',
@@ -311,7 +302,7 @@ export function buildCallsReport(
     '',
     `**Truncation guard.** Claude Code cuts an MCP tool description at about ${CLAUDE_CODE_DESCRIPTION_CAP.toLocaleString('en-US')} characters; anything past that never reaches the model. The \`execute_code\` description here is **${costs.descriptionChars.toLocaleString('en-US')} characters** (${fits ? 'fits' : '**OVER THE CAP**'}), listing every function at detail level ${costs.indexLevel} (1 = parameter types and summary, 2 = parameter names, 3 = names only, 4 = names cut to fit). An earlier design put the whole typed API in the description; it was cut off and the model never saw the function list (see ../README.md).`,
     '',
-    '## Latency per call (no model)',
+    '### Latency per call (no model)',
     '',
     'Wall time for one tool call, in milliseconds, measured over a live connection. `Codemode` includes the sandbox start, the generated bridge and the upstream call. Chars is the size of what comes back to the model.',
     '',
@@ -328,25 +319,20 @@ export function buildCallsReport(
     '',
     `Sandbox-only cost (\`return 1\` through \`execute_code\`, no upstream call): median ${ms(latency.sandboxOnly.median)} ms, p95 ${ms(latency.sandboxOnly.p95)} ms. This is the floor of codemode's per-call overhead.`,
     '',
-    '## Coverage',
+    '### Coverage',
     '',
-    `Cases cover ${new Set(suite.cases.map((c) => c.tool)).size} of ${meta.toolCount} tools. The rest are skipped on purpose:`,
+    `Cases cover ${data.coveredTools} of ${data.toolCount} tools. The rest are skipped on purpose:`,
     '',
     '| Tool | Why it is not benchmarked |',
     '|---|---|',
-    ...suite.skipped.map((s) => `| ${s.tool} | ${s.reason} |`),
+    ...data.skipped.map((s) => `| ${s.tool} | ${s.reason} |`),
     '',
-    '## Cases',
+    '### Cases',
     '',
     '| Case | Arguments | Model prompt |',
     '|---|---|---|',
-    ...suite.cases.map(
-      (c) => `| ${c.id} | \`${JSON.stringify(c.args).replace(/\|/g, '\\|')}\` | ${c.prompt ? 'yes' : 'latency only'} |`,
-    ),
+    ...data.cases.map((c) => `| ${c.id} | \`${JSON.stringify(c.args).replace(/\|/g, '\\|')}\` | ${c.hasPrompt ? 'yes' : 'latency only'} |`),
     '',
   );
-  return out.join('\n');
+  return out;
 }
-
-
-

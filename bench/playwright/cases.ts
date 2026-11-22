@@ -1,8 +1,7 @@
-import type { CallCase, CallSuite } from '../lib/calls.ts';
+import type { CallCase, CallDef } from '../lib/types.ts';
 import { ORIGIN, resetFixture } from './fixture.ts';
-import { playwright } from './index.ts';
 
-const nav = (path: string): CallCase['before'] => [{ tool: 'browser_navigate', args: { url: `${ORIGIN}${path}` } }];
+const nav = (path: string): NonNullable<CallCase['before']> => [{ tool: 'browser_navigate', args: { url: `${ORIGIN}${path}` } }];
 
 const cases: CallCase[] = [
   {
@@ -60,7 +59,7 @@ const cases: CallCase[] = [
   { id: 'browser_tabs', tool: 'browser_tabs', args: { action: 'list' }, before: nav('/form') },
   { id: 'browser_resize', tool: 'browser_resize', args: { width: 1000, height: 700 }, before: nav('/form') },
   { id: 'browser_wait_for', tool: 'browser_wait_for', args: { time: 0.1 }, before: nav('/form') },
-  { id: 'browser_navigate_back', tool: 'browser_navigate_back', args: {}, before: [...(nav('/form') ?? []), ...(nav('/counter') ?? [])] },
+  { id: 'browser_navigate_back', tool: 'browser_navigate_back', args: {}, before: [...nav('/form'), ...nav('/counter')] },
 ];
 
 const covered = new Set(cases.map((c) => c.tool));
@@ -76,14 +75,10 @@ const skipReasons: Record<string, string> = {
   browser_drag: 'Needs two live element references.',
 };
 
-export const playwrightCalls: CallSuite = {
-  id: 'playwright',
-  title: 'Playwright (browser, local test site)',
-  base: playwright,
+export const playwrightCalls: CallDef = {
   async reset() {
     resetFixture();
   },
-  preflight: playwright.preflight,
   cases,
   // Everything the server offers that has no case is listed with its reason (unknown tools get a generic note).
   skipped: Object.keys(skipReasons)

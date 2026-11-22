@@ -1,8 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import type { CallSuite } from '../lib/calls.ts';
-import { windowsFull } from '../windows-full/index.ts';
-import { SANDBOX } from './index.ts';
+import type { CallDef } from '../lib/types.ts';
+import { SANDBOX } from './tasks.ts';
 
 const dir = `${SANDBOX}-calls`;
 
@@ -17,10 +16,7 @@ function runningProcessNames(): string[] {
  * Windows-MCP, benchmarked per tool call against all 20 tools. Only read-only or sandbox-confined calls are covered;
  * anything that touches the screen, input devices, the clipboard or the network is skipped on purpose.
  */
-export const windowsCalls: CallSuite = {
-  id: 'windows',
-  title: 'Windows (Windows-MCP, all tools)',
-  base: windowsFull,
+export const windowsCalls: CallDef = {
   async reset() {
     rmSync(dir, { recursive: true, force: true });
     mkdirSync(dir, { recursive: true });
@@ -28,7 +24,6 @@ export const windowsCalls: CallSuite = {
     writeFileSync(`${dir}\\b.txt`, 'second file');
     writeFileSync(`${dir}\\c.txt`, 'third file');
   },
-  preflight: windowsFull.preflight,
   cases: [
     {
       id: 'PowerShell',
