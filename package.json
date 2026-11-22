@@ -18,7 +18,8 @@
                     "bench:validate":  "node bench/cli/validate.ts",
                     "servers:install":  "npm ci --ignore-scripts --prefix servers \u0026\u0026 uv sync --frozen --project servers/python",
                     "lock:update":  "node scripts/update-locks.ts",
-                    "lock:verify":  "node scripts/update-locks.ts --verify"
+                    "lock:verify":  "node scripts/update-locks.ts --verify",
+                    "mcp:usage":  "node scripts/mcp-usage.ts"
                 },
     "license":  "MIT",
     "dependencies":  {

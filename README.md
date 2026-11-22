@@ -20,6 +20,8 @@ bench/
   lib/              reusable harness: runners (Claude, DSH), per-call benchmark, report building
   suites/<id>/      one service's tasks, cases, raw results and generated RESULTS.md
 docs/landscape.md   comparison with other Code Mode implementations
+docs/production.md  security, scaling and supply-chain research, and the plan
+docs/mcp-candidates.md  which MCP servers would benefit from a wrapper (and docs/mcp-usage.md, generated)
 test/               unit and end-to-end tests
 scripts/            add-service scaffolder
 ```
