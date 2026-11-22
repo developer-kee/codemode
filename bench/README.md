@@ -1,4 +1,4 @@
-# Benchmarks
+﻿# Benchmarks
 
 Each tool wrapped by codemode is benchmarked **separately**. For every tool, Claude does the same tasks twice, on the same model: once with the upstream MCP server used directly, once with the same server behind codemode (a single `execute_code` tool over a typed `codemode.*` API). The harness measures **tokens, cost, turns and wall time**, and checks the result objectively.
 
@@ -153,7 +153,7 @@ Prefer tasks that are safe to repeat and fully checkable from outside the model.
 - **Tools are not comparable with each other.** Task difficulty, the number of upstream tools and the benchmark's tool whitelist differ per tool.
 - **The saving is mostly tool-definition overhead.** Direct sends every upstream tool schema each turn; codemode sends one. Where the model uses only one upstream tool anyway (Blender: run Python), the benchmark does not exercise **chaining several different upstream tools in one script**, which is where codemode is meant to help most.
 - **Windows understates the schema overhead.** The real Windows-MCP server offers 20 tools; the benchmark exposes four.
-- **Possible description truncation.** The typed API is placed in the `execute_code` tool description. Claude Code may shorten long MCP tool descriptions, and codemode's first-turn context is smaller than the generated API alone in the Blender runs, so the model may have seen only part of it. Not verified.
+- **Description truncation (verified).** The typed API is placed in the `execute_code` tool description, and Claude Code cuts MCP tool descriptions at about 2,048 characters: asking the model to quote it returned about 2,070 characters ending "… [truncated]", and codemode first-turn context stays near 1.7k tokens for both tools whatever the API size. The callable member list comes last in the description, so the model never saw it. Codemode savings in `RESULTS.md` are therefore an **upper bound**: part of the saving is missing information, not compression. See [../docs/landscape.md](../docs/landscape.md) for the planned fix and for other metrics to add.
 - **Prompt cache.** Cache-read tokens depend on caching behaviour and vary between runs; that is why `Fresh input`, `Cache read` and `Total` are shown separately.
 - **Telemetry.** The upstream servers send their own telemetry on both paths. It was left on to keep the paths identical.
 - **Task difficulty.** All tasks are doable with one script. Harder or more tool-diverse tasks may change the picture, in either direction.
@@ -172,3 +172,4 @@ Prefer tasks that are safe to repeat and fully checkable from outside the model.
 | `@modelcontextprotocol/sdk` | 1.32.2 |
 | `quickjs-emscripten` | 0.32.0 |
 | OS | Windows 11 |
+

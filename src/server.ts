@@ -62,6 +62,20 @@ async function listAllTools(client: Client): Promise<Tool[]> {
   return tools;
 }
 
+/** The `execute_code` tool description: guidance plus the generated TypeScript API. */
+export function describeExecuteCode(dts: string, instructions = ''): string {
+  return [
+    `Write TypeScript that calls the \`${NAMESPACE}\` API below, in ONE script. Chain calls, loop, filter and`,
+    'aggregate in code instead of making many separate calls; only what you `console.log()` or `return` comes back.',
+    'The sandbox has no network, filesystem or imports; the API is the only way out. Top-level await is supported.',
+    instructions,
+    '',
+    '```ts',
+    dts,
+    '```',
+  ].join('\n');
+}
+
 export interface CodeModeServer {
   server: McpServer;
   client: Client;
@@ -88,16 +102,7 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
   server.registerTool(
     'execute_code',
     {
-      description: [
-        `Write TypeScript that calls the \`${NAMESPACE}\` API below, in ONE script. Chain calls, loop, filter and`,
-        'aggregate in code instead of making many separate calls; only what you `console.log()` or `return` comes back.',
-        'The sandbox has no network, filesystem or imports; the API is the only way out. Top-level await is supported.',
-        instructions,
-        '',
-        '```ts',
-        dts,
-        '```',
-      ].join('\n'),
+      description: describeExecuteCode(dts, instructions),
       inputSchema: { code: z.string().describe('TypeScript/JavaScript body to run') },
     },
     async ({ code }): Promise<CallToolResult> => {

@@ -25,7 +25,7 @@ function mcpConfig(service: BenchService, path: PathId): { server: string; json:
       mcpServers: {
         [server]: {
           command: process.execPath,
-          args: [`${root}src/cli.ts`, service.id],
+          args: [`${root}src/cli.ts`, service.wrapper ?? service.id],
           ...(service.codemodeEnv ? { env: service.codemodeEnv } : {}),
         },
       },

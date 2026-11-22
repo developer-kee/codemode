@@ -86,6 +86,39 @@ export function buildServiceReport(service: BenchService): string {
   for (const model of models) {
     const mr = records.filter((r) => r.model === model);
     out.push(`## Model: \`${model}\``, '');
+    // One row per task: no single task can hide inside the averages below.
+    const taskIds = service.tasks.filter((t) => mr.some((r) => r.task === t.id));
+    if (taskIds.length > 1) {
+      out.push(
+        '### Per-task summary',
+        '',
+        '| Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |',
+        '|---|---|---|---|---|---|---|---|---|---|',
+      );
+      const deltas: { id: string; tok: number }[] = [];
+      for (const t of taskIds) {
+        const tr = mr.filter((r) => r.task === t.id);
+        const d = tr.filter((r) => r.run.path === 'direct');
+        const c = tr.filter((r) => r.run.path === 'codemode');
+        if (d.length === 0 || c.length === 0) continue;
+        const dTok = mean(d.map((r) => total(r.run)));
+        const cTok = mean(c.map((r) => total(r.run)));
+        const dMs = mean(d.map((r) => r.run.durationMs)) / 1000;
+        const cMs = mean(c.map((r) => r.run.durationMs)) / 1000;
+        deltas.push({ id: t.id, tok: ((cTok - dTok) / dTok) * 100 });
+        out.push(
+          `| ${t.id} | ${d.filter((r) => r.pass).length}/${d.length} / ${c.filter((r) => r.pass).length}/${c.length} ` +
+            `| ${fmt(dTok)} | ${fmt(cTok)} | **${pct(dTok, cTok)}** | ${dMs.toFixed(1)}s | ${cMs.toFixed(1)}s | **${pct(dMs, cMs)}** ` +
+            `| $${mean(d.map((r) => r.run.costUsd)).toFixed(3)} | $${mean(c.map((r) => r.run.costUsd)).toFixed(3)} |`,
+        );
+      }
+      if (deltas.length > 1) {
+        const best = deltas.reduce((a, b) => (b.tok < a.tok ? b : a));
+        const worst = deltas.reduce((a, b) => (b.tok > a.tok ? b : a));
+        out.push('', `Token change ranges from **${best.tok.toFixed(0)}%** (${best.id}) to **${worst.tok.toFixed(0)}%** (${worst.id}).`);
+      }
+      out.push('');
+    }
     for (const task of service.tasks) {
       const tr = mr.filter((r) => r.task === task.id);
       if (tr.length === 0) continue;

@@ -50,4 +50,6 @@ export interface GeneratedApi {
   dts: string;
   /** Identifier -> original MCP tool name. */
   names: Record<string, string>;
+  /** Identifier -> the declarations that tool contributes to `dts` (its types plus its member). */
+  perTool: Record<string, string>;
 }

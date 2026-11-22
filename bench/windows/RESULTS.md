@@ -11,6 +11,16 @@ Reproduce: `npm run bench -- --service windows --runs 3`. Method, metric definit
 
 ## Model: `claude-sonnet-5-5`
 
+### Per-task summary
+
+| Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
+|---|---|---|---|---|---|---|---|---|---|
+| files | 3/3 / 3/3 | 5,638 | 4,407 | **-22%** | 13.6s | 14.0s | **3%** | $0.011 | $0.010 |
+| inventory | 3/3 / 3/3 | 9,334 | 9,633 | **3%** | 16.2s | 17.1s | **5%** | $0.016 | $0.020 |
+| organize | 3/3 / 3/3 | 9,426 | 7,593 | **-19%** | 14.7s | 18.8s | **28%** | $0.015 | $0.017 |
+
+Token change ranges from **-22%** (files) to **3%** (inventory).
+
 ### Task: files
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |

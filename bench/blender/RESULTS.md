@@ -12,6 +12,17 @@ Reproduce: `npm run bench -- --service blender --runs 3`. Method, metric definit
 
 ## Model: `claude-sonnet-5-5`
 
+### Per-task summary
+
+| Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
+|---|---|---|---|---|---|---|---|---|---|
+| table | 3/3 / 3/3 | 38,549 | 6,392 | **-83%** | 14.6s | 12.2s | **-16%** | $0.033 | $0.022 |
+| grid | 3/3 / 3/3 | 18,340 | 4,446 | **-76%** | 9.6s | 9.3s | **-3%** | $0.015 | $0.011 |
+| inspect-modify | 3/3 / 3/3 | 27,780 | 7,160 | **-74%** | 9.9s | 9.3s | **-6%** | $0.018 | $0.014 |
+| audit | 3/3 / 3/3 | 34,369 | 13,519 | **-61%** | 13.9s | 13.7s | **-1%** | $0.045 | $0.042 |
+
+Token change ranges from **-83%** (table) to **-61%** (audit).
+
 ### Task: table
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |

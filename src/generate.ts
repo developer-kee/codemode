@@ -1,4 +1,4 @@
-import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+﻿import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { compile } from 'json-schema-to-typescript';
 import type { GeneratedApi } from './types.ts';
 
@@ -38,11 +38,13 @@ export async function generateApi(
   const decls: string[] = [];
   const members: string[] = [];
   const names: Record<string, string> = {};
+  const perTool: Record<string, string> = {};
 
   for (const tool of tools) {
     const id = toIdentifier(tool.name);
     names[id] = tool.name;
     const base = pascal(tool.name);
+    const declStart = decls.length;
 
     const inputType = `${base}Input`;
     try {
@@ -62,9 +64,12 @@ export async function generateApi(
     }
 
     const doc = (tool.description ?? '').replace(/\*\//g, '*\\/').trim().split('\n').join('\n   * ');
-    members.push(`  /** ${doc} */\n  ${id}(input: ${inputType}): Promise<${outputType}>;`);
+    const member = `  /** ${doc} */\n  ${id}(input: ${inputType}): Promise<${outputType}>;`;
+    members.push(member);
+    perTool[id] = `${decls.slice(declStart).join('\n\n')}\n\n${member}`;
   }
 
   const dts = `${decls.join('\n\n')}\n\ndeclare const ${namespace}: {\n${members.join('\n')}\n};\n`;
-  return { dts, names };
+  return { dts, names, perTool };
 }
+

@@ -26,8 +26,10 @@ export interface DirectServer {
 
 /** Everything the harness needs to benchmark one codemode service (a file in `services/`). */
 export interface BenchService {
-  /** Matches `services/<id>.ts`. */
+  /** Names the results folder (`bench/<id>/`). Matches `services/<id>.ts` unless `wrapper` says otherwise. */
   id: string;
+  /** The `services/<wrapper>.ts` file to run under codemode, when several benchmarks share one wrapper. */
+  wrapper?: string;
   title: string;
   /** The upstream MCP server, exactly as a user would run it without codemode. */
   direct: DirectServer;

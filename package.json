@@ -13,7 +13,8 @@
                     "add":  "node scripts/add-service.ts",
                     "start":  "node src/cli.ts",
                     "bench":  "node bench/run.ts",
-                    "bench:report":  "node bench/report.ts"
+                    "bench:report":  "node bench/report.ts",
+                    "bench:calls":  "node bench/calls.ts"
                 },
     "license":  "MIT",
     "dependencies":  {
