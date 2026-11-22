@@ -35,7 +35,8 @@ interface Item {
 }
 export const items: Item[] = Array.from({ length: 120 }, (_, k) => ({
   id: `item-${String(k + 1).padStart(3, '0')}`,
-  rating: Math.round((1 + ((k * 7919) % 400) / 100) * 10) / 10, // 1.0 .. 4.9
+  // Cap at 4.9 so the injected 5.0 below is the only maximum; rounding 4.95-4.99 up produced ties.
+  rating: Math.min(4.9, Math.round((1 + ((k * 7919) % 400) / 100) * 10) / 10),
 }));
 const TOP = 77; // index of the single highest-rated item
 items[TOP] = { id: (items[TOP] as Item).id, rating: 5.0 };
@@ -132,7 +133,18 @@ export function startFixture(): Promise<() => Promise<void>> {
     });
   });
   return new Promise((resolve, reject) => {
-    server.once('error', reject);
+    server.once('error', (err: NodeJS.ErrnoException) => {
+      if (err.code === 'EADDRINUSE') {
+        reject(
+          new Error(
+            `port ${PORT} is already in use. A benchmark run may still be going (runs hold the fixture for their whole ` +
+              `duration); wait for it, or find and stop the process with: Get-NetTCPConnection -LocalPort ${PORT}`,
+          ),
+        );
+        return;
+      }
+      reject(err);
+    });
     server.listen(PORT, '127.0.0.1', () => {
       resolve(() => new Promise<void>((done) => server.close(() => done())));
     });

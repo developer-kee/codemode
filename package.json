@@ -14,7 +14,8 @@
         "start": "node src/cli.ts",
         "bench": "node bench/run.ts",
         "bench:report": "node bench/report.ts",
-        "bench:calls": "node bench/calls.ts"
+        "bench:calls": "node bench/calls.ts",
+        "bench:validate": "node bench/validate.ts"
     },
     "license": "MIT",
     "dependencies": {

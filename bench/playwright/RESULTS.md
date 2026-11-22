@@ -1,7 +1,8 @@
 # Benchmark: Playwright (browser, local test site), direct MCP vs codemode
 
-- Both paths launch the same pinned `@playwright/mcp@0.0.86` (headless Edge, isolated profile, restricted to the local fixture origin) and see the same 24 tools; the browser starts fresh for every run.
+- Both paths launch the same pinned `@playwright/mcp@0.0.86` (headless Edge, isolated profile, restricted to the local fixture origin) and see the same 25 tools; the browser starts fresh for every run.
 - Tasks run against a deterministic local website (150-row catalog, a form, a 6-page ratings list), so results do not depend on the internet.
+- The ratings list has exactly one item rated 5.0: decoy ratings are capped at 4.9, so the top-rated task has a single correct answer.
 - Pass/fail comes from the fixture itself: the form task checks what the server received; the other tasks check the answer against values computed from the fixture data.
 - Unlike Blender and Windows, these tasks return large page snapshots (the catalog is one big table), so they exercise filtering big tool results in code, which is the case Code Mode is designed for.
 
@@ -10,67 +11,133 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 > **Warning:** Drives a real headless Microsoft Edge (already installed; nothing is downloaded) against a small local site on http://127.0.0.1:4817, and the browser is limited to that origin with --allowed-origins. The server also exposes browser_run_code_unsafe, which runs arbitrary Playwright code on this PC, and nothing here removes it. Needs port 4817 free. Edge must be installed.
 
+## Models
+
+Runs are grouped by model family, then by model id. Each family is produced by one runner, and every family uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.
+
+### Claude
+
+Runner: `claude`.
+
+- `claude-sonnet-5-5`: 36 runs in `scenarios`, `calls`
+
+### DeepSeek
+
+Runner: `dsh`.
+
+- `deepseek-flash`: 36 runs in `scenarios`, `calls`
+
 ## Variant: `scenarios`, multi-step scenario tasks
 
-- Both paths expose the same 24 tools of the pinned `@playwright/mcp@0.0.86`.
+- Both paths expose the same 25 tools of the pinned `@playwright/mcp@0.0.86`.
 
 Reproduce: `npm run bench -- --service playwright --variant scenarios --runs 3`.
 
-### Model: `claude-sonnet-5-5`
+### Claude
 
-#### Per-task summary
+#### Model: `claude-sonnet-5-5` via `claude`
+
+##### Per-task summary
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
 | catalog-sum | 3/3 / 3/3 | 31,356 | 11,844 | **-62%** | 12.5s | 12.5s | **0%** | $0.028 | $0.029 |
 | form | 3/3 / 3/3 | 30,308 | 7,433 | **-75%** | 11.3s | 11.7s | **3%** | $0.022 | $0.013 |
-| top-rated | 3/3 / 3/3 | 29,567 | 9,260 | **-69%** | 12.1s | 17.2s | **43%** | $0.031 | $0.022 |
+| top-rated | 3/3 / 3/3 | 26,414 | 6,028 | **-77%** | 9.1s | 11.4s | **24%** | $0.030 | $0.017 |
 
-Token change ranges from **-75%** (form) to **-62%** (catalog-sum).
+Token change ranges from **-77%** (top-rated) to **-62%** (catalog-sum).
 
-#### Task: catalog-sum
+##### Task: catalog-sum
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.7 | 2.7 | 7,608 | 527 | 1,838 | 28,992 | 31,356 | $0.028 | 12.5s |
 | codemode | 3/3 | 3.3 | 2.3 | 1,597 | 477 | 3,308 | 8,060 | 11,844 | $0.029 | 12.5s |
 
-#### Task: form
+##### Task: form
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 5.0 | 4.0 | 7,603 | 409 | 1,193 | 28,706 | 30,308 | $0.022 | 11.3s |
 | codemode | 3/3 | 3.3 | 2.3 | 1,592 | 465 | 652 | 6,317 | 7,433 | $0.013 | 11.7s |
 
-#### Task: top-rated
+##### Task: top-rated
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 3/3 | 3.3 | 2.3 | 7,604 | 378 | 2,988 | 26,202 | 29,567 | $0.031 | 12.1s |
-| codemode | 3/3 | 3.7 | 2.7 | 1,593 | 599 | 1,801 | 6,860 | 9,260 | $0.022 | 17.2s |
+| direct | 3/3 | 3.0 | 2.0 | 7,608 | 279 | 3,065 | 23,070 | 26,414 | $0.030 | 9.1s |
+| codemode | 3/3 | 2.3 | 1.3 | 1,598 | 272 | 1,829 | 3,927 | 6,028 | $0.017 | 11.4s |
 
-#### All tasks
+##### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
-| direct | 9/9 | 4.0 | 3.0 | 7,605 | 438 | 2,006 | 27,967 | 30,411 | $0.027 | 12.0s |
-| codemode | 9/9 | 3.4 | 2.4 | 1,594 | 514 | 1,920 | 7,079 | 9,512 | $0.021 | 13.8s |
+| direct | 9/9 | 3.9 | 2.9 | 7,606 | 405 | 2,032 | 26,923 | 29,359 | $0.027 | 11.0s |
+| codemode | 9/9 | 3.0 | 2.0 | 1,596 | 405 | 1,929 | 6,101 | 8,435 | $0.020 | 11.9s |
 
-Total tokens, codemode vs direct: **-69%** (9,512 vs 30,411).
+Total tokens, codemode vs direct: **-71%** (8,435 vs 29,359).
 
-Wall time, codemode vs direct: **16%** (13.8s vs 12.0s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
+Wall time, codemode vs direct: **8%** (11.9s vs 11.0s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
+
+### DeepSeek
+
+#### Model: `deepseek-flash` via `dsh`
+
+##### Per-task summary
+
+| Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
+|---|---|---|---|---|---|---|---|---|---|
+| catalog-sum | 3/3 / 3/3 | 38,698 | 21,656 | **-44%** | 16.6s | 18.9s | **14%** | n/a | n/a |
+| form | 3/3 / 3/3 | 37,514 | 14,024 | **-63%** | 14.1s | 19.8s | **41%** | n/a | n/a |
+| top-rated | 3/3 / 3/3 | 103,845 | 21,090 | **-80%** | 28.3s | 27.7s | **-2%** | n/a | n/a |
+
+Token change ranges from **-80%** (top-rated) to **-44%** (catalog-sum).
+
+##### Task: catalog-sum
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 5.3 | 4.3 | 5,691 | 748 | 2,750 | 35,200 | 38,698 | n/a | 16.6s |
+| codemode | 3/3 | 4.3 | 3.3 | 1,463 | 932 | 4,212 | 16,512 | 21,656 | n/a | 18.9s |
+
+##### Task: form
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 6.0 | 5.0 | 5,680 | 387 | 1,415 | 35,712 | 37,514 | n/a | 14.1s |
+| codemode | 3/3 | 6.0 | 5.0 | 1,452 | 735 | 1,342 | 11,947 | 14,024 | n/a | 19.8s |
+
+##### Task: top-rated
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 13.3 | 12.3 | 5,691 | 971 | 4,485 | 98,389 | 103,845 | n/a | 28.3s |
+| codemode | 3/3 | 6.3 | 5.3 | 1,463 | 1,185 | 2,710 | 17,195 | 21,090 | n/a | 27.7s |
+
+##### All tasks
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 9/9 | 8.2 | 7.2 | 5,687 | 702 | 2,883 | 56,434 | 60,019 | n/a | 19.6s |
+| codemode | 9/9 | 5.6 | 4.6 | 1,459 | 951 | 2,755 | 15,218 | 18,923 | n/a | 22.2s |
+
+Total tokens, codemode vs direct: **-68%** (18,923 vs 60,019).
+
+Wall time, codemode vs direct: **13%** (22.2s vs 19.6s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
 
 ## Variant: `calls`, one tool call per task
 
 - Each task asks for exactly one upstream tool call (3 of 16 cases have a model prompt), so no single tool can dominate the totals and each tool is visible on its own row.
 - Same cases as the deterministic latency benchmark (`npm run bench:calls`), so a tool can be followed from definition cost, to raw latency, to model tokens.
-- Both paths expose the same 24 tools of the pinned `@playwright/mcp@0.0.86`.
+- Both paths expose the same 25 tools of the pinned `@playwright/mcp@0.0.86`.
 
 Reproduce: `npm run bench -- --service playwright --variant calls --runs 3`.
 
-### Model: `claude-sonnet-5-5`
+### Claude
 
-#### Per-task summary
+#### Model: `claude-sonnet-5-5` via `claude`
+
+##### Per-task summary
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
@@ -80,28 +147,28 @@ Reproduce: `npm run bench -- --service playwright --variant calls --runs 3`.
 
 Token change ranges from **-85%** (browser_evaluate) to **-77%** (browser_snapshot).
 
-#### Task: browser_navigate
+##### Task: browser_navigate
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 7,561 | 131 | 601 | 22,879 | 23,611 | $0.012 | 8.4s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,550 | 176 | 411 | 3,005 | 3,591 | $0.006 | 8.8s |
 
-#### Task: browser_snapshot
+##### Task: browser_snapshot
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 7,570 | 166 | 649 | 15,114 | 15,929 | $0.011 | 8.0s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,559 | 161 | 496 | 3,055 | 3,713 | $0.006 | 8.5s |
 
-#### Task: browser_evaluate
+##### Task: browser_evaluate
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 7,574 | 152 | 453 | 22,914 | 23,519 | $0.012 | 9.6s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,563 | 138 | 202 | 3,140 | 3,480 | $0.004 | 8.5s |
 
-#### All tasks
+##### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -111,6 +178,52 @@ Token change ranges from **-85%** (browser_evaluate) to **-77%** (browser_snapsh
 Total tokens, codemode vs direct: **-83%** (3,594 vs 21,020).
 
 Wall time, codemode vs direct: **-1%** (8.6s vs 8.7s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
+
+### DeepSeek
+
+#### Model: `deepseek-flash` via `dsh`
+
+##### Per-task summary
+
+| Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
+|---|---|---|---|---|---|---|---|---|---|
+| browser_navigate | 3/3 / 3/3 | 17,660 | 3,265 | **-82%** | 10.4s | 12.0s | **16%** | n/a | n/a |
+| browser_snapshot | 3/3 / 3/3 | 17,720 | 3,323 | **-81%** | 10.3s | 12.3s | **20%** | n/a | n/a |
+| browser_evaluate | 3/3 / 3/3 | 17,560 | 3,159 | **-82%** | 10.7s | 12.4s | **15%** | n/a | n/a |
+
+Token change ranges from **-82%** (browser_evaluate) to **-81%** (browser_snapshot).
+
+##### Task: browser_navigate
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 3.0 | 2.0 | 5,656 | 141 | 666 | 16,853 | 17,660 | n/a | 10.4s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,428 | 110 | 467 | 2,688 | 3,265 | n/a | 12.0s |
+
+##### Task: browser_snapshot
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 3.0 | 2.0 | 5,663 | 144 | 723 | 16,853 | 17,720 | n/a | 10.3s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,435 | 142 | 450 | 2,731 | 3,323 | n/a | 12.3s |
+
+##### Task: browser_evaluate
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 3.0 | 2.0 | 5,662 | 142 | 564 | 16,853 | 17,560 | n/a | 10.7s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,434 | 139 | 375 | 2,645 | 3,159 | n/a | 12.4s |
+
+##### All tasks
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 9/9 | 3.0 | 2.0 | 5,660 | 143 | 651 | 16,853 | 17,647 | n/a | 10.5s |
+| codemode | 9/9 | 2.0 | 1.0 | 1,432 | 130 | 431 | 2,688 | 3,249 | n/a | 12.2s |
+
+Total tokens, codemode vs direct: **-82%** (3,249 vs 17,647).
+
+Wall time, codemode vs direct: **17%** (12.2s vs 10.5s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
 
 ## Per-tool-call benchmark (no model)
 

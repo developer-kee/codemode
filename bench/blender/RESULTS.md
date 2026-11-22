@@ -10,15 +10,27 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 > **Warning:** Every run WIPES the open Blender scene. Needs Blender open with the BlenderMCP addon connected (localhost:9876).
 
+## Models
+
+Runs are grouped by model family, then by model id. Each family is produced by one runner, and every family uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.
+
+### Claude
+
+Runner: `claude`.
+
+- `claude-sonnet-5-5`: 42 runs in `scenarios`, `calls`
+
 ## Variant: `scenarios`, multi-step scenario tasks
 
 - Both paths expose every tool of the upstream `blender-mcp`.
 
 Reproduce: `npm run bench -- --service blender --variant scenarios --runs 3`.
 
-### Model: `claude-sonnet-5-5`
+### Claude
 
-#### Per-task summary
+#### Model: `claude-sonnet-5-5` via `claude`
+
+##### Per-task summary
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
@@ -29,35 +41,35 @@ Reproduce: `npm run bench -- --service blender --variant scenarios --runs 3`.
 
 Token change ranges from **-79%** (grid) to **-61%** (audit).
 
-#### Task: table
+##### Task: table
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.7 | 2.7 | 8,606 | 822 | 842 | 33,341 | 35,004 | $0.027 | 13.1s |
 | codemode | 3/3 | 3.3 | 2.3 | 1,469 | 989 | 1,532 | 6,107 | 8,627 | $0.026 | 13.2s |
 
-#### Task: grid
+##### Task: grid
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 8,602 | 580 | 354 | 17,403 | 18,337 | $0.016 | 9.3s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,465 | 466 | 567 | 2,798 | 3,831 | $0.011 | 8.8s |
 
-#### Task: inspect-modify
+##### Task: inspect-modify
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 8,549 | 392 | 1,009 | 26,425 | 27,826 | $0.020 | 9.4s |
 | codemode | 3/3 | 3.0 | 2.0 | 1,412 | 436 | 1,160 | 4,881 | 6,477 | $0.015 | 8.9s |
 
-#### Task: audit
+##### Task: audit
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 8,641 | 776 | 4,388 | 28,577 | 33,741 | $0.047 | 12.4s |
 | codemode | 3/3 | 3.0 | 2.0 | 1,504 | 906 | 4,695 | 7,559 | 13,159 | $0.044 | 13.7s |
 
-#### All tasks
+##### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -76,9 +88,11 @@ Wall time, codemode vs direct: **1%** (11.2s vs 11.0s). Wall time covers the who
 
 Reproduce: `npm run bench -- --service blender --variant calls --runs 3`.
 
-### Model: `claude-sonnet-5-5`
+### Claude
 
-#### Per-task summary
+#### Model: `claude-sonnet-5-5` via `claude`
+
+##### Per-task summary
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
@@ -88,28 +102,28 @@ Reproduce: `npm run bench -- --service blender --variant calls --runs 3`.
 
 Token change ranges from **-83%** (get_addon_status) to **-82%** (get_scene_info).
 
-#### Task: get_addon_status
+##### Task: get_addon_status
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 8,478 | 53 | 238 | 17,458 | 17,749 | $0.007 | 7.0s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,347 | 125 | 600 | 2,277 | 3,002 | $0.006 | 6.6s |
 
-#### Task: get_scene_info
+##### Task: get_scene_info
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 8,485 | 116 | 172 | 17,058 | 17,347 | $0.008 | 6.7s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,354 | 121 | 239 | 2,738 | 3,098 | $0.004 | 7.0s |
 
-#### Task: execute_blender_code
+##### Task: execute_blender_code
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 8,491 | 147 | 29 | 17,157 | 17,333 | $0.008 | 6.7s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,360 | 148 | 277 | 2,663 | 3,088 | $0.005 | 6.9s |
 
-#### All tasks
+##### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|

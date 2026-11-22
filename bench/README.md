@@ -1,6 +1,6 @@
 # Benchmarks
 
-Each service wrapped by codemode is benchmarked **separately**. For every service, Claude does the same tasks twice, on the same model: once with the upstream MCP server used directly, once with the same server behind codemode (a single `execute_code` tool over a typed `codemode.*` API). The harness measures **tokens, cost, turns and wall time**, and checks the result objectively.
+Each service wrapped by codemode is benchmarked **separately**. For every service, the same model does the same tasks twice: once with the upstream MCP server used directly, once with the same server behind codemode (`execute_code` over a typed `codemode.*` API, plus `get_api`). The harness measures **tokens, cost, turns and wall time**, and checks the result objectively.
 
 | Service | Folder | Results |
 |---|---|---|
@@ -8,7 +8,7 @@ Each service wrapped by codemode is benchmarked **separately**. For every servic
 | Windows ([Windows-MCP](https://github.com/CursorTouch/Windows-MCP)) | [windows/](windows/) | [windows/RESULTS.md](windows/RESULTS.md) |
 | Playwright ([@playwright/mcp](https://github.com/microsoft/playwright-mcp), local test site) | [playwright/](playwright/) | [playwright/RESULTS.md](playwright/RESULTS.md) |
 
-[RESULTS.md](RESULTS.md) is the overview, one row per service and variant. All `RESULTS.md` files are generated from the raw runs; do not edit them by hand.
+[RESULTS.md](RESULTS.md) is the overview, one row per service, variant and model (grouped by model family). All `RESULTS.md` files are generated from the raw runs; do not edit them by hand.
 
 > **Read the warning for a service before running its benchmark.** Blender runs wipe the open scene. Windows runs give the model real PowerShell and file access on your PC (the `scenarios` variant exposes every Windows-MCP tool, including screenshots and input). Playwright drives a headless browser limited to a local test site. The warning is printed when a run starts and is repeated at the top of each service's `RESULTS.md`.
 
@@ -20,10 +20,11 @@ One folder per service, named like `services/<id>.ts`, holding everything about 
 bench/
   run.ts            npm run bench -- --service <id> [--variant <v>] ...     (model-driven runs)
   calls.ts          npm run bench:calls -- --service <id>                     (deterministic per-call benchmark)
+  validate.ts       npm run bench:validate                                    (offline consistency check)
   report.ts         npm run bench:report                                      (rebuild every RESULTS.md)
   registry.ts       the list of benchmarked services
   RESULTS.md        generated overview, one row per service and variant
-  lib/              shared harness: Claude runner, report builder, per-call benchmark, types
+  lib/              shared harness: runner interface, Claude and DSH runners, report builder, per-call benchmark, types
   <service>/
     index.ts        BenchService: warning, notes, preflight, and its named variants
     tasks.ts        scenario tasks, each with its own setup and objective check
@@ -31,7 +32,7 @@ bench/
     (extras)        e.g. blender/socket.ts, playwright/fixture.ts
     results/        raw runs, one JSON line per run, all variants together (`variant` field on each record)
     results-archive/  superseded runs, kept for reference (not in the reports)
-    calls-latest.json  output of `bench:calls`: static definition costs, latency, coverage
+    calls-latest.json  output of `bench:calls`: static definition costs, latency, coverage (present once that has been run for the service)
     RESULTS.md      generated report for this service
 ```
 
@@ -52,25 +53,45 @@ Records without a `variant` field (written before variants existed) are read as 
 | | `direct` | `codemode` |
 |---|---|---|
 | MCP server | the upstream, launched as a user would (`uvx ...`) | `node src/cli.ts <service>` (wraps the same upstream) |
-| Tools the model sees | every upstream tool in the benchmark set | 1 tool: `execute_code` |
+| Tools the model sees | every upstream tool in the benchmark set | 2 tools: `execute_code` and `get_api` |
 | Model | same | same |
 | Prompt, system prompt | same | same |
 | Claude Code built-in tools | disabled | disabled |
 
 Everything else is held equal: same machine and target application, same upstream behaviour (including its telemetry), same task text, same budget cap.
 
+## Models
+
+The benchmark is **model- and harness-agnostic**: a *runner* drives a model with the same MCP server, prompts and checks, and every record stores the model id and the runner id. Reports group runs by model family (the leading token of the model id), then by model id, and show the runner.
+
+| Family | Model | Runner | What runs |
+|---|---|---|---|
+| Claude | `claude-sonnet-5-5` | `claude` | Claude Code headless (`claude -p`), built-in tools off |
+| DeepSeek | `deepseek-flash` | `dsh` | DeepSeek Harness headless (`dsh headless --json`), built-in tools off |
+
+The runner is chosen from the model id: `claude*` → `claude`, `deepseek*` → `dsh`; any other model needs `--runner <id>`. Adding a family or a model requires no report changes.
+
+Each harness sends its own system prompt and tool guidance, so token counts are comparable **within** a runner, and a cross-runner difference includes the harness as well as the model. `bench/validate` warns if one model was recorded through more than one runner.
+
+## Runners
+
+- **`claude`** — [lib/claude.ts](lib/claude.ts). Spawns `claude -p --output-format stream-json`, reads usage, cost and turns from its result event. Reports spend, so its cost columns are filled.
+- **`dsh`** — [lib/dsh.ts](lib/dsh.ts). Spawns `dsh headless --json`, parses its run events, and builds a temporary `--patch` overlay per run: the configured DSH provider (`DSH_BENCH_PROVIDER`, default `deepseek-account`), `--model`, reasoning effort `DSH_BENCH_REASONING` (default `high`), the service system prompt, every built-in tool disabled, and one MCP server. It does not report spend, so its cost columns are `n/a`. The launcher is found from `DSH_BIN`, from the running Desktop install, or on `PATH`.
+
+To add a runner, create an `AgentRunner` ([lib/agent.ts](lib/agent.ts)): launch the path's MCP server with [`mcpLaunch()`](lib/mcp.ts) so both paths see the same tools, send the task and the service's system prompt with built-in tools off, and return an `AgentRun` (`turns`, `toolCalls`, `toolNames`, `firstTurnContext`, `usage`, optional `costUsd`, `durationMs`). Register it in [lib/runners.ts](lib/runners.ts) and it appears in `--list`, in records and in the reports.
+
 ## Method
 
 For each repeat, task and path (path order alternates between repeats so cache warm-up and machine drift don't favour one side):
 
 1. **Prepare**: the task resets the tool's world to a known state and seeds it if needed (Blender: empty and seed the scene over the addon socket; Windows: recreate a sandbox folder with seeded files).
-2. **Run** Claude Code headless (`claude -p --output-format stream-json --verbose`) with only that path's MCP server, built-in tools off (`--tools ""`), no skills (`--disable-slash-commands`), no user/project settings (`--setting-sources ""`), no session persistence, a fixed one-line system prompt per service, and a per-run spend cap (`--max-budget-usd`, default $2). The working directory is an empty folder (`bench/work/`, git-ignored) so no `CLAUDE.md` is picked up.
+2. **Run** the runner — Claude Code headless (`claude -p --output-format stream-json --verbose`) or DSH headless (`dsh headless --json`) — with only that path's MCP server, built-in tools off, no skills or user/project settings, no session persistence, a fixed one-line system prompt per service, and a per-run spend cap where the runner supports one (`--max-budget-usd`, default $2). The working directory is an empty folder (`bench/work/`, git-ignored) so no `CLAUDE.md`/`AGENTS.md` is picked up.
 3. **Verify**: the task inspects the real result (a Blender scene snapshot, or files on disk) with a check written in code. A run passes only if the state is right and, where asked, the model's one-line answer contains the correct number. The model's own claim of success is never used.
 4. **Record** one JSON line in `<service>/results/<batch>.jsonl`; `report.ts` aggregates all batches into `RESULTS.md`.
 
 ### Metrics
 
-All token counts come from the usage reported by Claude Code for the whole run.
+All token counts come from the usage reported by the runner for the whole run: Claude Code's result event, or the sum of DSH's per-step usage events.
 
 | Column | Meaning |
 |---|---|
@@ -81,7 +102,7 @@ All token counts come from the usage reported by Claude Code for the whole run.
 | Fresh input | `input_tokens` + cache-creation tokens |
 | Cache read | Tokens served from prompt cache (cheaper per token, but they grow with every turn) |
 | Total tokens | Fresh input + cache read + output |
-| Cost | `total_cost_usd` as reported by Claude Code |
+| Cost | `total_cost_usd` as reported by Claude Code; `n/a` for runners that do not report spend (DSH) |
 | Wall time | Whole headless run, including MCP server start-up, per-turn model latency and the tool's own execution |
 
 `apiMs` (time waiting on the model API) is recorded for runs made after it was added; older records lack it and the report does not use it.
@@ -119,28 +140,31 @@ Uses [`@playwright/mcp`](https://github.com/microsoft/playwright-mcp) pinned to 
 |---|---|
 | `catalog-sum` | A 150-row product table: total price of the in-stock products in one category |
 | `form` | Fill and submit a form (text, email, select, checkbox); the check is what the fixture server received |
-| `top-rated` | A rated list over 6 pages with a "Next page" link: find the highest rating |
+| `top-rated` | A rated list over 6 pages with a "Next page" link: find the one item rated 5.0 (the fixture guarantees it is unique) |
 
 ## Run it
 
-Prerequisites: Node 24+ with `npm install` done in the repo root; `uvx` available; Claude Code logged in (`claude auth login`; the desktop app's login is separate) or an API key in the environment; plus each service's own prerequisites above.
+Prerequisites: Node 24+ with `npm install` done in the repo root; `uvx` available; a logged-in runner — Claude Code (`claude auth login`; the desktop app's login is separate) or an API key in the environment for Claude, and for DSH a signed-in DeepSeek Harness install; plus each service's own prerequisites above.
 
-> Runs spend your Claude usage. The recorded Blender run (24 runs) cost under $1 in total at Sonnet prices.
+> Runs spend your usage. The Blender `scenarios` batch (24 runs) cost under $1 in total at Sonnet prices; DSH account runs report tokens but not spend.
 
 ```powershell
-npm run bench -- --list                                       # services, variants and their tasks
+npm run bench -- --list                                       # services, variants, runners and their tasks
 npm run bench -- --service blender --runs 3                   # default variant (scenarios), both paths
 npm run bench -- --service windows --variant scenarios-4-tools --runs 3
 npm run bench -- --service playwright --variant calls --runs 1   # one model-driven task per tool call
+npm run bench -- --service playwright --model deepseek-flash --runs 3   # DSH runner, chosen from the model id
 npm run bench -- --service blender --runs 1 --tasks table,grid
 npm run bench -- --service windows --model claude-opus-5-5 --runs 3
+npm run bench -- --service playwright --model my-model --runner my-runner --runs 3
 npm run bench:calls -- --service blender --iters 10           # no model: definition cost + latency -> blender/calls-latest.json
 npm run bench:report                                          # rebuild every RESULTS.md from results/*.jsonl and calls-latest.json
+npm run bench:validate                                        # offline: definitions, raw runs, per-call data, report freshness
 ```
 
-Options of `bench`: `--service`, `--variant` (default `scenarios`), `--runs`, `--model`, `--tasks`, `--paths direct,codemode`, `--budget` (USD per run), `--timeout` (seconds per run). `bench:calls` takes `--service` and `--iters`; it connects to the service's default variant (all tools) and needs the same prerequisites.
+Options of `bench`: `--service`, `--variant` (default `scenarios`), `--runs`, `--model`, `--runner` (default `auto`, from the model id), `--tasks`, `--paths direct,codemode`, `--budget` (USD per run, Claude Code only), `--timeout` (seconds per run). `bench:calls` takes `--service` and `--iters`; it connects to the service's default variant (all tools) and needs the same prerequisites. `bench:validate` starts nothing and calls no model, so it is free and safe to run after every change; it fails on unknown variants, tasks or runners, malformed usage numbers, an over-cap `execute_code` description, inconsistent `calls-latest.json`, or a `RESULTS.md` that no longer matches the raw data, and warns on a non-MCP tool call (built-in tools not fully off) or one model recorded through two runners.
 
-Reports group by variant and then by model, so runs with different models sit side by side. Batches accumulate; delete a `results/*.jsonl` file to drop that batch (or move it to `results-archive/<name>/` to keep it).
+Reports group by variant, then by model family, then by model, so runs with different models sit side by side. Batches accumulate; delete a `results/*.jsonl` file to drop that batch (or move it to `results-archive/<name>/` to keep it).
 
 ## Add a task to a service
 
@@ -156,7 +180,7 @@ Add an entry in `<service>/tasks.ts` (Blender: a spec with `seed`, `prompt`, `ve
 }
 ```
 
-Keep tasks deterministic: fixed seed data, no network or asset-library dependence, tolerances on numeric checks. Run `npx tsc` to typecheck.
+Keep tasks deterministic: fixed seed data, no network or asset-library dependence, tolerances on numeric checks. Run `npx tsc` and `npm run bench:validate` after the change.
 
 To add a per-tool-call case, add an entry in `<service>/cases.ts`: `tool` and `args` give the deterministic latency measurement, `before` any setup calls, and `prompt` plus `expect` (or `check`) make it a task of the `calls` variant. Every upstream tool must either have a case or be listed in `skipped` with the reason.
 
@@ -167,7 +191,7 @@ To add a per-tool-call case, add an entry in `<service>/cases.ts`: `tool` and `a
    - `tasks.ts`: the scenario tasks;
    - `cases.ts`: a `CallDef` (`cases`, `skipped`, `reset`), data only;
    - `index.ts`: a `BenchService` ([lib/types.ts](lib/types.ts)) with the `warning`, `notes`, `preflight`, and its `variants`. Each variant gives the direct upstream command, an env for the codemode wrapper so both paths expose the same tools, a system prompt, `notes` and `tasks`. Define the `scenarios` variant, then add `callsVariant(scenarios, cases)` ([lib/calls.ts](lib/calls.ts)) to get the `calls` variant. Add more variants (like Windows' `scenarios-4-tools`) when the same tasks should run against a different tool set.
-3. Register it in [registry.ts](registry.ts). `npm run bench -- --list` should show it.
+3. Register it in [registry.ts](registry.ts). `npm run bench -- --list` should show it, and `npm run bench:validate` should pass for the new definitions.
 
 Prefer tasks that are safe to repeat and fully checkable from outside the model. Think about side effects first and say them in `warning`.
 
@@ -176,21 +200,22 @@ Prefer tasks that are safe to repeat and fully checkable from outside the model.
 `<service>/results/<batch>.jsonl`, one object per run, all variants of the service together:
 
 ```
-{ batch, variant, task, model, repeat, pass, verdict,
+{ batch, variant, task, model, runner, repeat, pass, verdict,
   run: { path, ok, error?, answer, turns, toolCalls, toolNames[], availableTools[],
          firstTurnContext, usage: { input, cacheWrite, cacheRead, output },
-         costUsd, durationMs, apiMs? } }
+         costUsd?, durationMs, apiMs? } }
 ```
 
-`variant` is the variant id (`scenarios`, `scenarios-4-tools`, `calls`); a record without it counts as `scenarios`. `availableTools` is recorded at start-up to prove built-in tools were off and only the intended MCP tools were visible.
+`variant` is the variant id (`scenarios`, `scenarios-4-tools`, `calls`); a record without it counts as `scenarios`. `runner` is the runner id; records written before runners existed have none and count as `claude`. `costUsd` is omitted when the runner does not report spend (DSH). `availableTools` is recorded at start-up when the runner exposes it, to prove built-in tools were off and only the intended MCP tools were visible; DSH does not report it.
 
 ## Limitations (read before quoting numbers)
 
-- **Small sample.** Typically 3 runs per task and path, one model, one machine, one day. Wall-time differences of a few percent are noise.
+- **Small sample.** Typically 3 runs per task and path, one machine, one day. Wall-time differences of a few percent are noise.
+- **Two models, two harnesses.** `claude-sonnet-5-5` runs through Claude Code and `deepseek-flash` through DSH, so a Claude-vs-DeepSeek difference includes the harness. Compare codemode-vs-direct **within** a family; the direct/codemode split is measured under the same runner in both cases. Other models are supported but not yet recorded.
 - **Services are not comparable with each other.** Task difficulty, the number of upstream tools and the benchmark's tool whitelist differ per service.
-- **The saving is mostly tool-definition overhead.** Direct sends every upstream tool schema each turn; codemode sends one. Where the model uses only one upstream tool anyway (Blender: run Python), the benchmark does not exercise **chaining several different upstream tools in one script**, which is where codemode is meant to help most.
+- **The saving is mostly tool-definition overhead.** Direct sends every upstream tool schema each turn; codemode sends one compact index. Where the model uses only one upstream tool anyway (Blender: run Python), the benchmark does not exercise **chaining several different upstream tools in one script**, which is where codemode is meant to help most.
 - **`scenarios-4-tools` understates the schema overhead.** The real Windows-MCP server offers 20 tools; that variant exposes four. The `scenarios` variant exposes all 20.
-- **Description truncation (verified).** The typed API is placed in the `execute_code` tool description, and Claude Code cuts MCP tool descriptions at about 2,048 characters: asking the model to quote it returned about 2,070 characters ending "… [truncated]", and codemode first-turn context stays near 1.7k tokens for both services whatever the API size. The callable member list comes last in the description, so the model never saw it. Codemode savings in `RESULTS.md` are therefore an **upper bound**: part of the saving is missing information, not compression. See [../docs/landscape.md](../docs/landscape.md) for the planned fix and for other metrics to add.
+- **The description budget is now guarded, not silently truncated.** Claude Code cuts MCP tool descriptions at about 2,048 characters, and the first design put the whole typed API in the `execute_code` description, so the model never saw the function list. Since the compact index landed, the description fits: `bench:calls` records its exact length and flags an overflow (Playwright: 1,709 characters for 25 tools), and `bench:validate` fails if a recorded description exceeds the cap. Runs in `results-archive/v1-truncated-description/` predate the fix and their savings are **upper bounds**; current results are not. See [../docs/landscape.md](../docs/landscape.md).
 - **Prompt cache.** Cache-read tokens depend on caching behaviour and vary between runs; that is why `Fresh input`, `Cache read` and `Total` are shown separately.
 - **Telemetry.** The upstream servers send their own telemetry on both paths. It was left on to keep the paths identical.
 - **Task difficulty.** All tasks are doable with one script. Harder or more tool-diverse tasks may change the picture, in either direction.
@@ -200,11 +225,11 @@ Prefer tasks that are safe to repeat and fully checkable from outside the model.
 | | |
 |---|---|
 | Date | 2026-11-22 |
-| Model | `claude-sonnet-5-5` |
-| Claude Code | 2.1.229 |
+| Models | `claude-sonnet-5-5` via Claude Code 2.1.229; `deepseek-flash` via DeepSeek Harness 0.2.2-rc.5 (reasoning effort `high`) |
 | Blender | 5.3.0, BlenderMCP addon 2.0 (protocol 16) |
 | `blender-mcp` (upstream, via uvx) | 2.0.0 |
 | `windows-mcp` (upstream, via uvx) | 0.8.5 |
+| `@playwright/mcp` (upstream, via npx) | 0.0.86 (Microsoft Edge, headless) |
 | Node | 24.14.0 |
 | `@modelcontextprotocol/sdk` | 1.32.2 |
 | `quickjs-emscripten` | 0.32.0 |

@@ -1,100 +1,31 @@
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import type { BenchService, BenchVariant } from './types.ts';
+import type { AgentRun, AgentRunner, RunnerRunOptions, TurnUsage } from './agent.ts';
+import { mcpLaunch } from './mcp.ts';
 
-export type PathId = 'direct' | 'codemode';
-
-const root = fileURLToPath(new URL('../../', import.meta.url));
-/** Empty working directory so no CLAUDE.md or project settings leak into a run. */
-const workDir = fileURLToPath(new URL('../work/', import.meta.url));
-
-/** Same upstream for both paths; only the wrapper differs. */
-function mcpConfig(service: BenchService, variant: BenchVariant, path: PathId): { server: string; json: object } {
-  if (path === 'direct') {
-    const d = variant.direct;
-    return {
-      server: d.server,
-      json: { mcpServers: { [d.server]: { command: d.command, args: d.args, ...(d.env ? { env: d.env } : {}) } } },
-    };
-  }
-  const server = `${service.id}-cm`;
-  return {
-    server,
-    json: {
-      mcpServers: {
-        [server]: {
-          command: process.execPath,
-          args: [`${root}src/cli.ts`, service.id],
-          ...(variant.codemodeEnv ? { env: variant.codemodeEnv } : {}),
-        },
-      },
-    },
-  };
-}
-
-export interface TurnUsage {
-  input: number;
-  cacheWrite: number;
-  cacheRead: number;
-  output: number;
-}
-
-export interface ClaudeRun {
-  path: PathId;
-  ok: boolean;
-  error?: string;
-  answer: string;
-  turns: number;
-  toolCalls: number;
-  toolNames: string[];
-  /** Tools visible to the model at start-up (to confirm built-ins are off). */
-  availableTools: string[];
-  /** Context size on the first request: system prompt + tool definitions + task. */
-  firstTurnContext: number;
-  usage: TurnUsage;
-  costUsd: number;
-  durationMs: number;
-  /** Time spent waiting on the model API, as reported by the CLI (absent in older records). */
-  apiMs?: number;
-}
-
-type Json = Record<string, unknown>;
-const num = (v: unknown): number => (typeof v === 'number' ? v : 0);
-const usageOf = (u: unknown): TurnUsage => {
-  const o = (u ?? {}) as Json;
-  return {
-    input: num(o['input_tokens']),
-    cacheWrite: num(o['cache_creation_input_tokens']),
-    cacheRead: num(o['cache_read_input_tokens']),
-    output: num(o['output_tokens']),
-  };
-};
-
-export function runClaude(opts: {
-  service: BenchService;
-  variant: BenchVariant;
-  path: PathId;
-  model: string;
-  prompt: string;
-  budgetUsd: number;
-  timeoutMs: number;
-}): Promise<ClaudeRun> {
-  mkdirSync(workDir, { recursive: true });
-  const { server, json } = mcpConfig(opts.service, opts.variant, opts.path);
-  const mcpFile = `${workDir}mcp-${opts.service.id}-${opts.variant.id}-${opts.path}.json`;
-  const sysFile = `${workDir}system-${opts.service.id}-${opts.variant.id}.txt`;
-  writeFileSync(mcpFile, JSON.stringify(json));
+/** Run one prompt through Claude Code headless and normalise its stream-json result. */
+function runClaude(opts: RunnerRunOptions): Promise<AgentRun> {
+  mkdirSync(opts.workDir, { recursive: true });
+  const launch = mcpLaunch(opts.service, opts.variant, opts.path);
+  const mcpFile = `${opts.workDir}mcp-${opts.service.id}-${opts.variant.id}-${opts.path}.json`;
+  const sysFile = `${opts.workDir}system-${opts.service.id}-${opts.variant.id}.txt`;
+  writeFileSync(
+    mcpFile,
+    JSON.stringify({
+      mcpServers: { [launch.server]: { command: launch.command, args: launch.args, ...(launch.env ? { env: launch.env } : {}) } },
+    }),
+  );
   writeFileSync(sysFile, opts.variant.systemPrompt);
 
   const q = (s: string): string => `"${s}"`;
+  const claude = process.platform === 'win32' ? 'claude.cmd' : 'claude';
   const cmdline = [
-    'claude.cmd -p',
+    `${claude} -p`,
     '--output-format stream-json --verbose',
     `--model ${opts.model}`,
     `--strict-mcp-config --mcp-config ${q(mcpFile)}`,
     '--tools ""',
-    `--allowedTools ${q(`mcp__${server}`)}`,
+    `--allowedTools ${q(`mcp__${launch.server}`)}`,
     '--disable-slash-commands --setting-sources "" --no-session-persistence --no-chrome',
     `--system-prompt-file ${q(sysFile)}`,
     `--max-budget-usd ${opts.budgetUsd}`,
@@ -102,19 +33,20 @@ export function runClaude(opts: {
 
   return new Promise((resolve) => {
     const started = Date.now();
-    const child = spawn(cmdline, { shell: true, cwd: workDir, stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = spawn(cmdline, { shell: true, cwd: opts.workDir, stdio: ['pipe', 'pipe', 'pipe'] });
     let stdout = '';
     let stderr = '';
     const timer = setTimeout(() => {
       stderr += '\n[harness] timeout, killing';
-      spawn('taskkill', ['/pid', String(child.pid), '/T', '/F']);
+      if (process.platform === 'win32') spawn('taskkill', ['/pid', String(child.pid), '/T', '/F']);
+      else child.kill('SIGKILL');
     }, opts.timeoutMs);
     child.stdout.on('data', (d: Buffer) => (stdout += d.toString('utf8')));
     child.stderr.on('data', (d: Buffer) => (stderr += d.toString('utf8')));
     child.stdin.end(opts.prompt);
     child.on('close', () => {
       clearTimeout(timer);
-      const run: ClaudeRun = {
+      const run: AgentRun = {
         path: opts.path,
         ok: false,
         answer: '',
@@ -130,17 +62,17 @@ export function runClaude(opts: {
       let sawFirst = false;
       for (const line of stdout.split('\n')) {
         if (!line.trim().startsWith('{')) continue;
-        let ev: Json;
+        let ev: Record<string, unknown>;
         try {
-          ev = JSON.parse(line) as Json;
+          ev = JSON.parse(line) as Record<string, unknown>;
         } catch {
           continue;
         }
         if (ev['type'] === 'system' && ev['subtype'] === 'init') {
           run.availableTools = ((ev['tools'] as unknown[]) ?? []).map(String);
         } else if (ev['type'] === 'assistant') {
-          const msg = (ev['message'] ?? {}) as Json;
-          for (const block of (msg['content'] as Json[] | undefined) ?? []) {
+          const msg = (ev['message'] ?? {}) as Record<string, unknown>;
+          for (const block of (msg['content'] as Record<string, unknown>[] | undefined) ?? []) {
             if (block['type'] === 'tool_use') {
               run.toolCalls++;
               run.toolNames.push(String(block['name']));
@@ -166,3 +98,21 @@ export function runClaude(opts: {
     });
   });
 }
+
+const num = (v: unknown): number => (typeof v === 'number' ? v : 0);
+const usageOf = (u: unknown): TurnUsage => {
+  const o = (u ?? {}) as Record<string, unknown>;
+  return {
+    input: num(o['input_tokens']),
+    cacheWrite: num(o['cache_creation_input_tokens']),
+    cacheRead: num(o['cache_read_input_tokens']),
+    output: num(o['output_tokens']),
+  };
+};
+
+/** Claude Code (`claude -p`): the runner every pre-existing record was produced with. */
+export const claudeRunner: AgentRunner = {
+  id: 'claude',
+  description: 'Claude Code headless (`claude -p`), one MCP server, built-in tools off',
+  run: runClaude,
+};

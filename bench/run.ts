@@ -1,10 +1,12 @@
-﻿// Usage: npm run bench -- --service <id> [--variant scenarios] [--runs 3] [--model claude-sonnet-5-5] [--tasks a,b] [--paths direct,codemode] [--budget 2]
+// Usage: npm run bench -- --service <id> [--variant scenarios] [--runs 3] [--model claude-sonnet-5-5] [--runner auto] [--tasks a,b] [--paths direct,codemode] [--budget 2]
 //        npm run bench -- --list
 // Each service's warning (side effects, prerequisites) is printed first: read it.
 import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { runClaude, type PathId } from './lib/claude.ts';
+import type { PathId } from './lib/agent.ts';
 import { saveRecord, writeReports } from './lib/report.ts';
+import { getRunner, runnerForModel, runners } from './lib/runners.ts';
 import { getService, getVariant, services } from './registry.ts';
 
 const { values } = parseArgs({
@@ -14,6 +16,7 @@ const { values } = parseArgs({
     list: { type: 'boolean', default: false },
     runs: { type: 'string', default: '3' },
     model: { type: 'string', default: 'claude-sonnet-5-5' },
+    runner: { type: 'string', default: 'auto' },
     tasks: { type: 'string', default: '' },
     paths: { type: 'string', default: 'direct,codemode' },
     budget: { type: 'string', default: '2' },
@@ -28,6 +31,7 @@ if (values.list) {
       console.log(`  --variant ${v.id}${v.id === s.defaultVariant ? ' (default)' : ''}: ${v.tasks.map((t) => t.id).join(', ')}`);
     }
   }
+  console.log(`\nRunners: ${runners.map((r) => `${r.id} (${r.description})`).join('; ')}`);
   process.exit(0);
 }
 
@@ -41,6 +45,15 @@ if (!variant) {
   console.error(`Unknown variant "${values.variant}" for ${service.id}. Available: ${service.variants.map((v) => v.id).join(', ')}`);
   process.exit(1);
 }
+const runner = values.runner === 'auto' ? runnerForModel(values.model) : getRunner(values.runner);
+if (!runner) {
+  console.error(
+    values.runner === 'auto'
+      ? `No default runner for model "${values.model}". Pass --runner <id>: ${runners.map((r) => r.id).join(', ')}`
+      : `Unknown runner "${values.runner}". Available: ${runners.map((r) => r.id).join(', ')}`,
+  );
+  process.exit(1);
+}
 const runs = Number(values.runs);
 const wantTasks = values.tasks ? values.tasks.split(',') : variant.tasks.map((t) => t.id);
 const wantPaths = values.paths.split(',') as PathId[];
@@ -50,13 +63,18 @@ if (selected.length === 0 || !Number.isInteger(runs) || runs < 1) {
   process.exit(1);
 }
 
+const workDir = fileURLToPath(new URL('./work/', import.meta.url));
+console.log(`Runner: ${runner.id} (${runner.description}), model ${values.model}\n`);
 console.log(`WARNING: ${service.warning}\n`);
 if (variant.warning) console.log(`WARNING (${variant.id}): ${variant.warning}\n`);
 await service.preflight();
 
 const rev = (() => {
   try {
-    return execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
+    const head = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
+    // Results from an uncommitted working tree must not be attributed to the last commit alone.
+    const dirty = execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim().length > 0;
+    return dirty ? `${head}-dirty` : head;
   } catch {
     return undefined;
   }
@@ -72,7 +90,7 @@ for (let repeat = 1; repeat <= runs; repeat++) {
     for (const path of order) {
       n++;
       await task.prepare();
-      const run = await runClaude({
+      const run = await runner.run({
         service,
         variant,
         path,
@@ -80,11 +98,13 @@ for (let repeat = 1; repeat <= runs; repeat++) {
         prompt: task.prompt,
         budgetUsd: Number(values.budget),
         timeoutMs: Number(values.timeout) * 1000,
+        workDir,
       });
       const verdict = run.ok ? await task.verify(run.answer) : { pass: false, detail: run.error ?? 'run failed' };
       saveRecord(service.id, {
         batch,
         variant: variant.id,
+        runner: runner.id,
         ...(rev ? { rev } : {}),
         task: task.id,
         model: values.model,
@@ -96,7 +116,8 @@ for (let repeat = 1; repeat <= runs; repeat++) {
       const tokens = run.usage.input + run.usage.cacheWrite + run.usage.cacheRead + run.usage.output;
       console.log(
         `[${n}/${totalRuns}] ${service.id}/${variant.id}/${task.id} ${path} #${repeat}: ${verdict.pass ? 'PASS' : `FAIL (${verdict.detail})`} ` +
-          `turns=${run.turns} tools=${run.toolCalls} tokens=${tokens} cost=$${run.costUsd.toFixed(3)} time=${(run.durationMs / 1000).toFixed(1)}s`,
+          `turns=${run.turns} tools=${run.toolCalls} tokens=${tokens} ` +
+          `cost=${run.costUsd === undefined ? 'n/a' : `$${run.costUsd.toFixed(3)}`} time=${(run.durationMs / 1000).toFixed(1)}s`,
       );
     }
   }

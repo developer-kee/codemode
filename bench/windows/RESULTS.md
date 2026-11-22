@@ -8,6 +8,16 @@ Variants: `scenarios`, `scenarios-4-tools`, `calls`. Method, metric definitions 
 
 > **Warning:** Gives the model real PowerShell and file access to this PC. Tasks are written to stay inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows, which is deleted and recreated before every run, but a model can still run arbitrary commands. Run on a machine you are happy to do that on. The `scenarios` and `calls` variants expose every tool, including screenshots and input: see their warning.
 
+## Models
+
+Runs are grouped by model family, then by model id. Each family is produced by one runner, and every family uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.
+
+### Claude
+
+Runner: `claude`.
+
+- `claude-sonnet-5-5`: 78 runs in `scenarios`, `scenarios-4-tools`, `calls`
+
 ## Variant: `scenarios`, multi-step scenario tasks, all 20 tools
 
 - Both paths expose all 20 Windows-MCP tools, as a normal install does, so tool-definition overhead is realistic.
@@ -17,9 +27,11 @@ Reproduce: `npm run bench -- --service windows --variant scenarios --runs 3`.
 
 > **Warning:** Gives the model EVERY Windows-MCP tool: PowerShell, files, processes, registry, screenshots of your desktop (sent to the model API), and mouse and keyboard input. The tasks only need files, and the prompt says to stay inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows (wiped before every run), but nothing stops the model using the other tools. Do not run this with anything sensitive on screen or open.
 
-### Model: `claude-sonnet-5-5`
+### Claude
 
-#### Per-task summary
+#### Model: `claude-sonnet-5-5` via `claude`
+
+##### Per-task summary
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
@@ -29,28 +41,28 @@ Reproduce: `npm run bench -- --service windows --variant scenarios --runs 3`.
 
 Token change ranges from **-73%** (files) to **-49%** (inventory).
 
-#### Task: files
+##### Task: files
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 7,837 | 351 | 172 | 16,262 | 16,785 | $0.011 | 13.1s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,654 | 408 | 1,330 | 2,753 | 4,491 | $0.015 | 13.0s |
 
-#### Task: inventory
+##### Task: inventory
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 7,852 | 425 | 874 | 24,372 | 25,670 | $0.019 | 15.1s |
 | codemode | 3/3 | 3.0 | 2.0 | 1,669 | 701 | 4,140 | 8,217 | 13,058 | $0.038 | 16.2s |
 
-#### Task: organize
+##### Task: organize
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 7,810 | 438 | 889 | 24,893 | 26,220 | $0.019 | 15.4s |
 | codemode | 3/3 | 3.0 | 2.0 | 1,627 | 518 | 1,500 | 5,765 | 7,783 | $0.018 | 16.0s |
 
-#### All tasks
+##### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -67,9 +79,11 @@ Wall time, codemode vs direct: **3%** (15.0s vs 14.5s). Wall time covers the who
 
 Reproduce: `npm run bench -- --service windows --variant scenarios-4-tools --runs 3`.
 
-### Model: `claude-sonnet-5-5`
+### Claude
 
-#### Per-task summary
+#### Model: `claude-sonnet-5-5` via `claude`
+
+##### Per-task summary
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
@@ -79,28 +93,28 @@ Reproduce: `npm run bench -- --service windows --variant scenarios-4-tools --run
 
 Token change ranges from **-26%** (organize) to **108%** (files).
 
-#### Task: files
+##### Task: files
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 2,274 | 330 | 4 | 5,258 | 5,592 | $0.007 | 11.3s |
 | codemode | 3/3 | 4.7 | 3.7 | 1,365 | 968 | 1,992 | 8,687 | 11,647 | $0.029 | 24.8s |
 
-#### Task: inventory
+##### Task: inventory
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 2,289 | 468 | 421 | 8,449 | 9,338 | $0.012 | 14.8s |
 | codemode | 3/3 | 3.0 | 2.0 | 1,380 | 634 | 1,824 | 5,203 | 7,662 | $0.022 | 13.8s |
 
-#### Task: organize
+##### Task: organize
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 3.0 | 2.0 | 2,247 | 425 | 468 | 8,562 | 9,455 | $0.012 | 13.7s |
 | codemode | 3/3 | 3.0 | 2.0 | 1,338 | 532 | 1,517 | 4,904 | 6,953 | $0.019 | 15.5s |
 
-#### All tasks
+##### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -122,9 +136,11 @@ Reproduce: `npm run bench -- --service windows --variant calls --runs 3`.
 
 > **Warning:** Gives the model EVERY Windows-MCP tool: PowerShell, files, processes, registry, screenshots of your desktop (sent to the model API), and mouse and keyboard input. The tasks only need files, and the prompt says to stay inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows (wiped before every run), but nothing stops the model using the other tools. Do not run this with anything sensitive on screen or open.
 
-### Model: `claude-sonnet-5-5`
+### Claude
 
-#### Per-task summary
+#### Model: `claude-sonnet-5-5` via `claude`
+
+##### Per-task summary
 
 | Task | Pass (d/c) | Tokens: direct | codemode | Change | Time: direct | codemode | Change | Cost: direct | codemode |
 |---|---|---|---|---|---|---|---|---|---|
@@ -138,56 +154,56 @@ Reproduce: `npm run bench -- --service windows --variant calls --runs 3`.
 
 Token change ranges from **-79%** (Wait) to **-77%** (FileSystem.list).
 
-#### Task: PowerShell
+##### Task: PowerShell
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 7,716 | 92 | 31 | 15,555 | 15,678 | $0.006 | 10.6s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,535 | 144 | 713 | 2,594 | 3,451 | $0.007 | 10.6s |
 
-#### Task: FileSystem.list
+##### Task: FileSystem.list
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 7,737 | 140 | 56 | 15,690 | 15,886 | $0.007 | 9.4s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,556 | 170 | 339 | 3,109 | 3,617 | $0.005 | 9.8s |
 
-#### Task: FileSystem.read
+##### Task: FileSystem.read
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 7,741 | 140 | 42 | 15,676 | 15,858 | $0.007 | 9.5s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,560 | 150 | 312 | 3,062 | 3,523 | $0.005 | 10.1s |
 
-#### Task: FileSystem.write
+##### Task: FileSystem.write
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 7,756 | 231 | 43 | 15,754 | 16,028 | $0.008 | 9.7s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,575 | 188 | 239 | 3,182 | 3,609 | $0.005 | 10.4s |
 
-#### Task: Process.list
+##### Task: Process.list
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 7,705 | 149 | 215 | 15,509 | 15,874 | $0.008 | 10.3s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,524 | 159 | 338 | 3,029 | 3,525 | $0.005 | 11.2s |
 
-#### Task: Registry.get
+##### Task: Registry.get
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 7,740 | 150 | 43 | 15,689 | 15,882 | $0.007 | 10.5s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,559 | 145 | 226 | 3,140 | 3,512 | $0.004 | 10.5s |
 
-#### Task: Wait
+##### Task: Wait
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
 | direct | 3/3 | 2.0 | 1.0 | 7,700 | 58 | 27 | 15,499 | 15,584 | $0.006 | 9.7s |
 | codemode | 3/3 | 2.0 | 1.0 | 1,519 | 78 | 197 | 2,974 | 3,249 | $0.003 | 10.6s |
 
-#### All tasks
+##### All tasks
 
 | Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
 |---|---|---|---|---|---|---|---|---|---|---|
