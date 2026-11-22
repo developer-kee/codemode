@@ -1,0 +1,16 @@
+- generic [active] [ref=f29e1]:
+  - heading "Sign-up form" [level=1] [ref=f29e2]
+  - generic [ref=f29e3]:
+    - text: Name
+    - textbox "Name" [ref=f29e4]
+    - text: Email
+    - textbox "Email" [ref=f29e5]
+    - text: Plan
+    - combobox "Plan" [ref=f29e6]:
+      - option "Free" [selected]
+      - option "Pro"
+      - option "Team"
+    - generic [ref=f29e7]:
+      - checkbox "I agree to the terms" [ref=f29e8]
+      - text: I agree to the terms
+    - button "Submit" [ref=f29e9]

@@ -1,0 +1,4 @@
+- generic [active] [ref=f15e1]:
+  - heading "Counter" [level=1] [ref=f15e2]
+  - paragraph [ref=f15e3]: "Clicked: 0"
+  - button "Increment" [ref=f15e4]

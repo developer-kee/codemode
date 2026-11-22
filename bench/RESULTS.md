@@ -10,6 +10,7 @@ Method, metric definitions and limitations: [README.md](README.md). Per-service 
 | Windows (Windows-MCP) | `scenarios` | `claude-sonnet-5-5` | 18 (18) | 22,892 | 8,444 | **-63%** | 14.5s | 15.0s | **3%** | [windows/RESULTS.md](windows/RESULTS.md) |
 | Windows (Windows-MCP) | `scenarios-4-tools` | `claude-sonnet-5-5` | 18 (18) | 8,128 | 8,754 | **8%** | 13.3s | 18.0s | **36%** | [windows/RESULTS.md](windows/RESULTS.md) |
 | Windows (Windows-MCP) | `calls` | `claude-sonnet-5-5` | 42 (42) | 15,827 | 3,498 | **-78%** | 9.9s | 10.5s | **5%** | [windows/RESULTS.md](windows/RESULTS.md) |
-| Playwright (browser, local test site) | `scenarios` | `claude-sonnet-5-5` | 4 (2) | 29,613 | 35,486 | **20%** | 11.8s | 24.2s | **105%** | [playwright/RESULTS.md](playwright/RESULTS.md) |
+| Playwright (browser, local test site) | `scenarios` | `claude-sonnet-5-5` | 18 (18) | 30,411 | 9,512 | **-69%** | 12.0s | 13.8s | **16%** | [playwright/RESULTS.md](playwright/RESULTS.md) |
+| Playwright (browser, local test site) | `calls` | `claude-sonnet-5-5` | 18 (18) | 21,020 | 3,594 | **-83%** | 8.7s | 8.6s | **-1%** | [playwright/RESULTS.md](playwright/RESULTS.md) |
 
 Figures are means across all tasks and runs of that variant. Small differences, especially in wall time, are within noise at this sample size. Services and variants are not comparable with each other: tasks and tool counts differ.

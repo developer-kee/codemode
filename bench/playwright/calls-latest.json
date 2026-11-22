@@ -1,0 +1,736 @@
+{
+  "date": "2026-11-22",
+  "iterations": 8,
+  "toolCount": 25,
+  "costs": {
+    "rows": [
+      {
+        "tool": "browser_close",
+        "covered": false,
+        "directChars": 212,
+        "codemodeChars": 19,
+        "onDemandChars": 147
+      },
+      {
+        "tool": "browser_resize",
+        "covered": true,
+        "directChars": 373,
+        "codemodeChars": 33,
+        "onDemandChars": 246
+      },
+      {
+        "tool": "browser_console_messages",
+        "covered": true,
+        "directChars": 812,
+        "codemodeChars": 52,
+        "onDemandChars": 670
+      },
+      {
+        "tool": "browser_handle_dialog",
+        "covered": false,
+        "directChars": 392,
+        "codemodeChars": 46,
+        "onDemandChars": 286
+      },
+      {
+        "tool": "browser_emulate_media",
+        "covered": false,
+        "directChars": 1084,
+        "codemodeChars": 89,
+        "onDemandChars": 798
+      },
+      {
+        "tool": "browser_evaluate",
+        "covered": true,
+        "directChars": 818,
+        "codemodeChars": 60,
+        "onDemandChars": 672
+      },
+      {
+        "tool": "browser_file_upload",
+        "covered": false,
+        "directChars": 396,
+        "codemodeChars": 31,
+        "onDemandChars": 302
+      },
+      {
+        "tool": "browser_drop",
+        "covered": false,
+        "directChars": 961,
+        "codemodeChars": 49,
+        "onDemandChars": 714
+      },
+      {
+        "tool": "browser_find",
+        "covered": true,
+        "directChars": 1233,
+        "codemodeChars": 55,
+        "onDemandChars": 1100
+      },
+      {
+        "tool": "browser_fill_form",
+        "covered": false,
+        "directChars": 1054,
+        "codemodeChars": 29,
+        "onDemandChars": 752
+      },
+      {
+        "tool": "browser_press_key",
+        "covered": true,
+        "directChars": 345,
+        "codemodeChars": 26,
+        "onDemandChars": 250
+      },
+      {
+        "tool": "browser_type",
+        "covered": true,
+        "directChars": 839,
+        "codemodeChars": 58,
+        "onDemandChars": 661
+      },
+      {
+        "tool": "browser_navigate",
+        "covered": true,
+        "directChars": 277,
+        "codemodeChars": 25,
+        "onDemandChars": 182
+      },
+      {
+        "tool": "browser_navigate_back",
+        "covered": true,
+        "directChars": 227,
+        "codemodeChars": 27,
+        "onDemandChars": 176
+      },
+      {
+        "tool": "browser_network_requests",
+        "covered": true,
+        "directChars": 975,
+        "codemodeChars": 62,
+        "onDemandChars": 825
+      },
+      {
+        "tool": "browser_network_request",
+        "covered": false,
+        "directChars": 876,
+        "codemodeChars": 52,
+        "onDemandChars": 711
+      },
+      {
+        "tool": "browser_run_code_unsafe",
+        "covered": false,
+        "directChars": 829,
+        "codemodeChars": 45,
+        "onDemandChars": 748
+      },
+      {
+        "tool": "browser_take_screenshot",
+        "covered": true,
+        "directChars": 1638,
+        "codemodeChars": 82,
+        "onDemandChars": 1431
+      },
+      {
+        "tool": "browser_snapshot",
+        "covered": true,
+        "directChars": 840,
+        "codemodeChars": 56,
+        "onDemandChars": 717
+      },
+      {
+        "tool": "browser_click",
+        "covered": true,
+        "directChars": 854,
+        "codemodeChars": 70,
+        "onDemandChars": 647
+      },
+      {
+        "tool": "browser_drag",
+        "covered": false,
+        "directChars": 815,
+        "codemodeChars": 68,
+        "onDemandChars": 643
+      },
+      {
+        "tool": "browser_hover",
+        "covered": true,
+        "directChars": 484,
+        "codemodeChars": 35,
+        "onDemandChars": 364
+      },
+      {
+        "tool": "browser_select_option",
+        "covered": true,
+        "directChars": 663,
+        "codemodeChars": 51,
+        "onDemandChars": 508
+      },
+      {
+        "tool": "browser_tabs",
+        "covered": true,
+        "directChars": 860,
+        "codemodeChars": 56,
+        "onDemandChars": 696
+      },
+      {
+        "tool": "browser_wait_for",
+        "covered": true,
+        "directChars": 646,
+        "codemodeChars": 45,
+        "onDemandChars": 537
+      }
+    ],
+    "directTotalChars": 18503,
+    "codemodeTotalChars": 2125,
+    "descriptionChars": 1709,
+    "indexLevel": 2
+  },
+  "latency": {
+    "rows": [
+      {
+        "id": "browser_navigate",
+        "tool": "browser_navigate",
+        "iterations": 8,
+        "direct": {
+          "median": 52.65440000000035,
+          "p95": 61.01270000000022,
+          "min": 47.164700000000266,
+          "max": 61.01270000000022
+        },
+        "codemode": {
+          "median": 53.52629999999954,
+          "p95": 59.30999999999949,
+          "min": 48.22659999999996,
+          "max": 59.30999999999949
+        },
+        "directChars": 232,
+        "codemodeChars": 240,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_snapshot",
+        "tool": "browser_snapshot",
+        "iterations": 8,
+        "direct": {
+          "median": 5.461100000000442,
+          "p95": 7.427599999999984,
+          "min": 4.716900000000351,
+          "max": 7.427599999999984
+        },
+        "codemode": {
+          "median": 7.114599999999882,
+          "p95": 8.304900000000089,
+          "min": 6.108999999999469,
+          "max": 8.304900000000089
+        },
+        "directChars": 574,
+        "codemodeChars": 582,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_find",
+        "tool": "browser_find",
+        "iterations": 8,
+        "direct": {
+          "median": 4.94130000000041,
+          "p95": 6.030300000000352,
+          "min": 4.797099999999773,
+          "max": 6.030300000000352
+        },
+        "codemode": {
+          "median": 6.948099999999613,
+          "p95": 8.650300000000243,
+          "min": 6.0045999999993,
+          "max": 8.650300000000243
+        },
+        "directChars": 284,
+        "codemodeChars": 292,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_evaluate",
+        "tool": "browser_evaluate",
+        "iterations": 8,
+        "direct": {
+          "median": 512.2059000000008,
+          "p95": 514.2952000000005,
+          "min": 507.4251000000004,
+          "max": 514.2952000000005
+        },
+        "codemode": {
+          "median": 511.91380000000026,
+          "p95": 520.5966000000008,
+          "min": 508.28659999999945,
+          "max": 520.5966000000008
+        },
+        "directChars": 104,
+        "codemodeChars": 112,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_click",
+        "tool": "browser_click",
+        "iterations": 8,
+        "direct": {
+          "median": 531.6046999999999,
+          "p95": 536.6892999999982,
+          "min": 527.2163,
+          "max": 536.6892999999982
+        },
+        "codemode": {
+          "median": 538.2010999999984,
+          "p95": 542.8430999999982,
+          "min": 532.5917000000009,
+          "max": 542.8430999999982
+        },
+        "directChars": 219,
+        "codemodeChars": 227,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_type",
+        "tool": "browser_type",
+        "iterations": 8,
+        "direct": {
+          "median": 10.177400000000489,
+          "p95": 12.430000000000291,
+          "min": 9.230199999998149,
+          "max": 12.430000000000291
+        },
+        "codemode": {
+          "median": 11.901699999998527,
+          "p95": 13.56619999999748,
+          "min": 10.560400000002119,
+          "max": 13.56619999999748
+        },
+        "directChars": 74,
+        "codemodeChars": 82,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_select_option",
+        "tool": "browser_select_option",
+        "iterations": 8,
+        "direct": {
+          "median": 12.406499999997322,
+          "p95": 13.708599999998114,
+          "min": 11.83690000000206,
+          "max": 13.708599999998114
+        },
+        "codemode": {
+          "median": 14.52179999999862,
+          "p95": 15.199699999997392,
+          "min": 12.992699999998877,
+          "max": 15.199699999997392
+        },
+        "directChars": 234,
+        "codemodeChars": 242,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_hover",
+        "tool": "browser_hover",
+        "iterations": 8,
+        "direct": {
+          "median": 19.991399999998976,
+          "p95": 21.81800000000294,
+          "min": 19.56580000000031,
+          "max": 21.81800000000294
+        },
+        "codemode": {
+          "median": 21.340799999998126,
+          "p95": 22.016199999998207,
+          "min": 20.239399999998568,
+          "max": 22.016199999998207
+        },
+        "directChars": 219,
+        "codemodeChars": 227,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_press_key",
+        "tool": "browser_press_key",
+        "iterations": 8,
+        "direct": {
+          "median": 6.140400000000227,
+          "p95": 7.876299999999901,
+          "min": 4.419799999999668,
+          "max": 7.876299999999901
+        },
+        "codemode": {
+          "median": 7.386599999997998,
+          "p95": 8.615499999999884,
+          "min": 6.666800000002695,
+          "max": 8.615499999999884
+        },
+        "directChars": 80,
+        "codemodeChars": 88,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_take_screenshot",
+        "tool": "browser_take_screenshot",
+        "iterations": 8,
+        "direct": {
+          "median": 26.481700000000274,
+          "p95": 30.724699999998847,
+          "min": 24.11779999999999,
+          "max": 30.724699999998847
+        },
+        "codemode": {
+          "median": 27.064799999996467,
+          "p95": 47.257799999999406,
+          "min": 25.78770000000077,
+          "max": 47.257799999999406
+        },
+        "directChars": 14286,
+        "codemodeChars": 14428,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_console_messages",
+        "tool": "browser_console_messages",
+        "iterations": 8,
+        "direct": {
+          "median": 3.7114000000001397,
+          "p95": 3.898300000000745,
+          "min": 3.375800000001618,
+          "max": 3.898300000000745
+        },
+        "codemode": {
+          "median": 4.944700000000012,
+          "p95": 5.309699999997974,
+          "min": 4.716199999998935,
+          "max": 5.309699999997974
+        },
+        "directChars": 54,
+        "codemodeChars": 62,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_network_requests",
+        "tool": "browser_network_requests",
+        "iterations": 8,
+        "direct": {
+          "median": 2.3564000000005763,
+          "p95": 3.348200000000361,
+          "min": 2.145199999999022,
+          "max": 3.348200000000361
+        },
+        "codemode": {
+          "median": 3.668600000000879,
+          "p95": 4.638500000000931,
+          "min": 3.1415999999990163,
+          "max": 4.638500000000931
+        },
+        "directChars": 81,
+        "codemodeChars": 89,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_tabs",
+        "tool": "browser_tabs",
+        "iterations": 8,
+        "direct": {
+          "median": 4.459200000001147,
+          "p95": 4.802500000001601,
+          "min": 4.150100000002567,
+          "max": 4.802500000001601
+        },
+        "codemode": {
+          "median": 6.220900000000256,
+          "p95": 6.423000000002503,
+          "min": 5.952499999999418,
+          "max": 6.423000000002503
+        },
+        "directChars": 68,
+        "codemodeChars": 76,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_resize",
+        "tool": "browser_resize",
+        "iterations": 8,
+        "direct": {
+          "median": 2.6023000000022876,
+          "p95": 3.8541999999979453,
+          "min": 2.382999999997992,
+          "max": 3.8541999999979453
+        },
+        "codemode": {
+          "median": 3.7695000000021537,
+          "p95": 4.917600000000675,
+          "min": 3.3742999999994936,
+          "max": 4.917600000000675
+        },
+        "directChars": 91,
+        "codemodeChars": 99,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_wait_for",
+        "tool": "browser_wait_for",
+        "iterations": 8,
+        "direct": {
+          "median": 119.02219999999943,
+          "p95": 126.59490000000005,
+          "min": 108.90629999999874,
+          "max": 126.59490000000005
+        },
+        "codemode": {
+          "median": 116.2957000000024,
+          "p95": 120.85439999999653,
+          "min": 109.82560000000012,
+          "max": 120.85439999999653
+        },
+        "directChars": 270,
+        "codemodeChars": 278,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "browser_navigate_back",
+        "tool": "browser_navigate_back",
+        "iterations": 8,
+        "direct": {
+          "median": 40.30840000000171,
+          "p95": 44.63799999999901,
+          "min": 5.570800000001327,
+          "max": 44.63799999999901
+        },
+        "codemode": {
+          "median": 41.23479999999836,
+          "p95": 50.74630000000252,
+          "min": 6.739099999998871,
+          "max": 50.74630000000252
+        },
+        "directChars": 164,
+        "codemodeChars": 172,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      }
+    ],
+    "sandboxOnly": {
+      "median": 0.7344999999986612,
+      "p95": 1.1077000000004773,
+      "min": 0.6365000000005239,
+      "max": 1.1077000000004773
+    }
+  },
+  "coveredTools": 16,
+  "skipped": [
+    {
+      "tool": "browser_close",
+      "reason": "Closes the browser; every later case would have nothing to talk to."
+    },
+    {
+      "tool": "browser_handle_dialog",
+      "reason": "Needs a JavaScript dialog to be open."
+    },
+    {
+      "tool": "browser_emulate_media",
+      "reason": "Changes browser-wide rendering state that would carry into later cases."
+    },
+    {
+      "tool": "browser_file_upload",
+      "reason": "Needs a file chooser to be open and a file on disk."
+    },
+    {
+      "tool": "browser_drop",
+      "reason": "Needs a drop target and files or data."
+    },
+    {
+      "tool": "browser_fill_form",
+      "reason": "Takes a structured array of fields; covered by the form task instead."
+    },
+    {
+      "tool": "browser_network_request",
+      "reason": "Needs an index from a prior network listing."
+    },
+    {
+      "tool": "browser_run_code_unsafe",
+      "reason": "Runs arbitrary Playwright code on this PC; deliberately not exercised."
+    },
+    {
+      "tool": "browser_drag",
+      "reason": "Needs two live element references."
+    }
+  ],
+  "cases": [
+    {
+      "id": "browser_navigate",
+      "tool": "browser_navigate",
+      "args": {
+        "url": "http://127.0.0.1:4817/form"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "browser_snapshot",
+      "tool": "browser_snapshot",
+      "args": {},
+      "hasPrompt": true
+    },
+    {
+      "id": "browser_find",
+      "tool": "browser_find",
+      "args": {
+        "text": "Email"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_evaluate",
+      "tool": "browser_evaluate",
+      "args": {
+        "function": "() => document.title"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "browser_click",
+      "tool": "browser_click",
+      "args": {
+        "target": "#inc"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_type",
+      "tool": "browser_type",
+      "args": {
+        "target": "#name",
+        "text": "Ada"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_select_option",
+      "tool": "browser_select_option",
+      "args": {
+        "target": "#plan",
+        "values": [
+          "Pro"
+        ]
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_hover",
+      "tool": "browser_hover",
+      "args": {
+        "target": "#inc"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_press_key",
+      "tool": "browser_press_key",
+      "args": {
+        "key": "Tab"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_take_screenshot",
+      "tool": "browser_take_screenshot",
+      "args": {
+        "scale": "css"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_console_messages",
+      "tool": "browser_console_messages",
+      "args": {
+        "level": "info"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_network_requests",
+      "tool": "browser_network_requests",
+      "args": {
+        "static": false
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_tabs",
+      "tool": "browser_tabs",
+      "args": {
+        "action": "list"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_resize",
+      "tool": "browser_resize",
+      "args": {
+        "width": 1000,
+        "height": 700
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_wait_for",
+      "tool": "browser_wait_for",
+      "args": {
+        "time": 0.1
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "browser_navigate_back",
+      "tool": "browser_navigate_back",
+      "args": {},
+      "hasPrompt": false
+    }
+  ]
+}
