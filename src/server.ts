@@ -7,7 +7,10 @@ import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { Ajv } from 'ajv';
 import { z } from 'zod';
 import { compactIndex, describeExecuteCode, GET_API_DESCRIPTION, headerBudget, type CompactIndex } from './describe.ts';
+import { filterTools } from './access.ts';
 import { generateApi, toIdentifier } from './generate.ts';
+import { capOutput } from './output.ts';
+import { createStore } from './store.ts';
 import { runInSandbox } from './sandbox.ts';
 import type { ServiceConfig, Upstream } from './types.ts';
 
@@ -82,8 +85,10 @@ export interface CodeModeServer {
 export async function createCodeModeServer(config: ServiceConfig): Promise<CodeModeServer> {
   const { name, upstream, limits, instructions = '' } = config;
   const maxToolCalls = limits?.maxToolCalls ?? 100;
+  const maxOutputChars = limits?.maxOutputChars ?? 20_000;
+  const store = createStore(limits?.maxStoreChars);
   const client = await connectUpstream(upstream);
-  const tools = await listAllTools(client);
+  const tools = filterTools(await listAllTools(client), config.access);
   const { dts, names, perTool } = await generateApi(tools, NAMESPACE);
   const index = compactIndex(tools, headerBudget(instructions));
   const description = describeExecuteCode(index, instructions);
@@ -102,6 +107,8 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
   const makeCallTool = () => {
     let calls = 0;
     return async (id: string, input: unknown): Promise<unknown> => {
+      const stored = store.handle(id, input);
+      if (stored.handled) return stored.value;
       const toolName = Object.hasOwn(names, id) ? names[id] : undefined;
       if (toolName === undefined) {
         throw new Error(`Unknown tool "${id}". Available: ${Object.keys(names).join(', ')}`);
@@ -140,7 +147,7 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       if (out.error !== undefined) parts.push(`error: ${out.error}`);
       return {
         isError: out.error !== undefined,
-        content: [{ type: 'text', text: parts.join('\n\n') || '(no output)' }],
+        content: [{ type: 'text', text: capOutput(parts.join('\n\n') || '(no output)', maxOutputChars) }],
       };
     },
   );

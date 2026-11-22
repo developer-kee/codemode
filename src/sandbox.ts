@@ -95,6 +95,22 @@ export async function runInSandbox(
       for (const id of ${JSON.stringify(api.ids)}) {
         globalThis.${api.namespace}[id] = async (input) => JSON.parse(__call(id, JSON.stringify(input ?? {})));
       }
+      // store: persists across scripts; the host handles the reserved "__store.*" ids.
+      globalThis.store = {
+        get(key) {
+          const r = JSON.parse(__call('__store.get', JSON.stringify({ key })));
+          return r.found ? JSON.parse(r.json) : undefined;
+        },
+        set(key, value) {
+          __call('__store.set', JSON.stringify({ key, json: JSON.stringify(value) }));
+        },
+        delete(key) {
+          return JSON.parse(__call('__store.delete', JSON.stringify({ key })));
+        },
+        keys() {
+          return JSON.parse(__call('__store.keys', '{}'));
+        },
+      };
     `;
     vm.unwrapResult(vm.evalCode(prelude)).dispose();
 

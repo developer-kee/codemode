@@ -22,6 +22,20 @@ export interface SandboxLimits {
   maxLogChars?: number;
   /** Max upstream tool calls per script, so a loop cannot fan out unchecked. Default 100. */
   maxToolCalls?: number;
+  /** Max characters of the text `execute_code` returns to the model (head 70%, tail 30%). Default 20 000. */
+  maxOutputChars?: number;
+  /** Max total size of the `store` across scripts, in characters of keys plus JSON. Default 1 048 576. */
+  maxStoreChars?: number;
+}
+
+/** Which upstream tools become callable. Names are the upstream MCP tool names. */
+export interface ToolAccess {
+  /** If set, only these tools are exposed. */
+  allow?: string[];
+  /** These tools are never exposed; wins over `allow`. */
+  deny?: string[];
+  /** Keep only tools whose MCP annotations say `readOnlyHint: true`. Tools without annotations are excluded. */
+  readOnly?: boolean;
 }
 
 /** A service = one file in `services/` default-exporting this. */
@@ -31,6 +45,7 @@ export interface ServiceConfig {
   /** Extra guidance appended to the `execute_code` tool description. */
   instructions?: string;
   limits?: SandboxLimits;
+  access?: ToolAccess;
 }
 
 export interface SandboxApi {
