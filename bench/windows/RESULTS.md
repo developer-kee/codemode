@@ -9,7 +9,39 @@ Reproduce: `npm run bench -- --service windows --runs 3`. Method, metric definit
 
 > **Warning:** Gives the model real PowerShell and file access to this PC. Tasks are written to stay inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows, which is deleted and recreated before every run, but a model can still run arbitrary commands. Run on a machine you are happy to do that on.
 
-_No runs recorded yet._
+## Model: `claude-sonnet-5-5`
+
+### Task: files
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 2.0 | 1.0 | 2,274 | 346 | 660 | 4,632 | 5,638 | $0.011 | 13.6s |
+| codemode | 3/3 | 2.0 | 1.0 | 1,663 | 398 | 583 | 3,427 | 4,407 | $0.010 | 14.0s |
+
+### Task: inventory
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 3.0 | 2.0 | 2,289 | 463 | 1,113 | 7,758 | 9,334 | $0.016 | 16.2s |
+| codemode | 3/3 | 3.0 | 2.0 | 1,678 | 548 | 1,635 | 7,450 | 9,633 | $0.020 | 17.1s |
+
+### Task: organize
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 3/3 | 3.0 | 2.0 | 2,247 | 399 | 1,103 | 7,924 | 9,426 | $0.015 | 14.7s |
+| codemode | 3/3 | 3.0 | 2.0 | 1,636 | 520 | 1,327 | 5,746 | 7,593 | $0.017 | 18.8s |
+
+### All tasks
+
+| Path | Pass | Turns | Tool calls | First-turn context | Output | Fresh input (new + cache write) | Cache read | Total tokens | Cost | Wall time |
+|---|---|---|---|---|---|---|---|---|---|---|
+| direct | 9/9 | 2.7 | 1.7 | 2,270 | 403 | 958 | 6,771 | 8,133 | $0.014 | 14.8s |
+| codemode | 9/9 | 2.7 | 1.7 | 1,659 | 489 | 1,181 | 5,541 | 7,211 | $0.016 | 16.6s |
+
+Total tokens, codemode vs direct: **-11%** (7,211 vs 8,133).
+
+Wall time, codemode vs direct: **12%** (16.6s vs 14.8s). Wall time covers the whole headless run: MCP server start-up, model latency per turn, and the tool's own execution.
 
 ## Task prompts
 
