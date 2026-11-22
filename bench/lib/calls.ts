@@ -21,6 +21,8 @@ export interface CallCase {
   tool: string;
   /** Arguments for the deterministic (no-model) latency measurement. */
   args: Record<string, unknown>;
+  /** Calls made on each side before timing starts, for tools that need state (e.g. open a page before a snapshot). */
+  before?: { tool: string; args: Record<string, unknown> }[];
   /** Model-driven run: a prompt that makes the model make this one call. Omit to measure latency only. */
   prompt?: string;
   /** Model-driven run: pattern the model's answer must match. */
@@ -205,6 +207,13 @@ export async function measureLatency(
   const rows: LatencyRow[] = [];
   for (const c of suite.cases) {
     await suite.reset();
+    for (const b of c.before ?? []) {
+      await direct.callTool({ name: b.tool, arguments: b.args });
+      await codemode.callTool({
+        name: 'execute_code',
+        arguments: { code: `return await codemode.${toIdentifier(b.tool)}(${JSON.stringify(b.args)});` },
+      });
+    }
     await timed(callDirect(c)); // warm-up, not recorded
     await timed(callCodemode(c));
     const d: number[] = [];
