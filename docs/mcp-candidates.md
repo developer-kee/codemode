@@ -44,9 +44,9 @@ A wrapper is worth building when most of these are true. The first two matter mo
 
 Skip it when the tool is a single lookup, when every step depends on seeing the screen, or when the saving would only be the smaller definition on a catalogue of a handful of tools.
 
-## 4. Suggested standing rule (not installed)
+## 4. Standing rule (installed in your user-level CLAUDE.md on 2026-11-22)
 
-You asked for a rule that prefers codemode and asks before using direct MCP access where no wrapper exists. It is written out here so you can decide where it lives. It would go in `~/.claude/CLAUDE.md` to apply in every project, or in a project's `CLAUDE.md`. Nothing has been added to either file.
+You asked for a rule that prefers codemode and asks before using direct MCP access where no wrapper exists. It now lives in `~/.claude/CLAUDE.md` (`C:\Users\Kee-Yankee\.claude\CLAUDE.md`), so it applies in every project; the text below is the version before two small additions (the exact current text is in that file). To remove it, delete that section from the file.
 
 ```
 ## MCP tools: prefer codemode wrappers
@@ -70,4 +70,4 @@ Limits of such a rule: it is guidance the model follows, not enforcement. A stri
 1. Register the wrappers you want to use: `claude mcp add codemode-<service> -- node C:\repos\codemode\src\cli.ts <service>` (after `npm run servers:install`). `claude mcp list` showed only the claude.ai connectors from this folder.
 2. Use Claude normally for a few weeks, then `npm run mcp:usage`, and read it against section 3.
 3. Decide on the Linear wrapper first (largest unwrapped catalogue). Open question: whether Linear's hosted server accepts an API key for non-interactive use.
-4. If you want the standing rule, say where it should go and I will add it.
+4. Register the wrappers (step 1): the rule tells Claude to stop and ask when a wrapper exists but is not registered.
