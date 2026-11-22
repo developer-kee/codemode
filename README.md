@@ -22,7 +22,6 @@ bench/
 docs/landscape.md   comparison with other Code Mode implementations
 test/               unit and end-to-end tests
 scripts/            add-service scaffolder
-vendor/addon.py     BlenderMCP addon copy for the Blender benchmark
 ```
 
 ## Services

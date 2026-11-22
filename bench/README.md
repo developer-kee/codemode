@@ -121,7 +121,7 @@ The exact prompts are repeated at the bottom of each service's `RESULTS.md`. Pro
 
 ### Blender
 
-Needs Blender open with the [BlenderMCP addon](https://github.com/ahujasid/blender-mcp) connected on `localhost:9876` (a copy is in `vendor/addon.py`). Every run **wipes the open scene**. The check uses the world-space bounding-box centre of each object rather than its origin, so correct geometry built with the origin elsewhere is not marked wrong (an early version used the origin and wrongly failed correct tables on both paths; fixed before any published numbers).
+Needs Blender open with the [BlenderMCP addon](https://github.com/ahujasid/blender-mcp) connected on `localhost:9876`. The addon is third-party code that runs Python inside Blender, so this repo does not ship a copy: install it yourself from the [upstream repository](https://github.com/ahujasid/blender-mcp) and check what you installed. The pinned `blender-mcp@2.0.0` server reports whether the addon it finds is the protocol version it expects. Every run **wipes the open scene**. The check uses the world-space bounding-box centre of each object rather than its origin, so correct geometry built with the origin elsewhere is not marked wrong (an early version used the origin and wrongly failed correct tables on both paths; fixed before any published numbers).
 
 | Task | What it tests |
 |---|---|
