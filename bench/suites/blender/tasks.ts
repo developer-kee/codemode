@@ -1,4 +1,5 @@
 import type { Verdict } from '../../lib/types/index.ts';
+import { fail, ok } from '../../lib/testkit.ts';
 import type { ObjectSnapshot, SceneSnapshot } from './socket.ts';
 
 export interface TaskSpec {
@@ -16,8 +17,6 @@ const nearV = (a: readonly number[], b: readonly number[], tol = 0.02): boolean 
 const byName = (scene: SceneSnapshot): Map<string, ObjectSnapshot> =>
   new Map(scene.objects.map((o) => [o.name, o]));
 
-const fail = (detail: string): Verdict => ({ pass: false, detail });
-const ok: Verdict = { pass: true, detail: 'ok' };
 
 // --- "audit" task data: 40 objects, deterministic, with known off-grid and below-ground cases. ---
 interface AuditObj {

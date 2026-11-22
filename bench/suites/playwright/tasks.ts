@@ -1,8 +1,7 @@
-import type { Task, Verdict } from '../../lib/types/index.ts';
+import type { Task } from '../../lib/types/index.ts';
 import { ORIGIN, resetFixture, submissions, toolsInStockTotal, topRatedId } from './fixture.ts';
+import { fail, ok } from '../../lib/testkit.ts';
 
-const fail = (detail: string): Verdict => ({ pass: false, detail });
-const ok: Verdict = { pass: true, detail: 'ok' };
 
 export const tasks: Task[] = [
   {

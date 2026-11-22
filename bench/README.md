@@ -41,7 +41,6 @@ bench/
     results/            raw runs, one JSON line per run, all variants together (`variant` field on each record)
     calls-latest.json   output of `bench:calls`: static definition costs, latency, coverage
     RESULTS.md          generated report for this service
-  legacy/migrate.ts     one-off migration from the earlier layout
   work/                 scratch configs for a run (git-ignored)
 ```
 
@@ -265,7 +264,3 @@ Prefer tasks that are safe to repeat and fully checkable from outside the model.
 | `@modelcontextprotocol/sdk` | 1.32.2 |
 | `quickjs-emscripten` | 0.32.0 |
 | OS | Windows 11 |
-
-## Moving from the old layout
-
-Before the one-folder-per-service layout, each variant had its own folder (`blender-calls`, `windows-full`, `windows-calls`, and `windows` meaning the 4-tool run). `node bench/legacy/migrate.ts` moves those results into the service folders and adds the `variant` field (`--dry` previews, `--root <dir>` works on a copy). It is a one-off and safe to repeat; stop any running benchmark before using it, then run `npm run bench:report`. The old generated `CALLS.md` files are removed; `npm run bench:calls` writes the new `calls-latest.json`.

@@ -1,3 +1,4 @@
+import { lcg } from '../../lib/testkit.ts';
 // Seeds a throwaway Notion database through the REST API for the Notion benchmark.
 //
 // UNTESTED AGAINST LIVE NOTION. This was written from the API documentation (version 2025-09-03, data sources) without
@@ -18,13 +19,6 @@ export interface SeedTask {
   owner: string;
 }
 
-function lcg(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 1103515245 + 12345) % 2147483648;
-    return s / 2147483648;
-  };
-}
 
 function build(): SeedTask[] {
   const rnd = lcg(808);

@@ -1,11 +1,7 @@
-import type { Task, Verdict } from '../../lib/types/index.ts';
+import type { Task } from '../../lib/types/index.ts';
 import { clearSummary, expected, readSummary, seedWorkspace, ids } from './fixture.ts';
+import { fail, hasNumber, ok } from '../../lib/testkit.ts';
 
-const fail = (detail: string): Verdict => ({ pass: false, detail });
-const ok: Verdict = { pass: true, detail: 'ok' };
-
-const hasNumber = (answer: string, value: number): boolean =>
-  [...answer.replace(/,/g, '').matchAll(/\d+(?:\.\d+)?/g)].some((m) => Number(m[0]) === value);
 
 /** The workspace is seeded once per benchmark run (preflight); each task only has to make sure it exists. */
 async function ensureSeeded(): Promise<void> {

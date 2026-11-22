@@ -1,6 +1,3 @@
-/** Reserved host-bridge ids for the sandbox `store`. They contain a dot, so no tool identifier can equal one. */
-export const STORE_IDS = ['__store.get', '__store.set', '__store.delete', '__store.keys'] as const;
-
 export const DEFAULT_MAX_STORE_CHARS = 1024 * 1024;
 
 export interface Store {

@@ -1,27 +1,11 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import type { Task, Verdict } from '../../lib/types/index.ts';
+import type { Task } from '../../lib/types/index.ts';
+import { fail, freshDir, lcg, lines, ok, readText } from '../../lib/testkit.ts';
 
 /** Every task works only inside this folder; the harness wipes and recreates it before each run. */
 export const SANDBOX = `${tmpdir()}\\codemode-bench-windows`;
 
-const fail = (detail: string): Verdict => ({ pass: false, detail });
-const ok: Verdict = { pass: true, detail: 'ok' };
-const lines = (text: string): string[] => text.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
-const readText = (p: string): string => readFileSync(p, 'utf8').replace(/^﻿/, '');
-const freshDir = (dir: string): void => {
-  rmSync(dir, { recursive: true, force: true });
-  mkdirSync(dir, { recursive: true });
-};
-
-/** Deterministic pseudo-random sequence so every run sees identical files. */
-function lcg(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 1103515245 + 12345) % 2147483648;
-    return s / 2147483648;
-  };
-}
 
 export function makeTasks(dir: string): Task[] {
   // ---- files: create a small tree with exact contents -----------------------------------------
