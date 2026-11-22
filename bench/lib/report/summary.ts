@@ -5,6 +5,7 @@ import { buildCallsSections } from '../calls/report.ts';
 import type { BenchService, BenchVariant } from '../types/index.ts';
 import { familiesIn, modelFamily, modelsIn, runnersOf } from './families.ts';
 import { loadCalls, loadRecords, overviewFile, reportFile, type RunRecord } from './records.ts';
+import { portablePaths } from '../portable.ts';
 
 const mean = (xs: number[]): number => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
 const fmt = (n: number): string => Math.round(n).toLocaleString('en-US');
@@ -254,7 +255,7 @@ export function buildServiceReport(service: BenchService): string {
     out.push(
       `### \`${variant.id}\``,
       '',
-      ...variant.tasks.map((t) => `- **${t.id}**${t.seeded ? ' (pre-seeded)' : ''}: ${t.prompt}`),
+      ...variant.tasks.map((t) => `- **${t.id}**${t.seeded ? ' (pre-seeded)' : ''}: ${portablePaths(t.prompt)}`),
       '',
     );
   }

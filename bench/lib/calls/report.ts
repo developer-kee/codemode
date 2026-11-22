@@ -1,6 +1,7 @@
 // Markdown sections for the deterministic per-call benchmark.
 import type { CallsData } from './data.ts';
 import { CLAUDE_CODE_DESCRIPTION_CAP, estimateTokens } from './static.ts';
+import { portablePaths } from '../portable.ts';
 
 const ms = (n: number): string => (n < 10 ? n.toFixed(1) : String(Math.round(n)));
 const signed = (n: number): string => (n < 0 ? '-' : '+') + ms(Math.abs(n));
@@ -65,7 +66,7 @@ export function buildCallsSections(serviceId: string, data: CallsData): string[]
     '',
     '| Case | Arguments | Model prompt |',
     '|---|---|---|',
-    ...data.cases.map((c) => `| ${c.id} | \`${JSON.stringify(c.args).replace(/\|/g, '\\|')}\` | ${c.hasPrompt ? 'yes' : 'latency only'} |`),
+    ...data.cases.map((c) => `| ${c.id} | \`${portablePaths(JSON.stringify(c.args)).replace(/\|/g, '\\|')}\` | ${c.hasPrompt ? 'yes' : 'latency only'} |`),
     '',
   );
   return out;

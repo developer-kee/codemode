@@ -260,17 +260,17 @@ Cases cover 12 of 16 tools. The rest are skipped on purpose:
 | Case | Arguments | Model prompt |
 |---|---|---|
 | list_allowed_directories | `{}` | yes |
-| read_text_file | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt"}` | yes |
-| read_multiple_files | `{"paths":["C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt","C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\b.txt"]}` | yes |
-| list_directory | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls"}` | yes |
-| list_directory_with_sizes | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls","sortBy":"name"}` | latency only |
-| directory_tree | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls"}` | yes |
-| search_files | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls","pattern":"c.txt"}` | yes |
-| get_file_info | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt"}` | yes |
-| write_file | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\out.txt","content":"written-4821"}` | yes |
-| append_file | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\log.txt","content":"line\n"}` | latency only |
-| edit_file | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\edit.txt","edits":[{"oldText":"AAA","newText":"BBB"}],"dryRun":true}` | yes |
-| create_directory | `{"path":"C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\made\\deep"}` | yes |
+| read_text_file | `{"path":"<path>"}` | yes |
+| read_multiple_files | `{"paths":["<path>","<path>"]}` | yes |
+| list_directory | `{"path":"<path>"}` | yes |
+| list_directory_with_sizes | `{"path":"<path>","sortBy":"name"}` | latency only |
+| directory_tree | `{"path":"<path>"}` | yes |
+| search_files | `{"path":"<path>","pattern":"c.txt"}` | yes |
+| get_file_info | `{"path":"<path>"}` | yes |
+| write_file | `{"path":"<path>","content":"written-4821"}` | yes |
+| append_file | `{"path":"<path>","content":"line\n"}` | latency only |
+| edit_file | `{"path":"<path>","edits":[{"oldText":"AAA","newText":"BBB"}],"dryRun":true}` | yes |
+| create_directory | `{"path":"<path>"}` | yes |
 
 ## Task prompts
 
@@ -278,20 +278,20 @@ Identical text is sent on both paths. Prompts never name tools.
 
 ### `scenarios`
 
-- **notes-index**: Work only inside C:\repos\codemode\bench\work\fs-sandbox. Create the folder notes/2026 there. Inside it create three Markdown files note_1.md, note_2.md and note_3.md, where note_N.md contains exactly two lines: "# Note N" and then "Body N" (N is its number). Also create notes/INDEX.md with one line per note, in order, in the form "- [Note N](2026/note_N.md)". Then reply with one short sentence.
-- **log-triage** (pre-seeded): Work only inside C:\repos\codemode\bench\work\fs-sandbox, which holds 20 log files named app_NN.log. Write C:\repos\codemode\bench\work\fs-sandbox\summary.csv with the header line "file,errors,warnings" and then one line per log file giving its name, the number of lines containing " ERROR " and the number containing " WARN ", sorted by errors, most first, ties by file name A to Z. Reply with one short sentence that names the file with the most errors.
-- **organize** (pre-seeded): Work only inside C:\repos\codemode\bench\work\fs-sandbox, which holds 40 loose files of several types. Move every file into a subfolder named after its extension in upper case (for example photo.jpg goes into JPG), creating the folders as needed. Do not delete or rename anything. Reply with one short sentence giving the number of files you moved.
-- **retries** (pre-seeded): Work only inside C:\repos\codemode\bench\work\fs-sandbox, which holds a tree of .cfg files in nested folders. In every .cfg file whose line reads exactly "retries=3", change that line to "retries=5". Files with any other retries value must stay exactly as they are. Reply with one short sentence giving the number of files you changed.
+- **notes-index**: Work only inside <path>. Create the folder notes/2026 there. Inside it create three Markdown files note_1.md, note_2.md and note_3.md, where note_N.md contains exactly two lines: "# Note N" and then "Body N" (N is its number). Also create notes/INDEX.md with one line per note, in order, in the form "- [Note N](2026/note_N.md)". Then reply with one short sentence.
+- **log-triage** (pre-seeded): Work only inside <path>, which holds 20 log files named app_NN.log. Write <path> with the header line "file,errors,warnings" and then one line per log file giving its name, the number of lines containing " ERROR " and the number containing " WARN ", sorted by errors, most first, ties by file name A to Z. Reply with one short sentence that names the file with the most errors.
+- **organize** (pre-seeded): Work only inside <path>, which holds 40 loose files of several types. Move every file into a subfolder named after its extension in upper case (for example photo.jpg goes into JPG), creating the folders as needed. Do not delete or rename anything. Reply with one short sentence giving the number of files you moved.
+- **retries** (pre-seeded): Work only inside <path>, which holds a tree of .cfg files in nested folders. In every .cfg file whose line reads exactly "retries=3", change that line to "retries=5". Files with any other retries value must stay exactly as they are. Reply with one short sentence giving the number of files you changed.
 
 ### `calls`
 
 - **list_allowed_directories** (pre-seeded): Which directories are you allowed to access? Reply with one short sentence naming the folder.
-- **read_text_file** (pre-seeded): Read the file C:\repos\codemode\bench\work\fs-sandbox\calls\a.txt and tell me exactly what it contains.
-- **read_multiple_files** (pre-seeded): Read C:\repos\codemode\bench\work\fs-sandbox\calls\a.txt and C:\repos\codemode\bench\work\fs-sandbox\calls\b.txt and tell me what each contains, in one short sentence.
-- **list_directory** (pre-seeded): List the contents of C:\repos\codemode\bench\work\fs-sandbox\calls and reply with the names in one short sentence.
-- **directory_tree** (pre-seeded): Show the folder tree of C:\repos\codemode\bench\work\fs-sandbox\calls and tell me which file lives inside the sub folder.
-- **search_files** (pre-seeded): Search C:\repos\codemode\bench\work\fs-sandbox\calls for a file called c.txt and tell me which folder it is in.
-- **get_file_info** (pre-seeded): What is the size in bytes of C:\repos\codemode\bench\work\fs-sandbox\calls\a.txt? Reply with one short sentence.
-- **write_file** (pre-seeded): Write the text written-4821 to the file C:\repos\codemode\bench\work\fs-sandbox\calls\out.txt, then reply with one short sentence.
-- **edit_file** (pre-seeded): In the file C:\repos\codemode\bench\work\fs-sandbox\calls\edit.txt replace the word AAA with BBB, then reply with one short sentence.
-- **create_directory** (pre-seeded): Create the folder C:\repos\codemode\bench\work\fs-sandbox\calls\made\deep (including any parent folders), then reply with one short sentence.
+- **read_text_file** (pre-seeded): Read the file <path> and tell me exactly what it contains.
+- **read_multiple_files** (pre-seeded): Read <path> and <path> and tell me what each contains, in one short sentence.
+- **list_directory** (pre-seeded): List the contents of <path> and reply with the names in one short sentence.
+- **directory_tree** (pre-seeded): Show the folder tree of <path> and tell me which file lives inside the sub folder.
+- **search_files** (pre-seeded): Search <path> for a file called c.txt and tell me which folder it is in.
+- **get_file_info** (pre-seeded): What is the size in bytes of <path>? Reply with one short sentence.
+- **write_file** (pre-seeded): Write the text written-4821 to the file <path>, then reply with one short sentence.
+- **edit_file** (pre-seeded): In the file <path> replace the word AAA with BBB, then reply with one short sentence.
+- **create_directory** (pre-seeded): Create the folder <path> (including any parent folders), then reply with one short sentence.

@@ -294,11 +294,11 @@ Cases cover 6 of 20 tools. The rest are skipped on purpose:
 | Case | Arguments | Model prompt |
 |---|---|---|
 | PowerShell | `{"command":"Write-Output codemode-ok-4821"}` | yes |
-| FileSystem.list | `{"mode":"list","path":"C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls"}` | yes |
-| FileSystem.read | `{"mode":"read","path":"C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls\\a.txt"}` | yes |
-| FileSystem.write | `{"mode":"write","path":"C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls\\out.txt","content":"written-4821","overwrite":true}` | yes |
+| FileSystem.list | `{"mode":"list","path":"<path>"}` | yes |
+| FileSystem.read | `{"mode":"read","path":"<path>"}` | yes |
+| FileSystem.write | `{"mode":"write","path":"<path>","content":"written-4821","overwrite":true}` | yes |
 | Process.list | `{"mode":"list","sort_by":"memory","limit":5}` | yes |
-| Registry.get | `{"mode":"get","path":"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion","name":"ProductName"}` | yes |
+| Registry.get | `{"mode":"get","path":"HKL<path> NT\\CurrentVersion","name":"ProductName"}` | yes |
 | Wait | `{"duration":1}` | yes |
 | DisplayInventory | `{}` | latency only |
 
@@ -308,22 +308,22 @@ Identical text is sent on both paths. Prompts never name tools.
 
 ### `scenarios`
 
-- **files**: Work only inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows. Create the folder report\2026 there. Inside it create four text files Q1.txt, Q2.txt, Q3.txt and Q4.txt, where each file contains exactly the text "Quarter N" with N being its quarter number (1 to 4). Also create report\README.txt containing the four file names, one per line, in order. Then reply with one short sentence.
-- **inventory** (pre-seeded): Work only inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows, which holds 30 files of several types. Write C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows\logs.csv containing a header line "name,bytes" followed by one line per .log file (name and its size in bytes), sorted by size, largest first, ties by name A to Z. Reply with one short sentence giving the total size in bytes of all the .log files.
-- **organize** (pre-seeded): Work only inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows, which holds 40 loose files of several types. Move every file into a subfolder named after its extension in upper case (for example photo.jpg goes into JPG), creating the folders as needed. Do not delete or rename anything. Reply with one short sentence giving the number of files you moved.
+- **files**: Work only inside <path>. Create the folder report\2026 there. Inside it create four text files Q1.txt, Q2.txt, Q3.txt and Q4.txt, where each file contains exactly the text "Quarter N" with N being its quarter number (1 to 4). Also create report\README.txt containing the four file names, one per line, in order. Then reply with one short sentence.
+- **inventory** (pre-seeded): Work only inside <path>, which holds 30 files of several types. Write <path> containing a header line "name,bytes" followed by one line per .log file (name and its size in bytes), sorted by size, largest first, ties by name A to Z. Reply with one short sentence giving the total size in bytes of all the .log files.
+- **organize** (pre-seeded): Work only inside <path>, which holds 40 loose files of several types. Move every file into a subfolder named after its extension in upper case (for example photo.jpg goes into JPG), creating the folders as needed. Do not delete or rename anything. Reply with one short sentence giving the number of files you moved.
 
 ### `scenarios-4-tools`
 
-- **files**: Work only inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows. Create the folder report\2026 there. Inside it create four text files Q1.txt, Q2.txt, Q3.txt and Q4.txt, where each file contains exactly the text "Quarter N" with N being its quarter number (1 to 4). Also create report\README.txt containing the four file names, one per line, in order. Then reply with one short sentence.
-- **inventory** (pre-seeded): Work only inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows, which holds 30 files of several types. Write C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows\logs.csv containing a header line "name,bytes" followed by one line per .log file (name and its size in bytes), sorted by size, largest first, ties by name A to Z. Reply with one short sentence giving the total size in bytes of all the .log files.
-- **organize** (pre-seeded): Work only inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows, which holds 40 loose files of several types. Move every file into a subfolder named after its extension in upper case (for example photo.jpg goes into JPG), creating the folders as needed. Do not delete or rename anything. Reply with one short sentence giving the number of files you moved.
+- **files**: Work only inside <path>. Create the folder report\2026 there. Inside it create four text files Q1.txt, Q2.txt, Q3.txt and Q4.txt, where each file contains exactly the text "Quarter N" with N being its quarter number (1 to 4). Also create report\README.txt containing the four file names, one per line, in order. Then reply with one short sentence.
+- **inventory** (pre-seeded): Work only inside <path>, which holds 30 files of several types. Write <path> containing a header line "name,bytes" followed by one line per .log file (name and its size in bytes), sorted by size, largest first, ties by name A to Z. Reply with one short sentence giving the total size in bytes of all the .log files.
+- **organize** (pre-seeded): Work only inside <path>, which holds 40 loose files of several types. Move every file into a subfolder named after its extension in upper case (for example photo.jpg goes into JPG), creating the folders as needed. Do not delete or rename anything. Reply with one short sentence giving the number of files you moved.
 
 ### `calls`
 
 - **PowerShell** (pre-seeded): Run a PowerShell command that prints codemode-ok-4821 and tell me exactly what it printed.
-- **FileSystem.list** (pre-seeded): List the files in C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows-calls and reply with their names in one short sentence.
-- **FileSystem.read** (pre-seeded): Read the file C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows-calls\a.txt and tell me exactly what it contains.
-- **FileSystem.write** (pre-seeded): Write the text written-4821 to the file C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows-calls\out.txt (replace it if it exists), then reply with one short sentence.
+- **FileSystem.list** (pre-seeded): List the files in <path> and reply with their names in one short sentence.
+- **FileSystem.read** (pre-seeded): Read the file <path> and tell me exactly what it contains.
+- **FileSystem.write** (pre-seeded): Write the text written-4821 to the file <path> (replace it if it exists), then reply with one short sentence.
 - **Process.list** (pre-seeded): List the five processes using the most memory right now, names only, in one short sentence.
-- **Registry.get** (pre-seeded): Read the ProductName value of the registry key HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion and tell me it in one short sentence.
+- **Registry.get** (pre-seeded): Read the ProductName value of the registry key HKL<path> NT\CurrentVersion and tell me it in one short sentence.
 - **Wait** (pre-seeded): Wait for 1 second, then reply with the single word done.
