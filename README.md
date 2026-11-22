@@ -18,7 +18,7 @@ services/           one file per wrapped MCP server (blender, notion, windows, p
 bench/
   cli/              entrypoints: run, calls, report, validate
   lib/              reusable harness: runners (Claude, DSH), per-call benchmark, report building
-  suites/<id>/      one service's tasks, cases, raw results, archive and generated RESULTS.md
+  suites/<id>/      one service's tasks, cases, raw results and generated RESULTS.md
   legacy/           one-off migration from the pre-layout folders
 docs/landscape.md   comparison with other Code Mode implementations
 test/               unit and end-to-end tests

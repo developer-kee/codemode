@@ -37,7 +37,6 @@ bench/
     cases.ts            per-tool-call cases (data only)
     (extras)            e.g. blender/socket.ts, playwright/fixture.ts
     results/            raw runs, one JSON line per run, all variants together (`variant` field on each record)
-    results-archive/    superseded runs, kept for reference (not in the reports)
     calls-latest.json   output of `bench:calls`: static definition costs, latency, coverage
     RESULTS.md          generated report for this service
   legacy/migrate.ts     one-off migration from the earlier layout
@@ -172,7 +171,7 @@ npm run bench:validate                                        # offline: definit
 
 Options of `bench`: `--service`, `--variant` (default `scenarios`), `--runs`, `--model`, `--runner` (default `auto`, from the model id), `--tasks`, `--paths direct,codemode`, `--budget` (USD per run, Claude Code only), `--timeout` (seconds per run). `bench:calls` takes `--service` and `--iters`; it connects to the service's default variant (all tools) and needs the same prerequisites. `bench:validate` starts nothing and calls no model, so it is free and safe to run after every change; it fails on unknown variants, tasks or runners, malformed usage numbers, an over-cap `execute_code` description, inconsistent `calls-latest.json`, or a `RESULTS.md` that no longer matches the raw data, and warns on a non-MCP tool call (built-in tools not fully off) or one model recorded through two runners.
 
-Reports group by variant, then by model family, then by model, so runs with different models sit side by side. Batches accumulate; delete a `results/*.jsonl` file to drop that batch (or move it to `results-archive/<name>/` to keep it).
+Reports group by variant, then by model family, then by model, so runs with different models sit side by side. Batches accumulate; delete a `results/*.jsonl` file to drop that batch (it stays in git history).
 
 ## Add a task to a service
 
@@ -223,7 +222,7 @@ Prefer tasks that are safe to repeat and fully checkable from outside the model.
 - **Services are not comparable with each other.** Task difficulty, the number of upstream tools and the benchmark's tool whitelist differ per service.
 - **The saving is mostly tool-definition overhead.** Direct sends every upstream tool schema each turn; codemode sends one compact index. Where the model uses only one upstream tool anyway (Blender: run Python), the benchmark does not exercise **chaining several different upstream tools in one script**, which is where codemode is meant to help most.
 - **`scenarios-4-tools` understates the schema overhead.** The real Windows-MCP server offers 20 tools; that variant exposes four. The `scenarios` variant exposes all 20.
-- **The description budget is now guarded, not silently truncated.** Claude Code cuts MCP tool descriptions at about 2,048 characters, and the first design put the whole typed API in the `execute_code` description, so the model never saw the function list. Since the compact index landed, the description fits: `bench:calls` records its exact length and flags an overflow (Playwright: 1,709 characters for 25 tools), and `bench:validate` fails if a recorded description exceeds the cap. Runs in `bench/suites/<service>/results-archive/v1-truncated-description/` predate the fix and their savings are **upper bounds**; current results are not. See [../docs/landscape.md](../docs/landscape.md).
+- **The description budget is now guarded, not silently truncated.** Claude Code cuts MCP tool descriptions at about 2,048 characters, and the first design put the whole typed API in the `execute_code` description, so the model never saw the function list. Since the compact index landed, the description fits: `bench:calls` records its exact length and flags an overflow (Playwright: 1,709 characters for 25 tools), and `bench:validate` fails if a recorded description exceeds the cap. Runs made before the fix (in git history, no longer in the tree) had savings that were **upper bounds**; current results are not. See [../docs/landscape.md](../docs/landscape.md).
 - **Prompt cache.** Cache-read tokens depend on caching behaviour and vary between runs; that is why `Fresh input`, `Cache read` and `Total` are shown separately.
 - **Telemetry.** The upstream servers send their own telemetry on both paths. It was left on to keep the paths identical.
 - **Task difficulty.** All tasks are doable with one script. Harder or more tool-diverse tasks may change the picture, in either direction.
