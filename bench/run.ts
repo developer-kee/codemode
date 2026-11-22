@@ -1,6 +1,7 @@
-// Usage: npm run bench -- --service <id> [--runs 3] [--model claude-sonnet-5-5] [--tasks a,b] [--paths direct,codemode] [--budget 2]
+﻿// Usage: npm run bench -- --service <id> [--runs 3] [--model claude-sonnet-5-5] [--tasks a,b] [--paths direct,codemode] [--budget 2]
 //        npm run bench -- --list
 // Each service's warning (side effects, prerequisites) is printed first: read it.
+import { execFileSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
 import { runClaude, type PathId } from './lib/claude.ts';
 import { saveRecord, writeReports } from './lib/report.ts';
@@ -41,6 +42,13 @@ if (selected.length === 0 || !Number.isInteger(runs) || runs < 1) {
 console.log(`WARNING: ${service.warning}\n`);
 await service.preflight();
 
+const rev = (() => {
+  try {
+    return execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
+  } catch {
+    return undefined;
+  }
+})();
 const batch = new Date().toISOString().replace(/[:.]/g, '-');
 const totalRuns = selected.length * wantPaths.length * runs;
 let n = 0;
@@ -61,7 +69,7 @@ for (let repeat = 1; repeat <= runs; repeat++) {
         timeoutMs: Number(values.timeout) * 1000,
       });
       const verdict = run.ok ? await task.verify(run.answer) : { pass: false, detail: run.error ?? 'run failed' };
-      saveRecord(service.id, { batch, task: task.id, model: values.model, repeat, pass: verdict.pass, verdict: verdict.detail, run });
+      saveRecord(service.id, { batch, ...(rev ? { rev } : {}), task: task.id, model: values.model, repeat, pass: verdict.pass, verdict: verdict.detail, run });
       const tokens = run.usage.input + run.usage.cacheWrite + run.usage.cacheRead + run.usage.output;
       console.log(
         `[${n}/${totalRuns}] ${service.id}/${task.id} ${path} #${repeat}: ${verdict.pass ? 'PASS' : `FAIL (${verdict.detail})`} ` +
@@ -71,3 +79,4 @@ for (let repeat = 1; repeat <= runs; repeat++) {
   }
 }
 console.log(`Reports: ${writeReports(services).join(', ')}`);
+

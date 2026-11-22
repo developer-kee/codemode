@@ -7,35 +7,35 @@ Reproduce: `npm run bench:calls -- --service windows --iters 10`.
 
 ## Definition cost per tool
 
-What the model is sent for each tool on **every turn**. `Direct` is the tool's name, description and input schema as JSON; `codemode` is that tool's slice of the generated TypeScript API. Tokens are estimated as characters / 4, good for comparing rows with each other, not an exact count.
+What the model is sent for each tool on **every turn**. `Direct` is the tool's name, description and input schema as JSON. `Codemode, always sent` is that tool's line in the `execute_code` description (name, parameters, one-line summary). `On demand` is its full TypeScript declaration, which the model only receives if it calls `get_api`. Tokens are estimated as characters / 4: good for comparing rows with each other, not an exact count.
 
-| Tool | Direct (≈ tokens) | Codemode (≈ tokens) | In per-call cases |
-|---|---|---|---|
-| Snapshot | 455 | 365 | no |
-| FileSystem | 399 | 289 | yes |
-| App | 282 | 178 | no |
-| Move | 251 | 177 | no |
-| Screenshot | 236 | 181 | no |
-| Scrape | 231 | 198 | no |
-| Registry | 223 | 184 | yes |
-| Type | 215 | 150 | no |
-| Scroll | 200 | 152 | no |
-| PowerShell | 197 | 195 | yes |
-| WaitFor | 197 | 151 | no |
-| Process | 193 | 140 | yes |
-| Click | 181 | 142 | no |
-| MultiSelect | 159 | 117 | no |
-| Notification | 144 | 136 | no |
-| MultiEdit | 128 | 98 | no |
-| Shortcut | 108 | 92 | no |
-| Clipboard | 106 | 94 | no |
-| Wait | 103 | 100 | yes |
-| DisplayInventory | 73 | 97 | yes |
-| **Total** | **4,078** | **3,354** (includes 107 fixed for `execute_code`) | |
+| Tool | Direct (≈ tokens) | Codemode, always sent (≈) | Codemode, on demand via get_api (≈) | In per-call cases |
+|---|---|---|---|---|
+| Snapshot | 455 | 31 | 365 | no |
+| FileSystem | 399 | 34 | 289 | yes |
+| App | 282 | 19 | 178 | no |
+| Move | 251 | 13 | 177 | no |
+| Screenshot | 236 | 22 | 181 | no |
+| Scrape | 231 | 12 | 198 | no |
+| Registry | 223 | 12 | 184 | yes |
+| Type | 215 | 17 | 150 | no |
+| Scroll | 200 | 14 | 152 | no |
+| PowerShell | 197 | 8 | 195 | yes |
+| WaitFor | 197 | 19 | 151 | no |
+| Process | 193 | 14 | 140 | yes |
+| Click | 181 | 10 | 142 | no |
+| MultiSelect | 159 | 11 | 117 | no |
+| Notification | 144 | 10 | 136 | no |
+| MultiEdit | 128 | 7 | 98 | no |
+| Shortcut | 108 | 6 | 92 | no |
+| Clipboard | 106 | 7 | 94 | no |
+| Wait | 103 | 5 | 100 | yes |
+| DisplayInventory | 73 | 6 | 97 | yes |
+| **Total sent every turn** | **4,078** | **479** (execute_code and get_api, with their fixed text) | | |
 
 The biggest single definition is 455 tokens, 11% of the direct total.
 
-> **Important: these two totals are what each side _tries_ to send, not what the model receives.** The codemode total is about the same size as the direct total because the generated TypeScript API carries the same information as the tool schemas. In Claude Code, though, an MCP tool description is cut at about 2,048 characters. Asking the model to quote its `execute_code` description (Blender) returned about 2,070 characters ending in "… [truncated]", and the first-turn context of codemode runs stays near 1.7k tokens for both Blender and Windows regardless of API size. The generated API lists the types first and the callable `codemode.*` members last, so the model sees the types of the first few tools and never the member list. Token savings measured by the model-driven benchmarks therefore include an unknown share that is **missing information**, not compression. Treat those savings as an upper bound until the description is restructured to fit the cap.
+**Truncation guard.** Claude Code cuts an MCP tool description at about 2,048 characters; anything past that never reaches the model. The `execute_code` description here is **1,504 characters** (fits), listing every function at detail level 2 (1 = parameter types and summary, 2 = parameter names, 3 = names only, 4 = names cut to fit). An earlier design put the whole typed API in the description; it was cut off and the model never saw the function list (see ../README.md).
 
 ## Latency per call (no model)
 
@@ -43,16 +43,16 @@ Wall time for one tool call, in milliseconds, measured over a live connection. `
 
 | Case | Direct median | Direct p95 | Codemode median | Codemode p95 | Overhead (median) | Chars: direct | Chars: codemode | Errors (d/c) |
 |---|---|---|---|---|---|---|---|---|
-| PowerShell | 888 | 919 | 907 | 923 | +20 ms | 43 | 72 | 0/0 |
-| FileSystem.list | 3.4 | 3.6 | 12 | 20 | +8.6 ms | 141 | 176 | 0/0 |
-| FileSystem.read | 3.2 | 3.8 | 16 | 23 | +13 ms | 90 | 124 | 0/0 |
-| FileSystem.write | 3.0 | 3.2 | 7.6 | 21 | +4.5 ms | 97 | 130 | 0/0 |
-| Process.list | 735 | 768 | 742 | 848 | +7.7 ms | 279 | 312 | 0/0 |
-| Registry.get | 910 | 921 | 923 | 933 | +13 ms | 99 | 131 | 0/0 |
-| Wait | 1003 | 1003 | 1009 | 1021 | +6.4 ms | 21 | 47 | 0/0 |
-| DisplayInventory | 2.4 | 2.8 | 11 | 21 | +8.4 ms | 306 | 549 | 0/0 |
+| PowerShell | 897 | 946 | 906 | 999 | +9.2 ms | 43 | 72 | 0/0 |
+| FileSystem.list | 3.5 | 3.9 | 9.1 | 20 | +5.7 ms | 141 | 176 | 0/0 |
+| FileSystem.read | 2.7 | 3.1 | 11 | 17 | +8.1 ms | 90 | 124 | 0/0 |
+| FileSystem.write | 3.2 | 3.9 | 11 | 20 | +7.4 ms | 97 | 130 | 0/0 |
+| Process.list | 978 | 1126 | 832 | 1252 | -146 ms | 279 | 312 | 0/0 |
+| Registry.get | 905 | 938 | 920 | 932 | +15 ms | 99 | 131 | 0/0 |
+| Wait | 1003 | 1005 | 1014 | 1021 | +11 ms | 21 | 47 | 0/0 |
+| DisplayInventory | 4.0 | 4.2 | 12 | 18 | +8.4 ms | 306 | 549 | 0/0 |
 
-Sandbox-only cost (`return 1` through `execute_code`, no upstream call): median 4.1 ms, p95 17 ms. This is the floor of codemode's per-call overhead.
+Sandbox-only cost (`return 1` through `execute_code`, no upstream call): median 16 ms, p95 17 ms. This is the floor of codemode's per-call overhead.
 
 ## Coverage
 

@@ -1,37 +1,38 @@
-﻿{
-    "name":  "codemode",
-    "version":  "0.1.0",
-    "description":  "Code Mode for MCP: wrap any MCP server as one execute_code tool. Each service is a file in services/.",
-    "type":  "module",
-    "main":  "src/index.ts",
-    "exports":  {
-                    ".":  "./src/index.ts"
-                },
-    "scripts":  {
-                    "typecheck":  "tsc",
-                    "test":  "tsc \u0026\u0026 node --test test/*.test.ts",
-                    "add":  "node scripts/add-service.ts",
-                    "start":  "node src/cli.ts",
-                    "bench":  "node bench/run.ts",
-                    "bench:report":  "node bench/report.ts",
-                    "bench:calls":  "node bench/calls.ts"
-                },
-    "license":  "MIT",
-    "dependencies":  {
-                         "@modelcontextprotocol/sdk":  "^1.32.2",
-                         "json-schema-to-typescript":  "^16.0.0",
-                         "quickjs-emscripten":  "^0.32.0",
-                         "sucrase":  "^3.35.1",
-                         "zod":  "^4.6.7"
-                     },
-    "bin":  {
-                "codemode":  "src/cli.ts"
-            },
-    "devDependencies":  {
-                            "@types/node":  "^24.19.2",
-                            "typescript":  "^7.0.2"
-                        },
-    "engines":  {
-                    "node":  "\u003e=24"
-                }
+{
+    "name": "codemode",
+    "version": "0.1.0",
+    "description": "Code Mode for MCP: wrap any MCP server as one execute_code tool. Each service is a file in services/.",
+    "type": "module",
+    "main": "src/index.ts",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc",
+        "test": "tsc && node --test test/*.test.ts",
+        "add": "node scripts/add-service.ts",
+        "start": "node src/cli.ts",
+        "bench": "node bench/run.ts",
+        "bench:report": "node bench/report.ts",
+        "bench:calls": "node bench/calls.ts"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.32.2",
+        "ajv": "^8.20.0",
+        "json-schema-to-typescript": "^16.0.0",
+        "quickjs-emscripten": "^0.32.0",
+        "sucrase": "^3.35.1",
+        "zod": "^4.6.7"
+    },
+    "bin": {
+        "codemode": "src/cli.ts"
+    },
+    "devDependencies": {
+        "@types/node": "^24.19.2",
+        "typescript": "^7.0.2"
+    },
+    "engines": {
+        "node": ">=24"
+    }
 }

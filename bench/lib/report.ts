@@ -1,4 +1,4 @@
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+﻿import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { ClaudeRun, PathId } from './claude.ts';
 import type { BenchService } from './types.ts';
@@ -10,6 +10,8 @@ export interface RunRecord {
   repeat: number;
   pass: boolean;
   verdict: string;
+  /** Git revision of this repo when the run was made, so results can be tied to the wrapper design. */
+  rev?: string;
   run: ClaudeRun;
 }
 
@@ -201,3 +203,4 @@ export function writeReports(all: BenchService[]): string[] {
   written.push(overviewFile);
   return written;
 }
+

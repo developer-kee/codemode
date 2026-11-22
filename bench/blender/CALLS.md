@@ -7,25 +7,25 @@ Reproduce: `npm run bench:calls -- --service blender --iters 10`.
 
 ## Definition cost per tool
 
-What the model is sent for each tool on **every turn**. `Direct` is the tool's name, description and input schema as JSON; `codemode` is that tool's slice of the generated TypeScript API. Tokens are estimated as characters / 4, good for comparing rows with each other, not an exact count.
+What the model is sent for each tool on **every turn**. `Direct` is the tool's name, description and input schema as JSON. `Codemode, always sent` is that tool's line in the `execute_code` description (name, parameters, one-line summary). `On demand` is its full TypeScript declaration, which the model only receives if it calls `get_api`. Tokens are estimated as characters / 4: good for comparing rows with each other, not an exact count.
 
-| Tool | Direct (≈ tokens) | Codemode (≈ tokens) | In per-call cases |
-|---|---|---|---|
-| look | 755 | 661 | yes |
-| generate_3d | 690 | 657 | no |
-| generate_gaussian_world | 610 | 615 | no |
-| search_assets | 594 | 549 | no |
-| get_scene_info | 459 | 461 | yes |
-| import_asset | 450 | 433 | no |
-| record_trajectory_feedback | 281 | 293 | no |
-| get_addon_status | 253 | 283 | yes |
-| execute_blender_code | 208 | 230 | yes |
-| disable_telemetry | 135 | 162 | no |
-| **Total** | **4,432** | **4,460** (includes 107 fixed for `execute_code`) | |
+| Tool | Direct (≈ tokens) | Codemode, always sent (≈) | Codemode, on demand via get_api (≈) | In per-call cases |
+|---|---|---|---|---|
+| look | 755 | 29 | 661 | yes |
+| generate_3d | 690 | 31 | 657 | no |
+| generate_gaussian_world | 610 | 25 | 615 | no |
+| search_assets | 594 | 34 | 549 | no |
+| get_scene_info | 459 | 16 | 461 | yes |
+| import_asset | 450 | 27 | 433 | no |
+| record_trajectory_feedback | 281 | 21 | 293 | no |
+| get_addon_status | 253 | 9 | 283 | yes |
+| execute_blender_code | 208 | 11 | 230 | yes |
+| disable_telemetry | 135 | 9 | 162 | no |
+| **Total sent every turn** | **4,432** | **407** (execute_code and get_api, with their fixed text) | | |
 
 The biggest single definition is 755 tokens, 17% of the direct total.
 
-> **Important: these two totals are what each side _tries_ to send, not what the model receives.** The codemode total is about the same size as the direct total because the generated TypeScript API carries the same information as the tool schemas. In Claude Code, though, an MCP tool description is cut at about 2,048 characters. Asking the model to quote its `execute_code` description (Blender) returned about 2,070 characters ending in "… [truncated]", and the first-turn context of codemode runs stays near 1.7k tokens for both Blender and Windows regardless of API size. The generated API lists the types first and the callable `codemode.*` members last, so the model sees the types of the first few tools and never the member list. Token savings measured by the model-driven benchmarks therefore include an unknown share that is **missing information**, not compression. Treat those savings as an upper bound until the description is restructured to fit the cap.
+**Truncation guard.** Claude Code cuts an MCP tool description at about 2,048 characters; anything past that never reaches the model. The `execute_code` description here is **1,225 characters** (fits), listing every function at detail level 2 (1 = parameter types and summary, 2 = parameter names, 3 = names only, 4 = names cut to fit). An earlier design put the whole typed API in the description; it was cut off and the model never saw the function list (see ../README.md).
 
 ## Latency per call (no model)
 
@@ -33,12 +33,12 @@ Wall time for one tool call, in milliseconds, measured over a live connection. `
 
 | Case | Direct median | Direct p95 | Codemode median | Codemode p95 | Overhead (median) | Chars: direct | Chars: codemode | Errors (d/c) |
 |---|---|---|---|---|---|---|---|---|
-| get_addon_status | 474 | 479 | 486 | 494 | +12 ms | 1,096 | 1,264 | 0/0 |
-| get_scene_info | 44 | 52 | 64 | 75 | +20 ms | 193 | 222 | 0/0 |
-| execute_blender_code | 45 | 52 | 62 | 73 | +17 ms | 45 | 72 | 0/0 |
-| look | 197 | 207 | 253 | 256 | +57 ms | 411,191 | 411,319 | 0/0 |
+| get_addon_status | 476 | 485 | 485 | 500 | +9.6 ms | 1,096 | 1,264 | 0/0 |
+| get_scene_info | 45 | 51 | 62 | 69 | +17 ms | 193 | 222 | 0/0 |
+| execute_blender_code | 48 | 52 | 62 | 69 | +14 ms | 45 | 72 | 0/0 |
+| look | 199 | 215 | 252 | 255 | +53 ms | 411,191 | 411,319 | 0/0 |
 
-Sandbox-only cost (`return 1` through `execute_code`, no upstream call): median 10 ms, p95 19 ms. This is the floor of codemode's per-call overhead.
+Sandbox-only cost (`return 1` through `execute_code`, no upstream call): median 9.7 ms, p95 13 ms. This is the floor of codemode's per-call overhead.
 
 ## Coverage
 

@@ -1,4 +1,4 @@
-/** Upstream MCP server launched as a child process over stdio. */
+﻿/** Upstream MCP server launched as a child process over stdio. */
 export interface StdioUpstream {
   command: string;
   args?: string[];
@@ -20,6 +20,8 @@ export interface SandboxLimits {
   memoryBytes?: number;
   /** Max characters kept from console output. Default 100 000. */
   maxLogChars?: number;
+  /** Max upstream tool calls per script, so a loop cannot fan out unchecked. Default 100. */
+  maxToolCalls?: number;
 }
 
 /** A service = one file in `services/` default-exporting this. */
@@ -53,3 +55,4 @@ export interface GeneratedApi {
   /** Identifier -> the declarations that tool contributes to `dts` (its types plus its member). */
   perTool: Record<string, string>;
 }
+

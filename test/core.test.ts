@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { createCodeModeServer, runInSandbox, type SandboxApi } from '../src/index.ts';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { compactIndex, createCodeModeServer, DESCRIPTION_BUDGET, runInSandbox, type SandboxApi } from '../src/index.ts';
 
 const fake = fileURLToPath(new URL('./fake-upstream.ts', import.meta.url));
 const noTools: SandboxApi = { namespace: 'codemode', ids: [], callTool: () => Promise.resolve(null) };
@@ -39,6 +40,29 @@ test('sandbox: guest cannot reach unknown tools', async () => {
   assert.match(r.error ?? '', /Unknown tool/);
 });
 
+function syntheticTools(n: number): Tool[] {
+  return Array.from({ length: n }, (_, i) => ({
+    name: `tool_number_${i}`,
+    description: `Does thing ${i}. Longer explanation that should be cut after the first sentence.`,
+    inputSchema: {
+      type: 'object' as const,
+      properties: { id: { type: 'string' }, mode: { enum: ['a', 'b'] }, limit: { type: 'integer' } },
+      required: ['id'],
+    },
+  }));
+}
+
+test('compactIndex: always fits the budget and always names every tool when it can', () => {
+  for (const n of [3, 20, 60, 400]) {
+    const tools = syntheticTools(n);
+    const idx = compactIndex(tools, 1500);
+    assert.ok(idx.text.length <= 1500, `${n} tools -> ${idx.text.length} chars at level ${idx.level}`);
+    if (idx.level < 4) for (const t of tools) assert.ok(idx.text.includes(t.name), `${t.name} missing at level ${idx.level}`);
+  }
+  assert.equal(compactIndex(syntheticTools(3), 1500).level, 1);
+  assert.ok(compactIndex(syntheticTools(400), 1500).level >= 3);
+});
+
 test('end to end: one execute_code call chains upstream tools', async () => {
   const { server, dts, close } = await createCodeModeServer({
     name: 'fake-codemode',
@@ -52,8 +76,23 @@ test('end to end: one execute_code call chains upstream tools', async () => {
   await client.connect(a);
 
   const tools = await client.listTools();
-  assert.equal(tools.tools.length, 1);
-  assert.equal(tools.tools[0]?.name, 'execute_code');
+  assert.deepEqual(tools.tools.map((t) => t.name).sort(), ['execute_code', 'get_api']);
+  const description = tools.tools.find((t) => t.name === 'execute_code')?.description ?? '';
+  assert.ok(description.length <= DESCRIPTION_BUDGET + 200, `description is ${description.length} chars`);
+  assert.match(description, /add_numbers\(\{ a: number; b: number \}\)/);
+
+  const api = (await client.callTool({ name: 'get_api', arguments: { names: ['add-numbers'] } })) as CallToolResult;
+  assert.match(firstText(api), /export interface AddNumbersInput/);
+  const noSuch = (await client.callTool({ name: 'get_api', arguments: { names: ['nope'] } })) as CallToolResult;
+  assert.equal(noSuch.isError, true);
+
+  const badArgs = (await client.callTool({
+    name: 'execute_code',
+    arguments: { code: 'return await codemode.add_numbers({a: "x"});' },
+  })) as CallToolResult;
+  assert.equal(badArgs.isError, true);
+  assert.match(firstText(badArgs), /Invalid arguments for add_numbers/);
+  assert.match(firstText(badArgs), /Expected: add_numbers\(\{ a: number; b: number \}\)/);
 
   const ok = (await client.callTool({
     name: 'execute_code',

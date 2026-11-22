@@ -1,11 +1,13 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+﻿import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Ajv } from 'ajv';
 import { z } from 'zod';
-import { generateApi } from './generate.ts';
+import { compactIndex, describeExecuteCode, GET_API_DESCRIPTION, headerBudget, type CompactIndex } from './describe.ts';
+import { generateApi, toIdentifier } from './generate.ts';
 import { runInSandbox } from './sandbox.ts';
 import type { ServiceConfig, Upstream } from './types.ts';
 
@@ -62,53 +64,72 @@ async function listAllTools(client: Client): Promise<Tool[]> {
   return tools;
 }
 
-/** The `execute_code` tool description: guidance plus the generated TypeScript API. */
-export function describeExecuteCode(dts: string, instructions = ''): string {
-  return [
-    `Write TypeScript that calls the \`${NAMESPACE}\` API below, in ONE script. Chain calls, loop, filter and`,
-    'aggregate in code instead of making many separate calls; only what you `console.log()` or `return` comes back.',
-    'The sandbox has no network, filesystem or imports; the API is the only way out. Top-level await is supported.',
-    instructions,
-    '',
-    '```ts',
-    dts,
-    '```',
-  ].join('\n');
-}
-
 export interface CodeModeServer {
   server: McpServer;
   client: Client;
   dts: string;
+  /** What the execute_code description lists, and how detailed it is. */
+  index: CompactIndex;
+  /** The full execute_code description as sent to the client. */
+  description: string;
   close(): Promise<void>;
 }
 
-/** Build an MCP server exposing ONE tool, `execute_code`, over the upstream's tools. */
+/**
+ * Build an MCP server over the upstream's tools with two tools of its own:
+ * `execute_code` (run a script against the typed API) and `get_api` (look up full declarations on demand).
+ */
 export async function createCodeModeServer(config: ServiceConfig): Promise<CodeModeServer> {
   const { name, upstream, limits, instructions = '' } = config;
+  const maxToolCalls = limits?.maxToolCalls ?? 100;
   const client = await connectUpstream(upstream);
   const tools = await listAllTools(client);
-  const { dts, names } = await generateApi(tools, NAMESPACE);
+  const { dts, names, perTool } = await generateApi(tools, NAMESPACE);
+  const index = compactIndex(tools, headerBudget(instructions));
+  const description = describeExecuteCode(index, instructions);
 
-  const callTool = async (id: string, input: unknown): Promise<unknown> => {
-    const toolName = Object.hasOwn(names, id) ? names[id] : undefined;
-    if (toolName === undefined) throw new Error(`Unknown tool "${id}"`);
-    const args = typeof input === 'object' && input !== null ? (input as Record<string, unknown>) : {};
-    const res = (await client.callTool({ name: toolName, arguments: args })) as CallToolResult;
-    return unwrapResult(res);
+  // Check arguments against each tool's JSON schema, so a wrong guess gets a precise error instead of an opaque one.
+  const ajv = new Ajv({ strict: false, allErrors: true, validateFormats: false });
+  const validators = new Map<string, ReturnType<Ajv['compile']>>();
+  for (const t of tools) {
+    try {
+      validators.set(toIdentifier(t.name), ajv.compile(t.inputSchema));
+    } catch {
+      /* unsupported schema keyword: skip validation for this tool */
+    }
+  }
+
+  const makeCallTool = () => {
+    let calls = 0;
+    return async (id: string, input: unknown): Promise<unknown> => {
+      const toolName = Object.hasOwn(names, id) ? names[id] : undefined;
+      if (toolName === undefined) {
+        throw new Error(`Unknown tool "${id}". Available: ${Object.keys(names).join(', ')}`);
+      }
+      if (++calls > maxToolCalls) throw new Error(`Tool call limit reached (${maxToolCalls} per script)`);
+      const args = typeof input === 'object' && input !== null ? (input as Record<string, unknown>) : {};
+      const validate = validators.get(id);
+      if (validate && !validate(args)) {
+        const why = ajv.errorsText(validate.errors, { dataVar: 'input' });
+        throw new Error(`Invalid arguments for ${id}: ${why}. Expected: ${index.lines[id] ?? id}`);
+      }
+      const res = (await client.callTool({ name: toolName, arguments: args })) as CallToolResult;
+      return unwrapResult(res);
+    };
   };
 
   const server = new McpServer({ name, version: '0.1.0' });
+
   server.registerTool(
     'execute_code',
     {
-      description: describeExecuteCode(dts, instructions),
+      description,
       inputSchema: { code: z.string().describe('TypeScript/JavaScript body to run') },
     },
     async ({ code }): Promise<CallToolResult> => {
       const out = await runInSandbox(
         code,
-        { namespace: NAMESPACE, ids: Object.keys(names), callTool },
+        { namespace: NAMESPACE, ids: Object.keys(names), callTool: makeCallTool() },
         limits,
       );
       const parts: string[] = [];
@@ -124,7 +145,28 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
     },
   );
 
-  return { server, client, dts, close: () => client.close() };
+  server.registerTool(
+    'get_api',
+    {
+      description: GET_API_DESCRIPTION,
+      inputSchema: {
+        names: z.array(z.string()).optional().describe('Function names to describe; omit for all'),
+      },
+    },
+    ({ names: wanted }): CallToolResult => {
+      const ids = wanted && wanted.length > 0 ? wanted.map(toIdentifier) : Object.keys(perTool);
+      const unknown = ids.filter((id) => !Object.hasOwn(perTool, id));
+      if (unknown.length > 0) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Unknown: ${unknown.join(', ')}. Available: ${Object.keys(perTool).join(', ')}` }],
+        };
+      }
+      return { content: [{ type: 'text', text: ids.map((id) => perTool[id]).join('\n\n') }] };
+    },
+  );
+
+  return { server, client, dts, index, description, close: () => client.close() };
 }
 
 /** Serve a code-mode wrapper over stdio. */

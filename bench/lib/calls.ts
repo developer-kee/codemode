@@ -8,7 +8,8 @@ import { fileURLToPath } from 'node:url';
 import type { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { generateApi, toIdentifier } from '../../src/generate.ts';
-import { connectUpstream, describeExecuteCode } from '../../src/server.ts';
+import { compactIndex, describeExecuteCode, GET_API_DESCRIPTION, headerBudget } from '../../src/describe.ts';
+import { connectUpstream } from '../../src/server.ts';
 import type { BenchService, Task, Verdict } from './types.ts';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -91,34 +92,49 @@ export interface StaticRow {
   tool: string;
   covered: boolean;
   directChars: number;
+  /** This tool's line in the execute_code description (always sent). */
   codemodeChars: number;
+  /** The full declaration get_api returns for it (sent only if the model asks). */
+  onDemandChars: number;
 }
 
 export interface StaticCosts {
   rows: StaticRow[];
   directTotalChars: number;
+  /** execute_code description plus both tool definitions: what is sent every turn. */
   codemodeTotalChars: number;
-  /** execute_code description boilerplate plus its input schema, paid once whatever the tool count. */
-  codemodeFixedChars: number;
+  /** execute_code description length; Claude Code cuts descriptions at about 2,048 characters. */
+  descriptionChars: number;
+  /** How detailed the index in the description is (1 richest, 4 names only, truncated). */
+  indexLevel: number;
 }
 
+export const CLAUDE_CODE_DESCRIPTION_CAP = 2048;
+
 export async function staticCosts(tools: readonly Tool[], covered: ReadonlySet<string>): Promise<StaticCosts> {
-  const { perTool, dts } = await generateApi(tools);
-  const rows = tools.map((t): StaticRow => ({
-    tool: t.name,
-    covered: covered.has(t.name),
-    // What an MCP client sends the model per tool: name, description, input schema.
-    directChars: JSON.stringify({ name: t.name, description: t.description ?? '', input_schema: t.inputSchema }).length,
-    codemodeChars: (perTool[toIdentifier(t.name)] ?? '').length,
-  }));
-  const fixed =
-    describeExecuteCode('').length +
-    JSON.stringify({ name: 'execute_code', input_schema: { type: 'object', properties: { code: { type: 'string' } } } }).length;
+  const { perTool } = await generateApi(tools);
+  const index = compactIndex(tools, headerBudget());
+  const description = describeExecuteCode(index);
+  const rows = tools.map((t): StaticRow => {
+    const id = toIdentifier(t.name);
+    return {
+      tool: t.name,
+      covered: covered.has(t.name),
+      // What an MCP client sends the model per tool: name, description, input schema.
+      directChars: JSON.stringify({ name: t.name, description: t.description ?? '', input_schema: t.inputSchema }).length,
+      codemodeChars: (index.lines[id] ?? '').length,
+      onDemandChars: (perTool[id] ?? '').length,
+    };
+  });
+  const defs =
+    JSON.stringify({ name: 'execute_code', description, input_schema: { type: 'object', properties: { code: { type: 'string' } } } }).length +
+    JSON.stringify({ name: 'get_api', description: GET_API_DESCRIPTION, input_schema: { type: 'object', properties: { names: { type: 'array' } } } }).length;
   return {
     rows,
     directTotalChars: rows.reduce((n, r) => n + r.directChars, 0),
-    codemodeTotalChars: dts.length + fixed,
-    codemodeFixedChars: fixed,
+    codemodeTotalChars: defs,
+    descriptionChars: description.length,
+    indexLevel: index.level,
   };
 }
 
@@ -269,22 +285,22 @@ export function buildCallsReport(
     '',
     '## Definition cost per tool',
     '',
-    'What the model is sent for each tool on **every turn**. `Direct` is the tool\'s name, description and input schema as JSON; `codemode` is that tool\'s slice of the generated TypeScript API. Tokens are estimated as characters / 4, good for comparing rows with each other, not an exact count.',
+    'What the model is sent for each tool on **every turn**. `Direct` is the tool\'s name, description and input schema as JSON. `Codemode, always sent` is that tool\'s line in the `execute_code` description (name, parameters, one-line summary). `On demand` is its full TypeScript declaration, which the model only receives if it calls `get_api`. Tokens are estimated as characters / 4: good for comparing rows with each other, not an exact count.',
     '',
-    '| Tool | Direct (≈ tokens) | Codemode (≈ tokens) | In per-call cases |',
-    '|---|---|---|---|',
+    '| Tool | Direct (≈ tokens) | Codemode, always sent (≈) | Codemode, on demand via get_api (≈) | In per-call cases |',
+    '|---|---|---|---|---|',
   ];
   for (const r of [...costs.rows].sort((a, b) => b.directChars - a.directChars)) {
-    out.push(`| ${r.tool} | ${tok(r.directChars)} | ${tok(r.codemodeChars)} | ${r.covered ? 'yes' : 'no'} |`);
+    out.push(`| ${r.tool} | ${tok(r.directChars)} | ${tok(r.codemodeChars)} | ${tok(r.onDemandChars)} | ${r.covered ? 'yes' : 'no'} |`);
   }
+  const fits = costs.descriptionChars <= CLAUDE_CODE_DESCRIPTION_CAP;
+  const biggest = Math.max(...costs.rows.map((r) => r.directChars));
   out.push(
-    `| **Total** | **${tok(costs.directTotalChars)}** | **${tok(costs.codemodeTotalChars)}** (includes ${tok(costs.codemodeFixedChars)} fixed for \`execute_code\`) | |`,
+    `| **Total sent every turn** | **${tok(costs.directTotalChars)}** | **${tok(costs.codemodeTotalChars)}** (execute_code and get_api, with their fixed text) | | |`,
     '',
-    `The biggest single definition is ${tok(Math.max(...costs.rows.map((r) => r.directChars)))} tokens, ${(
-      (Math.max(...costs.rows.map((r) => r.directChars)) / costs.directTotalChars) * 100
-    ).toFixed(0)}% of the direct total.`,
+    `The biggest single definition is ${tok(biggest)} tokens, ${((biggest / costs.directTotalChars) * 100).toFixed(0)}% of the direct total.`,
     '',
-    '> **Important: these two totals are what each side _tries_ to send, not what the model receives.** The codemode total is about the same size as the direct total because the generated TypeScript API carries the same information as the tool schemas. In Claude Code, though, an MCP tool description is cut at about 2,048 characters. Asking the model to quote its `execute_code` description (Blender) returned about 2,070 characters ending in "… [truncated]", and the first-turn context of codemode runs stays near 1.7k tokens for both Blender and Windows regardless of API size. The generated API lists the types first and the callable `codemode.*` members last, so the model sees the types of the first few tools and never the member list. Token savings measured by the model-driven benchmarks therefore include an unknown share that is **missing information**, not compression. Treat those savings as an upper bound until the description is restructured to fit the cap.',
+    `**Truncation guard.** Claude Code cuts an MCP tool description at about ${CLAUDE_CODE_DESCRIPTION_CAP.toLocaleString('en-US')} characters; anything past that never reaches the model. The \`execute_code\` description here is **${costs.descriptionChars.toLocaleString('en-US')} characters** (${fits ? 'fits' : '**OVER THE CAP**'}), listing every function at detail level ${costs.indexLevel} (1 = parameter types and summary, 2 = parameter names, 3 = names only, 4 = names cut to fit). An earlier design put the whole typed API in the description; it was cut off and the model never saw the function list (see ../README.md).`,
     '',
     '## Latency per call (no model)',
     '',
