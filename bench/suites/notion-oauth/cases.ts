@@ -1,6 +1,6 @@
 import type { CallDef } from '../../lib/types/index.ts';
 
-// Notion's hosted server, read-only tools only, against whatever workspace is signed in. There is no seed data and no
+// Notion's hosted server, the read tools, against whatever workspace is signed in. There is no seed data and no
 // model prompt: the benchmark records sizes and timings, never what the workspace contains, and the arguments below
 // are generic (no titles, ids or names). That is also why there are no model-driven tasks here: with no known
 // content there is nothing objective to check an answer against.
@@ -34,6 +34,46 @@ export const notionOauthCalls: CallDef = {
     },
   ],
   skipped: [
+    ...[
+      'notion-create-attachment',
+      'notion-create-file-upload',
+      'notion-create-pages',
+      'notion-update-page',
+      'notion-delete-pages',
+      'notion-delete-databases',
+      'notion-restore-pages',
+      'notion-convert-page-to-skill',
+      'notion-upload-skill',
+      'notion-update-skill-settings',
+      'notion-complete-mcp-setup',
+      'notion-move-pages',
+      'notion-duplicate-page',
+      'notion-create-database',
+      'notion-create-folder',
+      'notion-update-folder',
+      'notion-update-data-source',
+      'notion-create-comment',
+      'notion-update-comment',
+      'notion-delete-comment',
+      'notion-set-discussion-resolved',
+      'notion-set-comment-reaction',
+      'notion-create-suggested-edit',
+      'notion-resolve-suggested-edit',
+      'notion-spawn-session',
+      'notion-stop-session',
+      'notion-send-message-to-session',
+      'notion-create-view',
+      'notion-update-view',
+      'notion-restore-version',
+      'notion-update-sidebar-tabs',
+      'notion-update-page-favorites',
+      'notion-calendar-create-events',
+      'notion-calendar-update-events',
+      'notion-calendar-cancel-events',
+      'notion-link-meeting-note-to-calendar-event',
+      'notion-convert-to-meetings-database',
+      'notion-create-meeting-note',
+    ].map((tool) => ({ tool, reason: 'Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database.' })),
     ...['notion-query-meeting-notes', 'notion-query-sessions'].map((tool) => ({
       tool,
       reason: 'Answers "requires a Business plan" on other plans, so its latency would depend on the account, not the wrapper.',

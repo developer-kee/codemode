@@ -1,7 +1,7 @@
 {
   "date": "2026-11-22",
   "iterations": 10,
-  "toolCount": 39,
+  "toolCount": 77,
   "costs": {
     "rows": [
       {
@@ -33,6 +33,20 @@
         "onDemandChars": 3855
       },
       {
+        "tool": "notion-create-attachment",
+        "covered": false,
+        "directChars": 3936,
+        "codemodeChars": 24,
+        "onDemandChars": 3712
+      },
+      {
+        "tool": "notion-create-file-upload",
+        "covered": false,
+        "directChars": 1885,
+        "codemodeChars": 25,
+        "onDemandChars": 1731
+      },
+      {
         "tool": "notion-download-attachment",
         "covered": false,
         "directChars": 1493,
@@ -45,6 +59,55 @@
         "directChars": 1430,
         "codemodeChars": 29,
         "onDemandChars": 1336
+      },
+      {
+        "tool": "notion-create-pages",
+        "covered": false,
+        "directChars": 10330,
+        "codemodeChars": 19,
+        "onDemandChars": 9166
+      },
+      {
+        "tool": "notion-update-page",
+        "covered": false,
+        "directChars": 11171,
+        "codemodeChars": 18,
+        "onDemandChars": 10066
+      },
+      {
+        "tool": "notion-delete-pages",
+        "covered": false,
+        "directChars": 1573,
+        "codemodeChars": 19,
+        "onDemandChars": 3105
+      },
+      {
+        "tool": "notion-delete-databases",
+        "covered": false,
+        "directChars": 1709,
+        "codemodeChars": 23,
+        "onDemandChars": 3245
+      },
+      {
+        "tool": "notion-restore-pages",
+        "covered": false,
+        "directChars": 1059,
+        "codemodeChars": 20,
+        "onDemandChars": 2609
+      },
+      {
+        "tool": "notion-convert-page-to-skill",
+        "covered": false,
+        "directChars": 915,
+        "codemodeChars": 28,
+        "onDemandChars": 794
+      },
+      {
+        "tool": "notion-upload-skill",
+        "covered": false,
+        "directChars": 2729,
+        "codemodeChars": 19,
+        "onDemandChars": 2257
       },
       {
         "tool": "notion-download-skill",
@@ -61,6 +124,69 @@
         "onDemandChars": 718
       },
       {
+        "tool": "notion-update-skill-settings",
+        "covered": false,
+        "directChars": 2200,
+        "codemodeChars": 28,
+        "onDemandChars": 1900
+      },
+      {
+        "tool": "notion-complete-mcp-setup",
+        "covered": false,
+        "directChars": 767,
+        "codemodeChars": 25,
+        "onDemandChars": 630
+      },
+      {
+        "tool": "notion-move-pages",
+        "covered": false,
+        "directChars": 2487,
+        "codemodeChars": 17,
+        "onDemandChars": 1924
+      },
+      {
+        "tool": "notion-duplicate-page",
+        "covered": false,
+        "directChars": 1051,
+        "codemodeChars": 21,
+        "onDemandChars": 952
+      },
+      {
+        "tool": "notion-create-database",
+        "covered": false,
+        "directChars": 5089,
+        "codemodeChars": 22,
+        "onDemandChars": 4973
+      },
+      {
+        "tool": "notion-create-folder",
+        "covered": false,
+        "directChars": 1461,
+        "codemodeChars": 20,
+        "onDemandChars": 1149
+      },
+      {
+        "tool": "notion-update-folder",
+        "covered": false,
+        "directChars": 1801,
+        "codemodeChars": 20,
+        "onDemandChars": 1617
+      },
+      {
+        "tool": "notion-update-data-source",
+        "covered": false,
+        "directChars": 9658,
+        "codemodeChars": 25,
+        "onDemandChars": 7862
+      },
+      {
+        "tool": "notion-create-comment",
+        "covered": false,
+        "directChars": 10677,
+        "codemodeChars": 21,
+        "onDemandChars": 7880
+      },
+      {
         "tool": "notion-get-comments",
         "covered": false,
         "directChars": 3082,
@@ -68,11 +194,53 @@
         "onDemandChars": 2965
       },
       {
+        "tool": "notion-update-comment",
+        "covered": false,
+        "directChars": 1287,
+        "codemodeChars": 21,
+        "onDemandChars": 1133
+      },
+      {
+        "tool": "notion-delete-comment",
+        "covered": false,
+        "directChars": 991,
+        "codemodeChars": 21,
+        "onDemandChars": 865
+      },
+      {
+        "tool": "notion-set-discussion-resolved",
+        "covered": false,
+        "directChars": 1163,
+        "codemodeChars": 30,
+        "onDemandChars": 1022
+      },
+      {
+        "tool": "notion-set-comment-reaction",
+        "covered": false,
+        "directChars": 1043,
+        "codemodeChars": 27,
+        "onDemandChars": 875
+      },
+      {
+        "tool": "notion-create-suggested-edit",
+        "covered": false,
+        "directChars": 1782,
+        "codemodeChars": 28,
+        "onDemandChars": 1565
+      },
+      {
         "tool": "notion-get-suggested-edit",
         "covered": false,
         "directChars": 978,
         "codemodeChars": 25,
         "onDemandChars": 858
+      },
+      {
+        "tool": "notion-resolve-suggested-edit",
+        "covered": false,
+        "directChars": 1140,
+        "codemodeChars": 29,
+        "onDemandChars": 990
       },
       {
         "tool": "notion-get-async-task",
@@ -173,6 +341,13 @@
         "onDemandChars": 6606
       },
       {
+        "tool": "notion-spawn-session",
+        "covered": false,
+        "directChars": 1041,
+        "codemodeChars": 20,
+        "onDemandChars": 883
+      },
+      {
         "tool": "notion-get-session-status",
         "covered": false,
         "directChars": 1042,
@@ -185,6 +360,20 @@
         "directChars": 1146,
         "codemodeChars": 19,
         "onDemandChars": 980
+      },
+      {
+        "tool": "notion-stop-session",
+        "covered": false,
+        "directChars": 1015,
+        "codemodeChars": 19,
+        "onDemandChars": 902
+      },
+      {
+        "tool": "notion-send-message-to-session",
+        "covered": false,
+        "directChars": 1136,
+        "codemodeChars": 30,
+        "onDemandChars": 1000
       },
       {
         "tool": "notion-list-session-events",
@@ -201,6 +390,20 @@
         "onDemandChars": 1006
       },
       {
+        "tool": "notion-create-view",
+        "covered": false,
+        "directChars": 5043,
+        "codemodeChars": 18,
+        "onDemandChars": 4835
+      },
+      {
+        "tool": "notion-update-view",
+        "covered": false,
+        "directChars": 3343,
+        "codemodeChars": 18,
+        "onDemandChars": 3214
+      },
+      {
         "tool": "notion-get-version-changes",
         "covered": false,
         "directChars": 2734,
@@ -215,6 +418,13 @@
         "onDemandChars": 1568
       },
       {
+        "tool": "notion-restore-version",
+        "covered": false,
+        "directChars": 2782,
+        "codemodeChars": 22,
+        "onDemandChars": 2495
+      },
+      {
         "tool": "notion-list-page-backlinks",
         "covered": false,
         "directChars": 1553,
@@ -227,6 +437,20 @@
         "directChars": 890,
         "codemodeChars": 23,
         "onDemandChars": 809
+      },
+      {
+        "tool": "notion-update-sidebar-tabs",
+        "covered": false,
+        "directChars": 9229,
+        "codemodeChars": 26,
+        "onDemandChars": 11260
+      },
+      {
+        "tool": "notion-update-page-favorites",
+        "covered": false,
+        "directChars": 2412,
+        "codemodeChars": 28,
+        "onDemandChars": 1898
       },
       {
         "tool": "notion-calendar-list-calendars",
@@ -264,11 +488,53 @@
         "onDemandChars": 740
       },
       {
+        "tool": "notion-calendar-create-events",
+        "covered": false,
+        "directChars": 5545,
+        "codemodeChars": 29,
+        "onDemandChars": 3278
+      },
+      {
+        "tool": "notion-calendar-update-events",
+        "covered": false,
+        "directChars": 7505,
+        "codemodeChars": 29,
+        "onDemandChars": 4453
+      },
+      {
+        "tool": "notion-calendar-cancel-events",
+        "covered": false,
+        "directChars": 1412,
+        "codemodeChars": 29,
+        "onDemandChars": 1035
+      },
+      {
         "tool": "notion-get-self",
         "covered": true,
         "directChars": 715,
         "codemodeChars": 15,
         "onDemandChars": 620
+      },
+      {
+        "tool": "notion-link-meeting-note-to-calendar-event",
+        "covered": false,
+        "directChars": 1688,
+        "codemodeChars": 42,
+        "onDemandChars": 1328
+      },
+      {
+        "tool": "notion-convert-to-meetings-database",
+        "covered": false,
+        "directChars": 1229,
+        "codemodeChars": 35,
+        "onDemandChars": 1052
+      },
+      {
+        "tool": "notion-create-meeting-note",
+        "covered": false,
+        "directChars": 3297,
+        "codemodeChars": 26,
+        "onDemandChars": 2393
       },
       {
         "tool": "notion-get-setup-guide",
@@ -278,10 +544,10 @@
         "onDemandChars": 648
       }
     ],
-    "directTotalChars": 107568,
-    "codemodeTotalChars": 1799,
-    "descriptionChars": 1407,
-    "indexLevel": 3
+    "directTotalChars": 232149,
+    "codemodeTotalChars": 2290,
+    "descriptionChars": 1898,
+    "indexLevel": 4
   },
   "latency": {
     "rows": [
@@ -290,16 +556,16 @@
         "tool": "notion-get-self",
         "iterations": 10,
         "direct": {
-          "median": 313.45700000000033,
-          "p95": 362.6284000000005,
-          "min": 250.83659999999873,
-          "max": 362.6284000000005
+          "median": 239.3637000000008,
+          "p95": 286.9422999999997,
+          "min": 222.5749999999989,
+          "max": 286.9422999999997
         },
         "codemode": {
-          "median": 301.8093999999992,
-          "p95": 353.33410000000003,
-          "min": 246.41789999999946,
-          "max": 353.33410000000003
+          "median": 272.1788999999999,
+          "p95": 418.1881000000003,
+          "min": 236.0608000000002,
+          "max": 418.1881000000003
         },
         "directChars": 201,
         "codemodeChars": 260,
@@ -313,16 +579,16 @@
         "tool": "notion-get-users",
         "iterations": 10,
         "direct": {
-          "median": 298.4274999999998,
-          "p95": 314.52529999999933,
-          "min": 270.1406999999999,
-          "max": 314.52529999999933
+          "median": 280.54269999999997,
+          "p95": 361.85020000000077,
+          "min": 222.2373000000007,
+          "max": 361.85020000000077
         },
         "codemode": {
-          "median": 285.3300999999992,
-          "p95": 293.78069999999934,
-          "min": 264.9796000000006,
-          "max": 293.78069999999934
+          "median": 300.5188999999991,
+          "p95": 311.4997000000003,
+          "min": 252.9995999999992,
+          "max": 311.4997000000003
         },
         "directChars": 376,
         "codemodeChars": 540,
@@ -336,16 +602,16 @@
         "tool": "notion-get-teams",
         "iterations": 10,
         "direct": {
-          "median": 271.40399999999863,
-          "p95": 388.32760000000053,
-          "min": 226.28779999999824,
-          "max": 388.32760000000053
+          "median": 259.5865999999987,
+          "p95": 478.84259999999995,
+          "min": 221.52870000000257,
+          "max": 478.84259999999995
         },
         "codemode": {
-          "median": 266.91049999999814,
-          "p95": 605.8179999999993,
-          "min": 233.40950000000157,
-          "max": 605.8179999999993
+          "median": 279.0000999999975,
+          "p95": 440.8630000000012,
+          "min": 219.8328999999976,
+          "max": 440.8630000000012
         },
         "directChars": 50,
         "codemodeChars": 71,
@@ -359,16 +625,16 @@
         "tool": "notion-get-groups",
         "iterations": 10,
         "direct": {
-          "median": 242.2383000000009,
-          "p95": 302.21180000000095,
-          "min": 231.3109000000004,
-          "max": 302.21180000000095
+          "median": 274.4856,
+          "p95": 445.5666999999994,
+          "min": 242.32879999999932,
+          "max": 445.5666999999994
         },
         "codemode": {
-          "median": 249.53150000000096,
-          "p95": 286.2967000000026,
-          "min": 225.8751000000011,
-          "max": 286.2967000000026
+          "median": 257.46789999999964,
+          "p95": 285.461299999999,
+          "min": 230.75239999999758,
+          "max": 285.461299999999
         },
         "directChars": 30,
         "codemodeChars": 47,
@@ -382,19 +648,19 @@
         "tool": "notion-get-tool-access",
         "iterations": 10,
         "direct": {
-          "median": 282.3646000000008,
-          "p95": 631.5875999999989,
-          "min": 261.82180000000153,
-          "max": 631.5875999999989
+          "median": 294.8117999999995,
+          "p95": 378.98749999999563,
+          "min": 281.84519999999975,
+          "max": 378.98749999999563
         },
         "codemode": {
-          "median": 281.2247999999963,
-          "p95": 305.7160999999978,
-          "min": 241.520999999997,
-          "max": 305.7160999999978
+          "median": 297.1798999999992,
+          "p95": 2669.172200000001,
+          "min": 268.96759999999995,
+          "max": 2669.172200000001
         },
-        "directChars": 7949,
-        "codemodeChars": 9508,
+        "directChars": 7942,
+        "codemodeChars": 9501,
         "errors": {
           "direct": 0,
           "codemode": 0
@@ -405,16 +671,16 @@
         "tool": "notion-get-enabled-skills",
         "iterations": 10,
         "direct": {
-          "median": 251.55509999999776,
-          "p95": 290.3001000000004,
-          "min": 234.72340000000258,
-          "max": 290.3001000000004
+          "median": 261.87569999999687,
+          "p95": 309.83380000000034,
+          "min": 239.24179999999615,
+          "max": 309.83380000000034
         },
         "codemode": {
-          "median": 240.81929999999556,
-          "p95": 285.40959999999905,
-          "min": 228.74500000000262,
-          "max": 285.40959999999905
+          "median": 253.41380000000208,
+          "p95": 300.05970000000525,
+          "min": 241.17150000000402,
+          "max": 300.05970000000525
         },
         "directChars": 13,
         "codemodeChars": 26,
@@ -428,16 +694,16 @@
         "tool": "notion-get-setup-guide",
         "iterations": 10,
         "direct": {
-          "median": 250.93769999999495,
-          "p95": 301.4683999999979,
-          "min": 233.63209999999526,
-          "max": 301.4683999999979
+          "median": 261.6918000000005,
+          "p95": 432.924199999994,
+          "min": 222.84249999999884,
+          "max": 432.924199999994
         },
         "codemode": {
-          "median": 257.681700000001,
-          "p95": 353.9225000000006,
-          "min": 218.56060000000434,
-          "max": 353.9225000000006
+          "median": 238.88520000000426,
+          "p95": 530.2494000000006,
+          "min": 223.58640000000014,
+          "max": 530.2494000000006
         },
         "directChars": 10516,
         "codemodeChars": 10529,
@@ -451,16 +717,16 @@
         "tool": "notion-get-sidebar-tabs",
         "iterations": 10,
         "direct": {
-          "median": 286.6392999999953,
-          "p95": 478.6643999999942,
-          "min": 238.4291000000012,
-          "max": 478.6643999999942
+          "median": 318.83929999999964,
+          "p95": 589.5144999999975,
+          "min": 263.58640000000014,
+          "max": 589.5144999999975
         },
         "codemode": {
-          "median": 275.3580000000002,
-          "p95": 1836.3701999999976,
-          "min": 251.5535000000018,
-          "max": 1836.3701999999976
+          "median": 280.0777999999991,
+          "p95": 6680.123299999999,
+          "min": 244.96850000000268,
+          "max": 6680.123299999999
         },
         "directChars": 5357,
         "codemodeChars": 7782,
@@ -474,19 +740,19 @@
         "tool": "notion-search",
         "iterations": 10,
         "direct": {
-          "median": 500.1042000000016,
-          "p95": 770.8894,
-          "min": 430.6619999999966,
-          "max": 770.8894
+          "median": 464.70520000000397,
+          "p95": 708.5629000000044,
+          "min": 420.4039000000048,
+          "max": 708.5629000000044
         },
         "codemode": {
-          "median": 517.6299999999974,
-          "p95": 1437.0795999999973,
-          "min": 427.85629999999946,
-          "max": 1437.0795999999973
+          "median": 481.23910000000615,
+          "p95": 560.1092999999964,
+          "min": 420.7954000000027,
+          "max": 560.1092999999964
         },
-        "directChars": 2165,
-        "codemodeChars": 2664,
+        "directChars": 2153,
+        "codemodeChars": 2652,
         "errors": {
           "direct": 0,
           "codemode": 0
@@ -497,16 +763,16 @@
         "tool": "notion-memory-search",
         "iterations": 10,
         "direct": {
-          "median": 251.32200000000012,
-          "p95": 266.90089999999327,
-          "min": 234.92859999999928,
-          "max": 266.90089999999327
+          "median": 260.3497000000061,
+          "p95": 277.26900000000023,
+          "min": 238.02070000000822,
+          "max": 277.26900000000023
         },
         "codemode": {
-          "median": 243.96719999999914,
-          "p95": 265.3783000000112,
-          "min": 228.79850000000442,
-          "max": 265.3783000000112
+          "median": 237.85469999999623,
+          "p95": 395.9953000000096,
+          "min": 209.75290000000678,
+          "max": 395.9953000000096
         },
         "directChars": 14,
         "codemodeChars": 27,
@@ -520,16 +786,16 @@
         "tool": "notion-list-private-pages",
         "iterations": 10,
         "direct": {
-          "median": 274.6618999999919,
-          "p95": 442.1168000000034,
-          "min": 238.2433999999921,
-          "max": 442.1168000000034
+          "median": 274.40400000000955,
+          "p95": 424.27410000000964,
+          "min": 242.06000000001222,
+          "max": 424.27410000000964
         },
         "codemode": {
-          "median": 273.15969999998924,
-          "p95": 301.2176000000036,
-          "min": 261.98709999999846,
-          "max": 301.2176000000036
+          "median": 269.3677000000025,
+          "p95": 299.37889999999607,
+          "min": 257.3576999999932,
+          "max": 299.37889999999607
         },
         "directChars": 664,
         "codemodeChars": 870,
@@ -543,16 +809,16 @@
         "tool": "notion-list-shared-pages",
         "iterations": 10,
         "direct": {
-          "median": 290.8323999999993,
-          "p95": 542.5192999999999,
-          "min": 254.9091000000044,
-          "max": 542.5192999999999
+          "median": 330.5662000000011,
+          "p95": 590.7511999999988,
+          "min": 266.87190000001283,
+          "max": 590.7511999999988
         },
         "codemode": {
-          "median": 285.3092999999935,
-          "p95": 1316.578600000008,
-          "min": 269.1503999999986,
-          "max": 1316.578600000008
+          "median": 345.171800000011,
+          "p95": 605.1337000000058,
+          "min": 265.22119999999995,
+          "max": 605.1337000000058
         },
         "directChars": 14,
         "codemodeChars": 27,
@@ -566,16 +832,16 @@
         "tool": "notion-list-favorite-pages",
         "iterations": 10,
         "direct": {
-          "median": 255.771900000007,
-          "p95": 334.765699999989,
-          "min": 239.07039999999688,
-          "max": 334.765699999989
+          "median": 312.2016000000003,
+          "p95": 875.5341999999946,
+          "min": 238.55800000000454,
+          "max": 875.5341999999946
         },
         "codemode": {
-          "median": 288.6351999999897,
-          "p95": 320.7198000000062,
-          "min": 240.7911999999924,
-          "max": 320.7198000000062
+          "median": 286.1247000000003,
+          "p95": 320.1877999999997,
+          "min": 240.9828000000125,
+          "max": 320.1877999999997
         },
         "directChars": 406,
         "codemodeChars": 532,
@@ -589,19 +855,19 @@
         "tool": "notion-list-recent-pages",
         "iterations": 10,
         "direct": {
-          "median": 323.24099999999453,
-          "p95": 1238.9900999999954,
-          "min": 275.0485999999946,
-          "max": 1238.9900999999954
+          "median": 323.4244999999937,
+          "p95": 617.2770000000019,
+          "min": 277.1880000000092,
+          "max": 617.2770000000019
         },
         "codemode": {
-          "median": 305.8173999999999,
-          "p95": 5518.272599999997,
-          "min": 276.67459999999846,
-          "max": 5518.272599999997
+          "median": 317.04670000000624,
+          "p95": 516.4902000000002,
+          "min": 267.193299999999,
+          "max": 516.4902000000002
         },
-        "directChars": 762,
-        "codemodeChars": 976,
+        "directChars": 650,
+        "codemodeChars": 848,
         "errors": {
           "direct": 0,
           "codemode": 0
@@ -612,16 +878,16 @@
         "tool": "notion-calendar-list-calendars",
         "iterations": 10,
         "direct": {
-          "median": 703.3295999999973,
-          "p95": 1319.077099999995,
-          "min": 658.5601999999926,
-          "max": 1319.077099999995
+          "median": 703.043399999995,
+          "p95": 1831.738799999992,
+          "min": 608.8735000000015,
+          "max": 1831.738799999992
         },
         "codemode": {
-          "median": 753.2917000000016,
-          "p95": 945.4116000000067,
-          "min": 652.6811999999918,
-          "max": 945.4116000000067
+          "median": 909.9343000000081,
+          "p95": 3317.9168000000063,
+          "min": 665.2902999999933,
+          "max": 3317.9168000000063
         },
         "directChars": 1960,
         "codemodeChars": 2818,
@@ -635,16 +901,16 @@
         "tool": "notion-calendar-list-contacts",
         "iterations": 10,
         "direct": {
-          "median": 477.72930000000633,
-          "p95": 601.5112999999983,
-          "min": 410.9216000000015,
-          "max": 601.5112999999983
+          "median": 508.3847999999998,
+          "p95": 554.6263000000035,
+          "min": 425.3500000000058,
+          "max": 554.6263000000035
         },
         "codemode": {
-          "median": 493.2056000000157,
-          "p95": 573.7602999999945,
-          "min": 424.9054999999935,
-          "max": 573.7602999999945
+          "median": 493.91219999999157,
+          "p95": 578.2136000000173,
+          "min": 431.625400000019,
+          "max": 578.2136000000173
         },
         "directChars": 8374,
         "codemodeChars": 16622,
@@ -658,16 +924,16 @@
         "tool": "notion-calendar-list-events",
         "iterations": 10,
         "direct": {
-          "median": 1049.0566000000108,
-          "p95": 1522.0757999999914,
-          "min": 945.8960000000079,
-          "max": 1522.0757999999914
+          "median": 1086.4766999999993,
+          "p95": 1369.2200000000012,
+          "min": 873.574099999998,
+          "max": 1369.2200000000012
         },
         "codemode": {
-          "median": 1032.659800000023,
-          "p95": 1536.5249999999942,
-          "min": 940.6266999999934,
-          "max": 1536.5249999999942
+          "median": 1059.9004000000132,
+          "p95": 1398.8763000000035,
+          "min": 939.7905999999784,
+          "max": 1398.8763000000035
         },
         "directChars": 3589,
         "codemodeChars": 5438,
@@ -678,14 +944,166 @@
       }
     ],
     "sandboxOnly": {
-      "median": 0.7552000000141561,
-      "p95": 1.091599999985192,
-      "min": 0.694099999993341,
-      "max": 1.091599999985192
+      "median": 0.8554000000003725,
+      "p95": 1.2783000000054017,
+      "min": 0.7364000000234228,
+      "max": 1.2783000000054017
     }
   },
   "coveredTools": 17,
   "skipped": [
+    {
+      "tool": "notion-create-attachment",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-create-file-upload",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-create-pages",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-update-page",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-delete-pages",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-delete-databases",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-restore-pages",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-convert-page-to-skill",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-upload-skill",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-update-skill-settings",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-complete-mcp-setup",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-move-pages",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-duplicate-page",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-create-database",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-create-folder",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-update-folder",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-update-data-source",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-create-comment",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-update-comment",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-delete-comment",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-set-discussion-resolved",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-set-comment-reaction",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-create-suggested-edit",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-resolve-suggested-edit",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-spawn-session",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-stop-session",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-send-message-to-session",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-create-view",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-update-view",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-restore-version",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-update-sidebar-tabs",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-update-page-favorites",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-calendar-create-events",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-calendar-update-events",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-calendar-cancel-events",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-link-meeting-note-to-calendar-event",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-convert-to-meetings-database",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
+    {
+      "tool": "notion-create-meeting-note",
+      "reason": "Changes the workspace, so it is not timed against a live account. The seed step exercises create-pages and create-database."
+    },
     {
       "tool": "notion-query-meeting-notes",
       "reason": "Answers \"requires a Business plan\" on other plans, so its latency would depend on the account, not the wrapper."

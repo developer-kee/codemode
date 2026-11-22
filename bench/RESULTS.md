@@ -3,11 +3,24 @@
 Each service is benchmarked separately: the same model, prompts and checks on two paths, the upstream MCP server used directly versus the same server behind codemode (`execute_code` with `get_api`). A service has several variants (the scenario tasks, one tool call per task, ...), listed as separate rows.
 Method, metric definitions and limitations: [README.md](README.md). Per-service detail and raw runs are linked below.
 
+## Verdicts
+
+One line per service, from the same fixed rule as the TL;DR at the top of each report (default variant, all models pooled).
+
+| Service | Verdict | Report |
+|---|---|---|
+| Blender | Saves a lot of tokens with similar time (tokens -71%, time +0%). | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
+| Windows (Windows-MCP) | Saves a lot of tokens with similar time (tokens -65%, time +2%). | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
+| Playwright (browser, local test site) | Saves a lot of tokens with similar time (tokens -69%, time +11%). | [suites/playwright/RESULTS.md](suites/playwright/RESULTS.md) |
+| Filesystem (reference MCP server) | Saves a lot of tokens and is faster (tokens -88%, time -47%). | [suites/filesystem/RESULTS.md](suites/filesystem/RESULTS.md) |
+| Notion (official MCP server) | No runs yet, so nothing is measured. | [suites/notion/RESULTS.md](suites/notion/RESULTS.md) |
+| Notion (hosted MCP server, OAuth) | Codemode passed fewer runs than direct. Read the failed runs below before trusting the savings. | [suites/notion-oauth/RESULTS.md](suites/notion-oauth/RESULTS.md) |
+
 ## Models
 
 | Model | Provider | Runner | Runs | Services |
 |---|---|---|---|---|
-| `claude-sonnet-5-5` | Claude | `claude` | 240 | blender, windows, playwright, filesystem |
+| `claude-sonnet-5-5` | Claude | `claude` | 252 | blender, windows, playwright, filesystem, notion-oauth |
 | `deepseek-flash` | DeepSeek | `dsh` | 36 | playwright |
 
 ## Compare models
@@ -25,6 +38,7 @@ Each cell is the **token change**, `codemode / direct` total tokens, and passed/
 | Playwright (browser, local test site) | `calls` | **-83%** · 3,594 / 21,020 · 18/18 | **-82%** · 3,249 / 17,647 · 18/18 |
 | Filesystem (reference MCP server) | `scenarios` | **-88%** · 6,218 / 53,069 · 24/24 | not run |
 | Filesystem (reference MCP server) | `calls` | **-70%** · 3,356 / 11,249 · 60/60 | not run |
+| Notion (hosted MCP server, OAuth) | `scenarios` | **-89%** · 50,589 / 459,735 · 11/12 | not run |
 
 ## Detail by model family
 
@@ -43,6 +57,7 @@ Full per-task tables for each model. The comparison above is the quick view; the
 | Playwright (browser, local test site) | `calls` | `claude-sonnet-5-5` | `claude` | 18 (18) | 21,020 | 3,594 | **-83%** | 8.7s | 8.6s | **-1%** | [suites/playwright/RESULTS.md](suites/playwright/RESULTS.md) |
 | Filesystem (reference MCP server) | `scenarios` | `claude-sonnet-5-5` | `claude` | 24 (24) | 53,069 | 6,218 | **-88%** | 20.4s | 10.9s | **-47%** | [suites/filesystem/RESULTS.md](suites/filesystem/RESULTS.md) |
 | Filesystem (reference MCP server) | `calls` | `claude-sonnet-5-5` | `claude` | 60 (60) | 11,249 | 3,356 | **-70%** | 8.5s | 8.5s | **-0%** | [suites/filesystem/RESULTS.md](suites/filesystem/RESULTS.md) |
+| Notion (hosted MCP server, OAuth) | `scenarios` | `claude-sonnet-5-5` | `claude` | 12 (11) | 459,735 | 50,589 | **-89%** | 14.0s | 13.6s | **-3%** | [suites/notion-oauth/RESULTS.md](suites/notion-oauth/RESULTS.md) |
 
 ### DeepSeek
 

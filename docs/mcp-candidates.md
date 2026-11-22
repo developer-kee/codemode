@@ -18,7 +18,7 @@ Our measurements say the saving comes mostly from two things: **how many tool de
 
 | Server you have connected | Tools (about) | Wrapper today | Verdict | Why |
 |---|---|---|---|---|
-| Notion (hosted connector) | 85 | `notion/oauth` (hosted, read-only by default) and `notion/token` (self-hosted) | **Strong** | Largest catalogue; listing and querying pages and databases returns long records |
+| Notion (hosted connector) | 85 | `notion/oauth` (hosted, read and write) and `notion/token` (self-hosted) | **Strong** | Largest catalogue; listing and querying pages and databases returns long records |
 | Linear | 72 | none | **Strong** | Second-largest; issue and project lists are big and usually filtered afterwards |
 | Gmail | not seen | none | **Likely, check first** | Message bodies are large and mostly irrelevant to the question asked |
 | Google Drive | not seen | none | **Likely, check first** | Same: long documents, small answers |
@@ -29,7 +29,7 @@ Our measurements say the saving comes mostly from two things: **how many tool de
 | computer-use | 28 | none | **No** | One UI step per call; every step needs the model to look at the screen |
 | Browser (Playwright, or the Chrome extension) | 25 and 17 | `playwright` | **Yes, for scripted work** | Page snapshots are big; interactive exploration is not a good fit |
 
-There are two Notion wrappers. `notion/token` wraps the **official self-hosted server** (24 tools, needs an integration token, sees only pages shared with it); the benchmark numbers come from it. `notion/oauth` wraps the **hosted connector** (77 tools, signs in with OAuth through `npm run login -- notion/oauth`) and offers only its 39 read-only tools unless `CODEMODE_NOTION_WRITE=1`. It has not been benchmarked yet, so the Notion numbers are "what codemode does on a Notion-shaped catalogue".
+There are two Notion wrappers. `notion/token` wraps the **official self-hosted server** (24 tools, needs an integration token, sees only pages shared with it); the benchmark numbers come from it. `notion/oauth` wraps the **hosted connector** (77 tools, signs in with OAuth through `npm run login -- notion/oauth`) and offers all of them; calls to tools the server marks destructive are reported after each script, and `CODEMODE_NOTION_READ_ONLY=1` narrows it to the 39 read-only tools. It has not been benchmarked yet, so the Notion numbers are "what codemode does on a Notion-shaped catalogue".
 
 ## 3. How to decide, before building one
 

@@ -48,7 +48,7 @@ npm run login -- notion/oauth                              # one-time browser si
 node src/cli.ts --list
 ```
 
-Credentials go in the MCP client config `env` (e.g. `NOTION_TOKEN`) or, for a URL upstream, `headers`, never in this repo. A service whose server signs in with OAuth (`notion/oauth`) needs no credential in any config: `npm run login -- <service>` saves the tokens in your user profile (`%LOCALAPPDATA%\codemode\oauth` on Windows), and the running wrapper refreshes them. `notion/oauth` is read-only unless `CODEMODE_NOTION_WRITE=1`.
+Credentials go in the MCP client config `env` (e.g. `NOTION_TOKEN`) or, for a URL upstream, `headers`, never in this repo. A service whose server signs in with OAuth (`notion/oauth`) needs no credential in any config: `npm run login -- <service>` saves the tokens in your user profile (`%LOCALAPPDATA%\codemode\oauth` on Windows), and the running wrapper refreshes them. `notion/oauth` can write; after any script that calls a tool the server marks destructive (update, delete, move, cancel), the result ends with a notice naming the tool and the count. `CODEMODE_NOTION_READ_ONLY=1` offers only its read-only tools.
 Blender needs Blender open with the BlenderMCP addon connected; Windows and Playwright drive the real desktop or browser, Notion writes to a real workspace, and Filesystem is confined to a sandbox folder, so read each warning in `bench/README.md` before exposing a service.
 
 ## Test

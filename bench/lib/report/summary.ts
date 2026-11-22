@@ -236,6 +236,23 @@ function verdict(tokenChange: number | undefined, timeChange: number | undefined
   return `${tokens} ${time} (tokens ${tokenChange.toFixed(0)}%, time ${timeChange > 0 ? '+' : ''}${timeChange.toFixed(0)}%).`;
 }
 
+/** The verdict for a service: pooled over every model's runs of its default variant, plus the definition cost. */
+export function serviceVerdict(service: BenchService, records: RunRecord[], calls: CallsData | undefined): string {
+  const main = records.filter((r) => r.variant === service.defaultVariant);
+  const pooled = summary(main);
+  const dMain = main.filter((r) => r.run.path === 'direct');
+  const cMain = main.filter((r) => r.run.path === 'codemode');
+  const measured = pooled.d > 0 && pooled.c > 0;
+  const directChars = calls?.costs.directTotalChars ?? 0;
+  const definitionChange = calls && directChars > 0 ? ((calls.costs.codemodeTotalChars - directChars) / directChars) * 100 : undefined;
+  return verdict(
+    measured ? ((pooled.c - pooled.d) / pooled.d) * 100 : undefined,
+    measured ? ((pooled.ct - pooled.dt) / pooled.dt) * 100 : undefined,
+    cMain.filter((r) => r.pass).length / Math.max(1, cMain.length) < dMain.filter((r) => r.pass).length / Math.max(1, dMain.length),
+    definitionChange,
+  );
+}
+
 /**
  * The short version at the top of a service report. Every number comes from the recorded runs or the calls data; the
  * verdict is a fixed rule on those numbers (`verdict` above), not an opinion.
@@ -262,10 +279,8 @@ function tldr(service: BenchService, records: RunRecord[], calls: CallsData | un
   if (runLines.length > MAX_TLDR_RUN_LINES) out.push(`- ${runLines.length - MAX_TLDR_RUN_LINES} more variant and model rows are in the tables below.`);
   if (runLines.length === 0) out.push('- **Model runs:** none recorded yet.');
 
-  let definitionChange: number | undefined;
   if (calls) {
     const { directTotalChars, codemodeTotalChars } = calls.costs;
-    definitionChange = directTotalChars === 0 ? undefined : ((codemodeTotalChars - directTotalChars) / directTotalChars) * 100;
     out.push(
       `- **Tool definitions sent every turn:** ${fmt(estimateTokens(codemodeTotalChars))} vs ${fmt(estimateTokens(directTotalChars))} tokens ` +
         `(${chg(directTotalChars, codemodeTotalChars)}), ${calls.toolCount} tools.`,
@@ -282,20 +297,7 @@ function tldr(service: BenchService, records: RunRecord[], calls: CallsData | un
     }
   }
 
-  const main = records.filter((r) => r.variant === service.defaultVariant);
-  const pooled = summary(main);
-  const dMain = main.filter((r) => r.run.path === 'direct');
-  const cMain = main.filter((r) => r.run.path === 'codemode');
-  const measured = pooled.d > 0 && pooled.c > 0;
-  out.push(
-    `- **Verdict (\`${service.defaultVariant}\`):** ${verdict(
-      measured ? ((pooled.c - pooled.d) / pooled.d) * 100 : undefined,
-      measured ? ((pooled.ct - pooled.dt) / pooled.dt) * 100 : undefined,
-      cMain.filter((r) => r.pass).length / Math.max(1, cMain.length) < dMain.filter((r) => r.pass).length / Math.max(1, dMain.length),
-      definitionChange,
-    )}`,
-    '',
-  );
+  out.push(`- **Verdict (\`${service.defaultVariant}\`):** ${serviceVerdict(service, records, calls)}`, '');
   return out;
 }
 
@@ -366,6 +368,14 @@ export function buildOverview(all: BenchService[]): string {
     '',
     'Each service is benchmarked separately: the same model, prompts and checks on two paths, the upstream MCP server used directly versus the same server behind codemode (`execute_code` with `get_api`). A service has several variants (the scenario tasks, one tool call per task, ...), listed as separate rows.',
     'Method, metric definitions and limitations: [README.md](README.md). Per-service detail and raw runs are linked below.',
+    '',
+    '## Verdicts',
+    '',
+    'One line per service, from the same fixed rule as the TL;DR at the top of each report (default variant, all models pooled).',
+    '',
+    '| Service | Verdict | Report |',
+    '|---|---|---|',
+    ...all.map((svc) => `| ${svc.title} | ${serviceVerdict(svc, loadRecords(svc.id), loadCalls(svc.id))} | [suites/${svc.id}/RESULTS.md](suites/${svc.id}/RESULTS.md) |`),
     '',
   ];
   const records = all.flatMap((svc) => loadRecords(svc.id));

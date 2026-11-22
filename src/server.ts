@@ -74,8 +74,21 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
     }
   }
 
+  // Tools the upstream marks `destructiveHint: true` (they change or delete existing data). Tools without that mark
+  // are not counted, so a service that has no annotations simply never produces a notice.
+  const destructive = new Set(tools.filter((t) => t.annotations?.destructiveHint === true && t.annotations.readOnlyHint !== true).map((t) => idOf(t.name)));
+
   const makeCallTool = (scriptId: string) => {
     let calls = 0;
+    const destructiveCalls = new Map<string, { calls: number; failed: number }>();
+    const noteDestructive = (id: string, failed: boolean): void => {
+      if (!destructive.has(id)) return;
+      const name = Object.hasOwn(names, id) ? (names[id] ?? id) : id;
+      const entry = destructiveCalls.get(name) ?? { calls: 0, failed: 0 };
+      entry.calls++;
+      if (failed) entry.failed++;
+      destructiveCalls.set(name, entry);
+    };
     const limited = createLimiter(maxConcurrentCalls);
     const callOnce = async (id: string, input: unknown, signal?: AbortSignal): Promise<unknown> => {
       const toolName = Object.hasOwn(names, id) ? names[id] : undefined;
@@ -97,13 +110,15 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
       try {
         const result = await callOnce(id, input, signal);
         audit.call({ script: scriptId, tool: Object.hasOwn(names, id) ? (names[id] ?? id) : id, args: input, ms: performance.now() - started });
+        noteDestructive(id, false);
         return result;
       } catch (e) {
         audit.call({ script: scriptId, tool: Object.hasOwn(names, id) ? (names[id] ?? id) : id, args: input, ms: performance.now() - started, error: classifyError(e instanceof Error ? e.message : String(e)) });
+        noteDestructive(id, true);
         throw e;
       }
     };
-    return { callTool, calls: () => calls };
+    return { callTool, calls: () => calls, destructiveCalls };
   };
 
   const server = new McpServer({ name, version: '0.1.0' });
@@ -117,7 +132,7 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
     async ({ code }): Promise<CallToolResult> => {
       const scriptId = audit.newScriptId();
       const started = performance.now();
-      const { callTool, calls } = makeCallTool(scriptId);
+      const { callTool, calls, destructiveCalls } = makeCallTool(scriptId);
       const out = await runInSandbox(
         code,
         { namespace: NAMESPACE, ids: Object.keys(names), callTool, syncCall: (id, input) => store.handle(id, input) },
@@ -129,7 +144,10 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
         parts.push(`result: ${typeof out.result === 'string' ? out.result : JSON.stringify(out.result, null, 2)}`);
       }
       if (out.error !== undefined) parts.push(`error: ${out.error}`);
-      const text = capOutput(parts.join('\n\n') || '(no output)', maxOutputChars);
+      // Added after the output cap so it is never cut off.
+      const notice = destructiveNotice(destructiveCalls);
+      if (notice) console.error(`[codemode] ${notice}`);
+      const text = capOutput(parts.join('\n\n') || '(no output)', maxOutputChars) + (notice ? `\n\n${notice}` : '');
       audit.script({ script: scriptId, code, ms: performance.now() - started, calls: calls(), outputChars: text.length, ...(out.error === undefined ? {} : { error: /timed out/i.test(out.error) ? ('timeout' as const) : ('script' as const) }) });
       if (debugLog) appendFileSync(debugLog, `${JSON.stringify({ code, error: out.error, text: text.slice(0, 1500) })}\n`);
       return {
@@ -162,6 +180,13 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
   );
 
   return { server, client, dts, index, description, close: () => client.close() };
+}
+
+/** One line the user can read: which destructive tools a script called, how often, and how many calls failed. */
+function destructiveNotice(calls: ReadonlyMap<string, { calls: number; failed: number }>): string {
+  if (calls.size === 0) return '';
+  const list = [...calls].map(([tool, c]) => `${tool} x${c.calls}${c.failed > 0 ? ` (${c.failed} failed)` : ''}`).join(', ');
+  return `Destructive tool calls in this script (they change or delete existing data): ${list}. Tell the user what was changed.`;
 }
 
 /** Serve a code-mode wrapper over stdio. */

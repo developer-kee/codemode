@@ -141,3 +141,19 @@ test('sandbox: a script that ends early aborts the calls it did not wait for', a
   assert.ok(Date.now() - started < 1500, 'returned without waiting for the unawaited call');
   assert.equal(seen?.aborted, true);
 });
+
+test('a script that calls a destructive tool is followed by a notice naming it; read-only scripts get none', async () => {
+  const t = await connect({ name: 'x', upstream: { command: process.execPath, args: [fake] } });
+  try {
+    const run = async (code: string): Promise<string> => text((await t.client.callTool({ name: 'execute_code', arguments: { code } })) as CallToolResult);
+    const quiet = await run('return await codemode.get_thing({})');
+    assert.doesNotMatch(quiet, /Destructive/);
+    const loud = await run('await codemode.delete_thing({}); await codemode.delete_thing({}); return 1');
+    assert.match(loud, /Destructive tool calls .*delete_thing x2/);
+    // The notice survives an output cap that cuts the rest of the text.
+    const big = await run('console.log("x".repeat(50000)); await codemode.delete_thing({}); return 1');
+    assert.match(big, /delete_thing x1/);
+  } finally {
+    await t.close();
+  }
+});
