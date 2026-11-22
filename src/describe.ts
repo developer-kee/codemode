@@ -114,7 +114,7 @@ export function compactIndex(tools: readonly Tool[], budget: number): CompactInd
 
 const HEADER = [
   'Run TypeScript against the `codemode` API in ONE script: chain calls, loop, filter and aggregate; only console.log() output and the returned value come back.',
-  'No network, filesystem or imports; top-level await works. Call `await codemode.<name>({ ... })`.',
+  'No network, filesystem or imports; top-level await works. Call `await codemode.<name>({ ... })`. `store.get/set/delete/keys` keeps JSON values between scripts.',
   'Unsure of a parameter or return shape? Call get_api first (one call, any number of names).',
 ].join('\n');
 
