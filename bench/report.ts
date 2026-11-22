@@ -1,6 +1,7 @@
 import { appendFileSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { ClaudeRun, PathId } from './claude.ts';
+import { tasks } from './tasks.ts';
 
 export interface RunRecord {
   batch: string;
@@ -56,7 +57,7 @@ export function buildReport(): string {
     '',
     'Both paths drive the same live Blender through the same upstream (`blender-mcp`), with the same model, the same prompt, built-in tools disabled, and the scene reset before every run.',
     'Numbers are means over runs. `Pass` is an objective check of the resulting scene (positions, sizes, names, materials), not the model\'s own claim.',
-    'Reproduce: `npm run bench -- --runs 3`.',
+    'Reproduce: `npm run bench -- --runs 3`. Full method, metric definitions and limitations: [README.md](README.md).',
     '',
   ];
   for (const model of models) {
@@ -101,6 +102,9 @@ export function buildReport(): string {
     '- 3 runs per task and path, one model, one machine: treat small differences (especially wall time) as noise.',
     '',
   );
+  out.push('## Task prompts', '', 'Identical text is sent on both paths. Method and limitations: [README.md](README.md).', '');
+  for (const t of tasks) out.push(`- **${t.id}**${t.seed ? ' (pre-seeded scene)' : ''}: ${t.prompt}`);
+  out.push('');
   const failures = records.filter((r) => !r.pass);
   if (failures.length) {
     out.push('## Failed runs', '', '| Task | Path | Repeat | Reason |', '|---|---|---|---|');
