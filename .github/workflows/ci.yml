@@ -46,4 +46,4 @@ jobs:
       - run: npm audit signatures --prefix servers
       - run: uv lock --check --project servers/python
       - name: Tool definitions still match the committed locks
-        run: npm run lock:verify -- filesystem notion playwright
+        run: npm run lock:verify -- filesystem notion/token playwright

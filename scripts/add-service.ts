@@ -1,11 +1,14 @@
-﻿// Usage: npm run add -- <name> <command> [args...]      e.g.  npm run add -- linear npx -y some-mcp
+﻿// <name> may be grouped: `notion/oauth` creates services/notion/oauth.ts.
+// Usage: npm run add -- <name> <command> [args...]      e.g.  npm run add -- linear npx -y some-mcp
 //        npm run add -- <name> --url <https://...>
-import { existsSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SERVICE_NAME } from '../src/services.ts';
 import type { Upstream } from '../src/types.ts';
 
 const [name, first, ...rest] = process.argv.slice(2);
-if (name === undefined || !/^[a-z0-9_-]+$/i.test(name) || first === undefined) {
+if (name === undefined || !SERVICE_NAME.test(name) || first === undefined) {
   console.error('Usage: npm run add -- <name> <command> [args...] | --url <url>');
   process.exit(1);
 }
@@ -21,16 +24,18 @@ if (first === '--url' && url === undefined) {
 }
 const upstream: Upstream = first === '--url' ? { url: url ?? '' } : { command: first, args: rest };
 
+mkdirSync(dirname(file), { recursive: true });
+const up = '../'.repeat(name.split('/').length);
 writeFileSync(
   file,
-  `import type { ServiceConfig } from '../src/types.ts';
+  `import type { ServiceConfig } from '${up}src/types.ts';
 
 export default {
-  name: ${JSON.stringify(name)},
+  name: ${JSON.stringify(name.replaceAll('/', '-'))},
   upstream: ${JSON.stringify(upstream)},
 } satisfies ServiceConfig;
 `,
 );
 console.log(
-  `Created services/${name}.ts\nRegister: claude mcp add codemode-${name} -- node ${fileURLToPath(new URL('../src/cli.ts', import.meta.url))} ${name}`,
+  `Created services/${name}.ts\nRegister: claude mcp add codemode-${name.replaceAll('/', '-')} -- node ${fileURLToPath(new URL('../src/cli.ts', import.meta.url))} ${name}`,
 );

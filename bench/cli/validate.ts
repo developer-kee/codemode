@@ -64,7 +64,8 @@ function checkServiceDefinition(service: BenchService): void {
   const scope = service.id;
   if (!/^[a-z0-9_-]+$/.test(service.id)) error(scope, 'service id must be lower-case letters, digits, "-" or "_"');
   if (!existsSync(`${benchRoot}suites/${service.id}/`)) error(scope, 'missing suite folder under bench/suites/');
-  if (!existsSync(`${benchRoot}../services/${service.id}.ts`)) warn(scope, `no services/${service.id}.ts (the wrapper CLI has no such service)`);
+  const wrapper = service.wrapper ?? service.id;
+  if (!existsSync(`${benchRoot}../services/${wrapper}.ts`)) warn(scope, `no services/${wrapper}.ts (the wrapper CLI has no such service)`);
   const variantIds = new Set<string>();
   for (const v of service.variants) {
     if (variantIds.has(v.id)) error(scope, `duplicate variant id "${v.id}"`);

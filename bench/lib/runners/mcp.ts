@@ -23,7 +23,7 @@ export function mcpLaunch(service: BenchService, variant: BenchVariant, path: Pa
   return {
     server: `${service.id}-cm`,
     command: process.execPath,
-    args: [`${root}src/cli.ts`, service.id],
+    args: [`${root}src/cli.ts`, service.wrapper ?? service.id],
     ...(variant.codemodeEnv ? { env: variant.codemodeEnv } : {}),
   };
 }

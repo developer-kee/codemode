@@ -8,6 +8,7 @@ import { createReadStream, existsSync, readdirSync, statSync, writeFileSync } fr
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { listServices } from '../src/services.ts';
 import { createInterface } from 'node:readline';
 import { parseArgs } from 'node:util';
 
@@ -49,11 +50,8 @@ interface Call {
   chars: number;
 }
 
-const services = new Set(
-  readdirSync(join(repo, 'services'))
-    .filter((f) => f.endsWith('.ts'))
-    .map((f) => f.slice(0, -3)),
-);
+// Grouped services (`notion/oauth`) count under their group (`notion`).
+const services = new Set(listServices(join(repo, 'services')).map((n) => n.split('/')[0]));
 
 function split(name: string): { server: string; tool: string } | undefined {
   if (!name.startsWith('mcp__')) return undefined;
@@ -218,7 +216,7 @@ const out: string[] = [
   '| Service | Calls | Tools used | Result tokens (≈) | Big results | In chains | Longest chain | Codemode service |',
   '|---|---|---|---|---|---|---|---|',
   ...rows.map(({ name, s, chars, big }) => {
-    const has = services.has(name) ? `yes (\`services/${name}.ts\`)` : 'no';
+    const has = services.has(name) ? `yes (\`services/${name}\`)` : 'no';
     const inChains = s.calls.length > 0 ? `${s.chainCalls} (${Math.round((s.chainCalls / s.calls.length) * 100)}%)` : '0';
     return `| ${name} | ${s.calls.length} | ${s.tools.size} | ${tokens(chars)} | ${big} | ${inChains} | ${s.longest || '-'} | ${has} |`;
   }),

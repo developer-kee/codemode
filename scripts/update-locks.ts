@@ -2,15 +2,13 @@
 //        npm run lock:verify [-- <service> ...]     check that each service still starts under its committed lock
 // Starts each service once with --update-lock so services/<service>.lock.json records exactly what its upstream
 // offers. Run it after you have READ what changed (git diff the lock files); the lock exists to make changes visible.
-import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { listServices } from '../src/services.ts';
 import { readLock } from '../src/toollock.ts';
 import { connectUpstream } from '../src/upstream.ts';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const all = readdirSync(`${root}services`)
-  .filter((f) => f.endsWith('.ts'))
-  .map((f) => f.slice(0, -3));
+const all = listServices(`${root}services`);
 const verify = process.argv.includes('--verify');
 const wanted = process.argv.slice(2).filter((a) => a !== '--verify');
 const targets = wanted.length > 0 ? wanted : all;

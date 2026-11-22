@@ -2,21 +2,19 @@
 // Usage: node src/cli.ts <service> [--read-only] [--update-lock]
 //        node src/cli.ts --list
 //
-// <service> is a file in services/. Environment:
+// <service> is a file in services/, or in a folder there: `blender`, `notion/oauth`. Environment:
 //   CODEMODE_READ_ONLY=1       same as --read-only
 //   CODEMODE_LOCK=enforce|warn|off|update   tool-definition lock mode (default enforce; --update-lock = update)
 //   CODEMODE_REQUIRE_LOCK=1    refuse to start when services/<service>.lock.json is missing
 //   CODEMODE_AUDIT=<file>      append a redacted audit trail (no code, arguments or results) to this file
-import { readdirSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { runCodeModeServer } from './server.ts';
+import { listServices, SERVICE_NAME } from './services.ts';
 import type { LockMode } from './toollock.ts';
 import type { ServiceConfig } from './types.ts';
 
 const dir = fileURLToPath(new URL('../services/', import.meta.url));
-const available = readdirSync(dir)
-  .filter((f) => f.endsWith('.ts'))
-  .map((f) => f.slice(0, -3));
+const available = listServices(dir);
 const FLAGS = new Set(['--read-only', '--update-lock']);
 const args = process.argv.slice(2);
 const flag = (name: string): boolean => args.includes(name);
@@ -26,7 +24,7 @@ if (arg === undefined || arg === '--list') {
   console.error(`Services: ${available.join(', ') || '(none)'}\nUsage: node src/cli.ts <service> [--read-only] [--update-lock]`);
   process.exit(arg === undefined ? 1 : 0);
 }
-if (!/^[a-z0-9_-]+$/i.test(arg) || !available.includes(arg)) {
+if (!SERVICE_NAME.test(arg) || !available.includes(arg)) {
   console.error(`Unknown service "${arg}". Available: ${available.join(', ')}`);
   process.exit(1);
 }

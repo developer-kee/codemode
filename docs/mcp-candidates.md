@@ -18,7 +18,7 @@ Our measurements say the saving comes mostly from two things: **how many tool de
 
 | Server you have connected | Tools (about) | Wrapper today | Verdict | Why |
 |---|---|---|---|---|
-| Notion (hosted connector) | 85 | `notion` (a different server, see below) | **Strong** | Largest catalogue; listing and querying pages and databases returns long records |
+| Notion (hosted connector) | 85 | `notion/oauth` (hosted, read-only by default) and `notion/token` (self-hosted) | **Strong** | Largest catalogue; listing and querying pages and databases returns long records |
 | Linear | 72 | none | **Strong** | Second-largest; issue and project lists are big and usually filtered afterwards |
 | Gmail | not seen | none | **Likely, check first** | Message bodies are large and mostly irrelevant to the question asked |
 | Google Drive | not seen | none | **Likely, check first** | Same: long documents, small answers |
@@ -29,7 +29,7 @@ Our measurements say the saving comes mostly from two things: **how many tool de
 | computer-use | 28 | none | **No** | One UI step per call; every step needs the model to look at the screen |
 | Browser (Playwright, or the Chrome extension) | 25 and 17 | `playwright` | **Yes, for scripted work** | Page snapshots are big; interactive exploration is not a good fit |
 
-Two things to know about the existing `notion` wrapper: it wraps the **official self-hosted server** (24 tools, needs an integration token, sees only pages shared with it), not the hosted connector (about 85 tools, signs in with OAuth). Our wrapper's HTTP upstream supports fixed headers only, so wrapping the hosted connector would need an OAuth step we have not built. Treat the Notion numbers as "what codemode does on a Notion-shaped catalogue", and the real decision as unfinished.
+There are two Notion wrappers. `notion/token` wraps the **official self-hosted server** (24 tools, needs an integration token, sees only pages shared with it); the benchmark numbers come from it. `notion/oauth` wraps the **hosted connector** (77 tools, signs in with OAuth through `npm run login -- notion/oauth`) and offers only its 39 read-only tools unless `CODEMODE_NOTION_WRITE=1`. It has not been benchmarked yet, so the Notion numbers are "what codemode does on a Notion-shaped catalogue".
 
 ## 3. How to decide, before building one
 
@@ -46,7 +46,7 @@ Skip it when the tool is a single lookup, when every step depends on seeing the 
 
 ## 4. Standing rule (installed in your user-level CLAUDE.md on 2026-11-22)
 
-You asked for a rule that prefers codemode and asks before using direct MCP access where no wrapper exists. It now lives in `~/.claude/CLAUDE.md` (`C:\Users\Kee-Yankee\.claude\CLAUDE.md`), so it applies in every project; the text below is the version before two small additions (the exact current text is in that file). To remove it, delete that section from the file.
+You asked for a rule that prefers codemode and asks before using direct MCP access where no wrapper exists. It now lives in `~/.claude/CLAUDE.md`, so it applies in every project; the text below is the version before two small additions (the exact current text is in that file). To remove it, delete that section from the file.
 
 ```
 ## MCP tools: prefer codemode wrappers

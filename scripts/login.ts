@@ -1,16 +1,14 @@
 // Usage: npm run login -- <service>
 // One-time browser sign-in for a service whose upstream uses OAuth (`upstream.oauth` in its service file).
 // Tokens are saved in your user profile, not in the repo; run it again if the sign-in expires.
-import { readdirSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { login } from '../src/oauth.ts';
+import { listServices } from '../src/services.ts';
 import type { ServiceConfig } from '../src/types.ts';
 
 const dir = fileURLToPath(new URL('../services/', import.meta.url));
 const service = process.argv[2];
-const available = readdirSync(dir)
-  .filter((f) => f.endsWith('.ts'))
-  .map((f) => f.slice(0, -3));
+const available = listServices(dir);
 if (service === undefined || !available.includes(service)) {
   console.error(`Usage: npm run login -- <service>\nServices: ${available.join(', ')}`);
   process.exit(1);

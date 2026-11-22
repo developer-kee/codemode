@@ -29,8 +29,10 @@ export interface BenchVariant {
 
 /** Everything the harness needs to benchmark one codemode suite (a folder in `bench/suites/`). */
 export interface BenchService {
-  /** Names the suite folder (`bench/suites/<id>/`) and matches `services/<id>.ts`. */
+  /** Names the suite folder (`bench/suites/<id>/`) and matches `services/<id>.ts` unless `wrapper` says otherwise. */
   id: string;
+  /** The service the wrapper CLI runs, when it is not named like the suite (`notion/token` for the `notion` suite). */
+  wrapper?: string;
   title: string;
   /** What a reader must know before running this: side effects, prerequisites. */
   warning: string;

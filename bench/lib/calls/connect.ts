@@ -24,7 +24,7 @@ export async function connectBoth(service: BenchService, variant: BenchVariant):
   });
   const codemode = await connectUpstream({
     command: process.execPath,
-    args: [`${root}src/cli.ts`, service.id],
+    args: [`${root}src/cli.ts`, service.wrapper ?? service.id],
     ...(variant.codemodeEnv ? { env: expandEnv(variant.codemodeEnv) ?? {} } : {}),
   });
   return { direct, codemode };

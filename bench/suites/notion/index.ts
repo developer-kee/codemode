@@ -25,6 +25,7 @@ const scenarios: BenchVariant = {
 
 export const notion: BenchService = {
   id: 'notion',
+  wrapper: 'notion/token',
   title: 'Notion (official MCP server)',
   warning:
     'WRITES to a real Notion workspace. Needs NOTION_TOKEN (an internal integration token) and NOTION_BENCH_PAGE_ID (a page shared with that integration). ' +

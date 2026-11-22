@@ -1,5 +1,5 @@
-import type { ServiceConfig } from '../src/types.ts';
-import { npmServer } from '../servers/resolve.ts';
+import type { ServiceConfig } from '../../src/types.ts';
+import { npmServer } from '../../servers/resolve.ts';
 
 // The official Notion MCP server, https://github.com/makenotion/notion-mcp-server (npm: @notionhq/notion-mcp-server),
 // pinned for reproducible results. 24 tools, each with a large schema (about 76,000 characters in total).
@@ -10,7 +10,7 @@ import { npmServer } from '../servers/resolve.ts';
 //
 // This wrapper can create, edit and trash pages. Restrict it with `access` (or `--read-only`) if it should only look.
 export default {
-  name: 'notion',
+  name: 'notion-token',
   // Private pages, text others wrote, and pages that others can read; no network access beyond Notion itself.
   capabilities: { privateData: true, untrustedContent: true, externalComms: false },
   // Only NOTION_TOKEN is handed to the server; the wrapper's other environment variables are not.

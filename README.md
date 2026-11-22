@@ -14,7 +14,8 @@ Two tools instead of the upstream's full set is the point: the model pays for on
 ```
 src/                the wrapper: server, upstream transport, sandbox, API generation, description,
                     argument checks, output cap, shared store
-services/           one file per wrapped MCP server (blender, windows, playwright, filesystem, notion)
+services/           one file per wrapped MCP server (blender, windows, playwright, filesystem), or a folder of
+                    related ones (notion/token, notion/oauth)
 bench/
   cli/              entrypoints: run, calls, report, validate
   lib/              reusable harness: runners (Claude, DSH), per-call benchmark, report building
@@ -28,12 +29,12 @@ scripts/            add-service scaffolder
 
 ## Services
 
-Each service is one file in `services/` (`blender`, `windows`, `playwright`, `filesystem`, `notion`) that names the upstream and optionally its limits and access rules:
+Each service is one file in `services/` (`blender`, `windows`, `playwright`, `filesystem`), or a file inside a folder for a family (`notion/token`, `notion/oauth`), that names the upstream and optionally its limits and access rules:
 
 ```ts
-// services/notion.ts
+// services/notion/token.ts
 export default {
-  name: 'notion',
+  name: 'notion-token',
   upstream: { ...npmServer('@notionhq/notion-mcp-server'), passEnv: ['NOTION_TOKEN'] },
 } satisfies ServiceConfig;
 ```
@@ -42,11 +43,12 @@ export default {
 npm install
 npm run servers:install                                   # the upstream MCP servers, from lockfiles
 npm run add -- linear npx -y some-linear-mcp        # add a service (or: -- name --url https://...)
-claude mcp add codemode-notion -- node C:\repos\codemode\src\cli.ts notion
+claude mcp add codemode-notion-token -- node C:\repos\codemode\src\cli.ts notion/token
+npm run login -- notion/oauth                              # one-time browser sign-in for services that use OAuth
 node src/cli.ts --list
 ```
 
-Credentials go in the MCP client config `env` (e.g. `NOTION_TOKEN`) or, for a URL upstream, `headers`, never in this repo.
+Credentials go in the MCP client config `env` (e.g. `NOTION_TOKEN`) or, for a URL upstream, `headers`, never in this repo. A service whose server signs in with OAuth (`notion/oauth`) needs no credential in any config: `npm run login -- <service>` saves the tokens in your user profile (`%LOCALAPPDATA%\codemode\oauth` on Windows), and the running wrapper refreshes them. `notion/oauth` is read-only unless `CODEMODE_NOTION_WRITE=1`.
 Blender needs Blender open with the BlenderMCP addon connected; Windows and Playwright drive the real desktop or browser, Notion writes to a real workspace, and Filesystem is confined to a sandbox folder, so read each warning in `bench/README.md` before exposing a service.
 
 ## Test
