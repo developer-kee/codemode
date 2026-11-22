@@ -83,11 +83,21 @@ Our current https-only check for `url` upstreams does **not** block private or m
 | 1 | Install upstream servers from lockfiles | Done | `servers/package-lock.json`, `servers/python/uv.lock` (1,175 hashes), `servers/resolve.ts`, `npm run servers:install`; services and the benchmark both launch from it |
 | 2 | Tool-definition lock | Done | `src/toollock.ts`, `services/*.lock.json`, `--update-lock`, `npm run lock:update` / `lock:verify`; a tampered lock is refused (tested) |
 | 3 | Redacted audit log | Done | `src/audit.ts`, `CODEMODE_AUDIT`; a test proves code, argument values and results never reach the file. `CODEMODE_LOG` is now `CODEMODE_DEBUG_LOG` |
-| 4 | CI | Done, green on GitHub | `.github/workflows/ci.yml` (typecheck, tests on Linux and Windows, validate, `npm audit`, `npm audit signatures`, lockfile and tool-lock checks) and `dependabot.yml`. A `dependency-review` workflow was tried and removed: it needs the dependency graph and Advanced Security, which a private repo does not have. Actions are pinned by tag, not by commit SHA |
+| 4 | CI | Done, green on GitHub | `.github/workflows/ci.yml` (typecheck, tests on Linux and Windows, validate, `npm audit`, `npm audit signatures`, lockfile and tool-lock checks) and `dependabot.yml`. A `dependency-review` workflow was tried and removed: it needs the dependency graph and Advanced Security, which a private repo does not have. Actions are pinned by commit SHA (see the P1 table) |
 | 5 | Adversarial sandbox tests | Done, and found a real bug | `test/sandbox-adversarial.test.ts`. Runaway recursion overflowed the **host** stack before QuickJS's own limit, left the engine half-freed and aborted it on cleanup: a model-written script could crash the call and poison the engine. Fixed by a 320 KB guest stack limit and non-fatal cleanup |
 | 6 | Capability profile and warning | Partly done | `src/capabilities.ts`; every service declares its legs and all-three-without-`access` warns at start. Not done: per-service documented `access` presets |
 
-Not part of P0 and still true: a script runs on the Node event loop, and the host-side size of an upstream result is not capped (section 3.1).
+### Status of the P1 items (2026-11-22)
+
+| # | Item | Status | Where |
+|---|---|---|---|
+| 7 | Sandbox off the main thread; cap upstream result size | Done, with one limit | `src/sandbox.ts` (worker pool, watchdog, 1 GB heap cap), `src/sandbox-core.ts`, `src/sandbox-worker.ts`; `test/worker.test.ts`. A `while (true)` script no longer stalls the wrapper (tested). Results over `maxResultChars` are refused before they enter the script. Limit: the MCP client library still reads a whole response into memory before the size is known |
+| 8 | Keep chosen tools native | Partly | `access.deny` already removes tools from the code API; not written up as a pattern. Destructive tools are now reported after each script (`destructiveHint`) |
+| 9 | OpenTelemetry | Not done | |
+| 10 | Upstream URL hardening | Done, with one limit | `assertPublicHost`, `guardedFetch` in `src/upstream.ts`; applied to the MCP endpoint and every OAuth request. Redirects: the SDK follows only same-origin ones. Limit: DNS is resolved once for the check and again by the connection, so rebinding is not caught (pinning needs a custom HTTP dispatcher) |
+| - | Actions pinned by commit SHA | Done | `.github/workflows/ci.yml` (Dependabot keeps the SHAs current) |
+
+The "script runs on the Node event loop" and "result size not capped" findings in section 3.1 were true when written and are fixed by item 7 (see its limit).
 **P1, hardening for shared or unattended use**
 7. **Run the sandbox out of the main thread**: a worker thread or child process per execution, with hard memory limits and kill-on-timeout, so a runaway script cannot stall or exhaust the wrapper. Cap the size of any upstream result before it is read into memory.
 8. **Keep chosen tools native**: tools that need approval (deletes, sends, payments) are not exposed in the code API and stay as ordinary tools the client can gate; the `access` config already supports removing them, this makes it a documented pattern.

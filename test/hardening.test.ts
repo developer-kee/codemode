@@ -157,3 +157,26 @@ test('a script that calls a destructive tool is followed by a notice naming it; 
     await t.close();
   }
 });
+
+test('SSRF guard: private, link-local and metadata addresses are refused; public and explicit loopback are not', async () => {
+  const { isPrivateAddress, assertPublicHost } = await import('../src/upstream.ts');
+  for (const bad of ['10.1.2.3', '172.16.0.1', '172.31.255.255', '192.168.1.1', '169.254.169.254', '127.0.0.1', '0.0.0.0', '100.64.0.1', 'fd00::1', 'fe80::1', '::1', '::ffff:169.254.169.254', '::ffff:10.0.0.1']) {
+    assert.equal(isPrivateAddress(bad), true, bad);
+  }
+  for (const good of ['8.8.8.8', '1.1.1.1', '172.15.0.1', '172.32.0.1', '2606:4700:4700::1111']) assert.equal(isPrivateAddress(good), false, good);
+  await assert.rejects(assertPublicHost(new URL('https://169.254.169.254/latest/meta-data')), /private or reserved/);
+  await assert.rejects(assertPublicHost(new URL('https://[fd00::1]/mcp')), /private or reserved/);
+  await assertPublicHost(new URL('http://127.0.0.1:9000/mcp')); // an explicit local choice is still allowed
+  await assertPublicHost(new URL('https://8.8.8.8/mcp'));
+});
+
+test('an upstream result over the size limit is refused with advice, before it reaches the script', async () => {
+  const t = await connect({ name: 'x', upstream: { command: process.execPath, args: [fake] }, limits: { maxResultChars: 1000 } });
+  try {
+    const run = async (code: string): Promise<string> => text((await t.client.callTool({ name: 'execute_code', arguments: { code } })) as CallToolResult);
+    assert.match(await run('return (await codemode.big_text({ n: 500 })).length'), /result: 500/);
+    assert.match(await run('return await codemode.big_text({ n: 5000 })'), /returned 5,000 characters, over the 1,000 limit.*Ask for less/s);
+  } finally {
+    await t.close();
+  }
+});

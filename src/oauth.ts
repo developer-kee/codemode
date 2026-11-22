@@ -19,7 +19,7 @@ import type {
   OAuthClientMetadata,
   OAuthTokens,
 } from '@modelcontextprotocol/sdk/shared/auth.js';
-import { assertSecureUrl } from './upstream.ts';
+import { assertSecureUrl, guardedFetch } from './upstream.ts';
 
 export const DEFAULT_REDIRECT_PORT = 33417;
 
@@ -223,7 +223,7 @@ export async function login(options: LoginOptions): Promise<number> {
   const timer = setTimeout(() => settle?.reject(new Error('Timed out waiting for the browser sign-in.')), options.timeoutMs ?? 300_000);
 
   try {
-    const transport = new StreamableHTTPClientTransport(serverUrl, { authProvider: provider });
+    const transport = new StreamableHTTPClientTransport(serverUrl, { authProvider: provider, fetch: guardedFetch });
     try {
       await new Client({ name: 'codemode', version: '0.1.0' }).connect(transport);
       log('Already signed in.');
@@ -233,7 +233,7 @@ export async function login(options: LoginOptions): Promise<number> {
     }
     // Prove the saved tokens work with a fresh connection.
     const client = new Client({ name: 'codemode', version: '0.1.0' });
-    await client.connect(new StreamableHTTPClientTransport(serverUrl, { authProvider: provider }));
+    await client.connect(new StreamableHTTPClientTransport(serverUrl, { authProvider: provider, fetch: guardedFetch }));
     const tools = (await client.listTools()).tools.length;
     await client.close();
     return tools;

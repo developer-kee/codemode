@@ -36,6 +36,8 @@ export interface SandboxLimits {
   maxConcurrentCalls?: number;
   /** Max characters of the text `execute_code` returns to the model (head 70%, tail 30%). Default 20 000. */
   maxOutputChars?: number;
+  /** Max size of one upstream result, in characters. A bigger one is refused with a message to ask for less, before it is copied into the sandbox. Default 10 000 000. */
+  maxResultChars?: number;
   /** Max total size of the `store` across scripts, in characters of keys plus JSON. Default 1 048 576. */
   maxStoreChars?: number;
 }

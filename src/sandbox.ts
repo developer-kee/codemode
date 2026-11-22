@@ -1,225 +1,116 @@
-import {
-  newQuickJSWASMModule,
-  shouldInterruptAfterDeadline,
-  type QuickJSContext,
-  type QuickJSDeferredPromise,
-  type QuickJSWASMModule,
-} from 'quickjs-emscripten';
-import { transform } from 'sucrase';
+import { MessageChannel, Worker } from 'node:worker_threads';
+import { runInQuickJS, stripTypes } from './sandbox-core.ts';
 import type { SandboxApi, SandboxLimits, SandboxResult } from './types.ts';
 
-/**
- * Guest call-stack limit. It must stay below the stack Node has left for WebAssembly: with a larger limit, runaway
- * recursion overflows the host stack first (RangeError), which leaves the engine half-freed and aborts it on cleanup.
- * Measured: up to 384 KB fails cleanly and still allows recursion about 2,000 frames deep; 512 KB does not.
- */
-const MAX_STACK_BYTES = 320 * 1024;
+export { stripTypes };
 
-let modulePromise: Promise<QuickJSWASMModule> | undefined;
-const getModule = (): Promise<QuickJSWASMModule> => (modulePromise ??= newQuickJSWASMModule());
+/** Extra time past the script's own deadline before the worker is killed from outside. */
+const WATCHDOG_GRACE_MS = 2_000;
+/** Cap on the worker's own JavaScript heap, so a huge result cannot exhaust the wrapper's memory. */
+const WORKER_HEAP_MB = 1024;
+/** Workers kept ready between scripts (starting one costs about a hundred milliseconds). */
+const MAX_IDLE_WORKERS = 2;
 
-/** Strip TypeScript syntax so the model may write either TS or JS. */
-export function stripTypes(code: string): string {
-  return transform(code, { transforms: ['typescript'] }).code;
-}
+const idle: Worker[] = [];
 
-interface GuestError {
-  name?: string;
-  message?: string;
-  stack?: string;
-}
-
-function formatError(err: unknown): string {
-  if (err !== null && typeof err === 'object') {
-    const e = err as GuestError;
-    const msg = e.message ?? JSON.stringify(err);
-    return e.stack ? `${e.name ?? 'Error'}: ${msg}\n${e.stack}` : msg;
-  }
-  return String(err);
-}
-
-/**
- * Run model-written code in a QuickJS (WASM) sandbox.
- *
- * The guest has no fetch, fs, network or process: the only way out is the `api.namespace` object, whose functions
- * return real promises that the host settles when `api.callTool` finishes. Because they are ordinary promises
- * (not Asyncify suspensions) the guest can `await` slow upstream calls, loop over them, and run several at once
- * with `Promise.all`. The code may use top-level await and `return`.
- */
-export async function runInSandbox(
-  code: string,
-  api: SandboxApi,
-  limits: SandboxLimits = {},
-): Promise<SandboxResult> {
-  const { timeoutMs = 60_000, memoryBytes = 128 * 1024 * 1024, maxLogChars = 100_000 } = limits;
-  const QuickJS = await getModule();
-  const vm: QuickJSContext = QuickJS.newContext(); // owns its runtime; disposing vm frees both
-  const runtime = vm.runtime;
-  runtime.setMemoryLimit(memoryBytes);
-  runtime.setMaxStackSize(MAX_STACK_BYTES);
-  runtime.setInterruptHandler(shouldInterruptAfterDeadline(Date.now() + timeoutMs));
-
-  const logs: string[] = [];
-  let logChars = 0;
-  const pushLog = (line: string): void => {
-    if (logChars > maxLogChars) return;
-    logChars += line.length;
-    logs.push(logChars > maxLogChars ? `${line.slice(0, 200)} …[log truncated]` : line);
+function spawn(): Worker {
+  const worker = new Worker(new URL('./sandbox-worker.ts', import.meta.url), { resourceLimits: { maxOldGenerationSizeMb: WORKER_HEAP_MB } });
+  worker.unref(); // a parked worker must not keep the process alive
+  // A worker that dies while parked must neither crash the process nor be handed out again.
+  const forget = (): void => {
+    const at = idle.indexOf(worker);
+    if (at >= 0) idle.splice(at, 1);
   };
-
-  /** Host calls still running; the loop below waits on these. */
-  const pending = new Set<Promise<void>>();
-  /** Aborted when the script ends or times out, so upstream calls it left running are cancelled. */
-  const abort = new AbortController();
-  const deferreds: QuickJSDeferredPromise[] = [];
-  let timer: NodeJS.Timeout | undefined;
-
-  try {
-    const consoleObj = vm.newObject();
-    for (const level of ['log', 'info', 'warn', 'error'] as const) {
-      const fn = vm.newFunction(level, (...args) => {
-        const text = args
-          .map((h) => {
-            const v: unknown = vm.dump(h);
-            return typeof v === 'string' ? v : JSON.stringify(v);
-          })
-          .join(' ');
-        pushLog(level === 'log' || level === 'info' ? text : `[${level}] ${text}`);
-      });
-      vm.setProp(consoleObj, level, fn);
-      fn.dispose();
-    }
-    vm.setProp(vm.global, 'console', consoleObj);
-    consoleObj.dispose();
-
-    // __call(id, jsonInput) -> Promise<jsonResult string>, settled by the host when the upstream call finishes.
-    const call = vm.newFunction('__call', (idH, inputH) => {
-      const id = vm.getString(idH);
-      const input: unknown = JSON.parse(vm.getString(inputH));
-      const deferred = vm.newPromise();
-      deferreds.push(deferred);
-      const work = (async (): Promise<void> => {
-        try {
-          const out = await api.callTool(id, input, abort.signal);
-          if (!vm.alive) return;
-          const h = vm.newString(JSON.stringify(out ?? null));
-          deferred.resolve(h);
-          h.dispose();
-        } catch (e) {
-          if (!vm.alive) return;
-          const h = vm.newError(e instanceof Error ? e.message : String(e));
-          deferred.reject(h);
-          h.dispose();
-        }
-      })();
-      const tracked: Promise<void> = work.finally(() => {
-        pending.delete(tracked);
-      });
-      pending.add(tracked);
-      return deferred.handle;
-    });
-    vm.setProp(vm.global, '__call', call);
-    call.dispose();
-
-    // __sync(id, jsonInput) -> jsonResult: host functions that finish at once (the `store`), no promise involved.
-    const sync = vm.newFunction('__sync', (idH, inputH) => {
-      const id = vm.getString(idH);
-      const input: unknown = JSON.parse(vm.getString(inputH));
-      const r = api.syncCall?.(id, input);
-      if (!r || !r.handled) return vm.newError(`Unknown sync call "${id}"`);
-      return vm.newString(JSON.stringify(r.value ?? null));
-    });
-    vm.setProp(vm.global, '__sync', sync);
-    sync.dispose();
-
-    const prelude = `
-      globalThis.${api.namespace} = {};
-      for (const id of ${JSON.stringify(api.ids)}) {
-        globalThis.${api.namespace}[id] = async (input) => JSON.parse(await __call(id, JSON.stringify(input ?? {})));
-      }
-      const syncCall = (id, input) => {
-        const r = __sync(id, JSON.stringify(input));
-        if (r instanceof Error) throw r;
-        return JSON.parse(r);
-      };
-      // store: persists across scripts; the host handles the reserved "__store.*" ids.
-      globalThis.store = {
-        get(key) {
-          const r = syncCall('__store.get', { key });
-          return r.found ? JSON.parse(r.json) : undefined;
-        },
-        set(key, value) {
-          syncCall('__store.set', { key, json: JSON.stringify(value) });
-        },
-        delete(key) {
-          return syncCall('__store.delete', { key });
-        },
-        keys() {
-          return syncCall('__store.keys', {});
-        },
-      };
-    `;
-    vm.unwrapResult(vm.evalCode(prelude)).dispose();
-
-    const js = stripTypes(`(async () => {\n${code}\n})()`);
-    const promiseHandle = vm.unwrapResult(vm.evalCode(js));
-
-    const deadline = Date.now() + timeoutMs;
-    for (;;) {
-      const jobs = runtime.executePendingJobs();
-      if (jobs.error) {
-        const err: unknown = vm.dump(jobs.error);
-        jobs.error.dispose();
-        promiseHandle.dispose();
-        return { logs, error: formatError(err) };
-      }
-
-      const state = vm.getPromiseState(promiseHandle);
-      if (state.type === 'fulfilled') {
-        const value: unknown = state.notAPromise ? undefined : vm.dump(state.value);
-        if (!state.notAPromise) state.value.dispose();
-        promiseHandle.dispose();
-        return value === undefined ? { logs } : { logs, result: value };
-      }
-      if (state.type === 'rejected') {
-        const err: unknown = vm.dump(state.error);
-        state.error.dispose();
-        promiseHandle.dispose();
-        return { logs, error: formatError(err) };
-      }
-
-      // Still pending: wait for a host call to finish (the next loop turn runs the jobs it unblocked).
-      if (pending.size === 0) {
-        promiseHandle.dispose();
-        return { logs, error: 'Script is waiting on a promise that can never settle (no upstream call is running).' };
-      }
-      const remaining = deadline - Date.now();
-      if (remaining <= 0) {
-        promiseHandle.dispose();
-        return { logs, error: `Script timed out after ${timeoutMs} ms` };
-      }
-      await Promise.race([
-        ...pending,
-        new Promise<void>((resolve) => {
-          timer = setTimeout(resolve, remaining);
-        }),
-      ]);
-      clearTimeout(timer);
-    }
-  } catch (e) {
-    const message = e instanceof Error ? e.message : String(e);
-    // A WASM trap leaves the shared module unusable for every later script; start a fresh one next time.
-    if (/memory access out of bounds|unreachable|RuntimeError/i.test(message)) modulePromise = undefined;
-    return { logs, error: formatError(message) };
-  } finally {
-    clearTimeout(timer);
-    abort.abort();
-    for (const d of deferreds) if (d.alive) d.dispose();
-    try {
-      vm.dispose();
-    } catch {
-      // The engine refused to free a context (an assertion fired). Its state is unreliable, so use a fresh module next time.
-      modulePromise = undefined;
-    }
-  }
+  worker.on('error', forget);
+  worker.on('exit', forget);
+  return worker;
 }
+
+/**
+ * Run model-written code in a QuickJS (WASM) sandbox inside a worker thread.
+ *
+ * The script, including a `while (true) {}`, runs on another thread, so the wrapper's own event loop keeps serving
+ * timers, the MCP connection and other scripts. A script that does not stop by its own deadline (or that exhausts the
+ * worker's memory or crashes it) costs a worker, never the wrapper: the worker is terminated and the call returns an error.
+ *
+ * Upstream calls (`api.callTool`) and the `store` (`api.syncCall`) still run here, on the main thread; the worker reaches
+ * them by message. See `sandbox-core.ts` for what the guest can do.
+ */
+export function runInSandbox(code: string, api: SandboxApi, limits: SandboxLimits = {}): Promise<SandboxResult> {
+  const { timeoutMs = 60_000 } = limits;
+  const worker = idle.pop() ?? spawn();
+  const calls = new MessageChannel();
+  const syncs = new MessageChannel();
+  const flag = new Int32Array(new SharedArrayBuffer(4));
+  const abort = new AbortController();
+
+  return new Promise<SandboxResult>((resolve) => {
+    let finished = false;
+    const finish = (result: SandboxResult, healthy: boolean): void => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(watchdog);
+      abort.abort(); // cancels upstream calls the script left running
+      worker.off('message', onMessage);
+      worker.off('error', onError);
+      worker.off('exit', onExit);
+      calls.port1.close();
+      syncs.port1.close();
+      if (healthy && idle.length < MAX_IDLE_WORKERS) idle.push(worker);
+      else void worker.terminate();
+      resolve(result);
+    };
+
+    const onMessage = (m: { type: string; result: SandboxResult }): void => {
+      if (m.type === 'done') finish(m.result, true);
+    };
+    const onError = (e: Error): void => finish({ logs: [], error: `The sandbox worker stopped: ${e.message}` }, false);
+    const onExit = (exitCode: number): void => finish({ logs: [], error: `The sandbox worker exited (code ${exitCode})` }, false);
+    const watchdog = setTimeout(
+      () => finish({ logs: [], error: `Script timed out after ${timeoutMs} ms` }, false),
+      timeoutMs + WATCHDOG_GRACE_MS,
+    );
+
+    worker.on('message', onMessage);
+    worker.on('error', onError);
+    worker.on('exit', onExit);
+
+    // Upstream tool calls from the guest.
+    calls.port1.on('message', (req: { n: number; id: string; input: unknown }) => {
+      api.callTool(req.id, req.input, abort.signal).then(
+        (value) => {
+          if (finished) return;
+          try {
+            calls.port1.postMessage({ n: req.n, ok: true, value });
+          } catch (e) {
+            calls.port1.postMessage({ n: req.n, ok: false, message: `The result could not be passed to the sandbox: ${e instanceof Error ? e.message : String(e)}` });
+          }
+        },
+        (e: unknown) => {
+          if (!finished) calls.port1.postMessage({ n: req.n, ok: false, message: e instanceof Error ? e.message : String(e) });
+        },
+      );
+    });
+
+    // `store` calls: answer, then wake the worker, which is waiting on `flag`.
+    syncs.port1.on('message', (req: { id: string; input: unknown }) => {
+      let reply: unknown;
+      try {
+        reply = api.syncCall?.(req.id, req.input) ?? { handled: false };
+      } catch (e) {
+        reply = { error: e instanceof Error ? e.message : String(e) };
+      }
+      syncs.port1.postMessage(reply);
+      Atomics.store(flag, 0, 1);
+      Atomics.notify(flag, 0);
+    });
+
+    worker.postMessage(
+      { type: 'run', code, namespace: api.namespace, ids: [...api.ids], limits, callPort: calls.port2, syncPort: syncs.port2, flag },
+      [calls.port2, syncs.port2],
+    );
+  });
+}
+
+/** In-thread variant, for callers that already run inside a worker. */
+export { runInQuickJS };

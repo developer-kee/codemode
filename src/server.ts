@@ -15,7 +15,7 @@ import { capOutput } from './output.ts';
 import { createStore } from './store.ts';
 import { applyLock } from './toollock.ts';
 import { runInSandbox } from './sandbox.ts';
-import { connectUpstream, listAllTools, unwrapResult } from './upstream.ts';
+import { connectUpstream, listAllTools, resultChars, unwrapResult } from './upstream.ts';
 import type { ServiceConfig } from './types.ts';
 
 const NAMESPACE = 'codemode';
@@ -40,6 +40,7 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
   const maxToolCalls = limits?.maxToolCalls ?? 100;
   const maxConcurrentCalls = limits?.maxConcurrentCalls ?? 8;
   const maxOutputChars = limits?.maxOutputChars ?? 20_000;
+  const maxResultChars = limits?.maxResultChars ?? 10_000_000;
   const store = createStore(limits?.maxStoreChars);
   // Debugging aid, off by default: records every script and its result in plain text. Not an audit log.
   const debugLog = process.env['CODEMODE_DEBUG_LOG'];
@@ -103,6 +104,10 @@ export async function createCodeModeServer(config: ServiceConfig): Promise<CodeM
         throw new Error(`Invalid arguments for ${id}: ${why}. Expected: ${index.lines[id] ?? id}`);
       }
       const res = await limited(() => client.callTool({ name: toolName, arguments: args }, undefined, signal ? { signal } : {}));
+      const size = resultChars(res as CallToolResult);
+      if (size > maxResultChars) {
+        throw new Error(`${toolName} returned ${size.toLocaleString('en-US')} characters, over the ${maxResultChars.toLocaleString('en-US')} limit for one result. Ask for less: a smaller page, a filter, or a narrower query.`);
+      }
       return unwrapResult(res as CallToolResult);
     };
     const callTool = async (id: string, input: unknown, signal?: AbortSignal): Promise<unknown> => {
