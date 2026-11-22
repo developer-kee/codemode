@@ -16,8 +16,8 @@ Each cell is the **token change**, `codemode / direct` total tokens, and passed/
 
 | Service | Variant | `claude-sonnet-5-5` (Claude, `claude`) | `deepseek-flash` (DeepSeek, `dsh`) |
 |---|---|---|---|
-| Blender | `scenarios` | **-72%** · 8,024 / 28,727 · 24/24 | not run |
-| Blender | `calls` | **-82%** · 3,063 / 17,476 · 18/18 | not run |
+| Blender | `scenarios` | **-71%** · 8,108 / 27,678 · 24/24 | not run |
+| Blender | `calls` | **-82%** · 3,090 / 17,468 · 18/18 | not run |
 | Windows (Windows-MCP) | `scenarios` | **-65%** · 8,101 / 22,860 · 18/18 | not run |
 | Windows (Windows-MCP) | `scenarios-4-tools` | **-3%** · 7,870 / 8,146 · 18/18 | not run |
 | Windows (Windows-MCP) | `calls` | **-78%** · 3,538 / 15,825 · 42/42 | not run |
@@ -32,8 +32,8 @@ Full per-task tables for each model. The comparison above is the quick view; the
 
 | Service | Variant | Model | Runner | Runs (pass) | Total tokens: direct | codemode | Change | Wall time: direct | codemode | Change | Detail |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Blender | `scenarios` | `claude-sonnet-5-5` | `claude` | 24 (24) | 28,727 | 8,024 | **-72%** | 11.0s | 11.2s | **1%** | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
-| Blender | `calls` | `claude-sonnet-5-5` | `claude` | 18 (18) | 17,476 | 3,063 | **-82%** | 6.8s | 6.8s | **1%** | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
+| Blender | `scenarios` | `claude-sonnet-5-5` | `claude` | 24 (24) | 27,678 | 8,108 | **-71%** | 11.5s | 11.6s | **0%** | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
+| Blender | `calls` | `claude-sonnet-5-5` | `claude` | 18 (18) | 17,468 | 3,090 | **-82%** | 7.1s | 7.0s | **-1%** | [suites/blender/RESULTS.md](suites/blender/RESULTS.md) |
 | Windows (Windows-MCP) | `scenarios` | `claude-sonnet-5-5` | `claude` | 18 (18) | 22,860 | 8,101 | **-65%** | 14.8s | 15.1s | **2%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
 | Windows (Windows-MCP) | `scenarios-4-tools` | `claude-sonnet-5-5` | `claude` | 18 (18) | 8,146 | 7,870 | **-3%** | 19.6s | 16.0s | **-19%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |
 | Windows (Windows-MCP) | `calls` | `claude-sonnet-5-5` | `claude` | 42 (42) | 15,825 | 3,538 | **-78%** | 12.1s | 12.0s | **-1%** | [suites/windows/RESULTS.md](suites/windows/RESULTS.md) |

@@ -1,0 +1,240 @@
+{
+  "date": "2026-11-22",
+  "iterations": 10,
+  "toolCount": 10,
+  "costs": {
+    "rows": [
+      {
+        "tool": "get_addon_status",
+        "covered": true,
+        "directChars": 1011,
+        "codemodeChars": 34,
+        "onDemandChars": 1133
+      },
+      {
+        "tool": "disable_telemetry",
+        "covered": false,
+        "directChars": 540,
+        "codemodeChars": 35,
+        "onDemandChars": 647
+      },
+      {
+        "tool": "get_scene_info",
+        "covered": true,
+        "directChars": 1835,
+        "codemodeChars": 64,
+        "onDemandChars": 1842
+      },
+      {
+        "tool": "execute_blender_code",
+        "covered": true,
+        "directChars": 830,
+        "codemodeChars": 44,
+        "onDemandChars": 919
+      },
+      {
+        "tool": "record_trajectory_feedback",
+        "covered": false,
+        "directChars": 1123,
+        "codemodeChars": 85,
+        "onDemandChars": 1172
+      },
+      {
+        "tool": "look",
+        "covered": true,
+        "directChars": 3018,
+        "codemodeChars": 116,
+        "onDemandChars": 2642
+      },
+      {
+        "tool": "generate_3d",
+        "covered": false,
+        "directChars": 2758,
+        "codemodeChars": 124,
+        "onDemandChars": 2627
+      },
+      {
+        "tool": "generate_gaussian_world",
+        "covered": false,
+        "directChars": 2440,
+        "codemodeChars": 99,
+        "onDemandChars": 2460
+      },
+      {
+        "tool": "search_assets",
+        "covered": false,
+        "directChars": 2374,
+        "codemodeChars": 137,
+        "onDemandChars": 2197
+      },
+      {
+        "tool": "import_asset",
+        "covered": false,
+        "directChars": 1799,
+        "codemodeChars": 107,
+        "onDemandChars": 1732
+      }
+    ],
+    "directTotalChars": 17728,
+    "codemodeTotalChars": 1689,
+    "descriptionChars": 1288,
+    "indexLevel": 2
+  },
+  "latency": {
+    "rows": [
+      {
+        "id": "get_addon_status",
+        "tool": "get_addon_status",
+        "iterations": 10,
+        "direct": {
+          "median": 476.5087999999996,
+          "p95": 479.6182000000008,
+          "min": 471.96910000000025,
+          "max": 479.6182000000008
+        },
+        "codemode": {
+          "median": 477.15030000000115,
+          "p95": 480.45510000000013,
+          "min": 472.5505000000012,
+          "max": 480.45510000000013
+        },
+        "directChars": 1096,
+        "codemodeChars": 1264,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "get_scene_info",
+        "tool": "get_scene_info",
+        "iterations": 10,
+        "direct": {
+          "median": 53.23369999999886,
+          "p95": 55.783299999999144,
+          "min": 49.21260000000075,
+          "max": 55.783299999999144
+        },
+        "codemode": {
+          "median": 54.9974000000002,
+          "p95": 55.52219999999943,
+          "min": 49.542999999999665,
+          "max": 55.52219999999943
+        },
+        "directChars": 193,
+        "codemodeChars": 222,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "execute_blender_code",
+        "tool": "execute_blender_code",
+        "iterations": 10,
+        "direct": {
+          "median": 52.34150000000045,
+          "p95": 52.89539999999943,
+          "min": 50.971700000000055,
+          "max": 52.89539999999943
+        },
+        "codemode": {
+          "median": 53.24069999999847,
+          "p95": 54.04619999999886,
+          "min": 52.13749999999891,
+          "max": 54.04619999999886
+        },
+        "directChars": 45,
+        "codemodeChars": 72,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "look",
+        "tool": "look",
+        "iterations": 10,
+        "direct": {
+          "median": 201.15759999999864,
+          "p95": 214.64879999999903,
+          "min": 191.41530000000057,
+          "max": 214.64879999999903
+        },
+        "codemode": {
+          "median": 218.1742000000013,
+          "p95": 223.98879999999917,
+          "min": 172.28059999999823,
+          "max": 223.98879999999917
+        },
+        "directChars": 279627,
+        "codemodeChars": 20092,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      }
+    ],
+    "sandboxOnly": {
+      "median": 1.0336999999999534,
+      "p95": 1.3410000000003492,
+      "min": 0.8297999999995227,
+      "max": 1.3410000000003492
+    }
+  },
+  "coveredTools": 4,
+  "skipped": [
+    {
+      "tool": "disable_telemetry",
+      "reason": "Changes the upstream's settings; not a read."
+    },
+    {
+      "tool": "record_trajectory_feedback",
+      "reason": "Writes feedback into the upstream's telemetry."
+    },
+    {
+      "tool": "generate_3d",
+      "reason": "Calls a paid external generator and takes minutes."
+    },
+    {
+      "tool": "generate_gaussian_world",
+      "reason": "Calls a paid external generator and takes minutes."
+    },
+    {
+      "tool": "search_assets",
+      "reason": "Asset libraries are switched off in the test Blender; network-bound and non-deterministic."
+    },
+    {
+      "tool": "import_asset",
+      "reason": "Downloads from external libraries; non-deterministic."
+    }
+  ],
+  "cases": [
+    {
+      "id": "get_addon_status",
+      "tool": "get_addon_status",
+      "args": {},
+      "hasPrompt": true
+    },
+    {
+      "id": "get_scene_info",
+      "tool": "get_scene_info",
+      "args": {},
+      "hasPrompt": true
+    },
+    {
+      "id": "execute_blender_code",
+      "tool": "execute_blender_code",
+      "args": {
+        "code": "print('codemode-ok-4821')"
+      },
+      "hasPrompt": true
+    },
+    {
+      "id": "look",
+      "tool": "look",
+      "args": {},
+      "hasPrompt": false
+    }
+  ]
+}

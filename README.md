@@ -67,8 +67,8 @@ Latest means of total tokens, codemode vs direct (all paths passed their objecti
 
 | Service | Model (runner) | `scenarios` | `calls` (one tool call per task) |
 |---|---|---|---|
-| Blender | `claude-sonnet-5-5` (`claude`) | **-72%** | **-82%** |
-| Windows (Windows-MCP) | `claude-sonnet-5-5` (`claude`) | **-63%** (20 tools); **+8%** with only 4 tools | **-78%** |
+| Blender | `claude-sonnet-5-5` (`claude`) | **-71%** | **-82%** |
+| Windows (Windows-MCP) | `claude-sonnet-5-5` (`claude`) | **-65%** (20 tools); **-3%** with only 4 tools | **-78%** |
 | Playwright | `claude-sonnet-5-5` (`claude`) | **-71%** | **-83%** |
 | Playwright | `deepseek-flash` (`dsh`) | **-68%** | **-82%** |
 
