@@ -6,3 +6,4 @@ bench/work/
 bench/results/*.tmp
 
 .claude/
+.playwright-mcp/
