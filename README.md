@@ -14,8 +14,8 @@ Each service is one file in `services/` (currently: `blender`, `notion`).
 ```powershell
 npm install
 npm run add -- linear npx -y some-linear-mcp        # add a service (or: -- name --url https://...)
-claude mcp add codemode-notion -- node C:\repos\codemode\src\cli.js notion
-node src/cli.js --list
+claude mcp add codemode-notion -- node C:\repos\codemode\src\cli.ts notion
+node src/cli.ts --list
 ```
 
 Credentials go in the MCP client config `env` (e.g. `NOTION_TOKEN`), never in this repo.
@@ -24,3 +24,10 @@ Blender needs Blender open with the BlenderMCP addon connected.
 ## Test
 
 `npm test`
+
+
+## Types
+
+TypeScript 7, strict (incl. noUncheckedIndexedAccess, exactOptionalPropertyTypes, erasableSyntaxOnly). Node 24 runs the .ts files directly, so there is no build step; `npm run typecheck` runs tsc.
+A service file should end with `satisfies ServiceConfig`.
+
