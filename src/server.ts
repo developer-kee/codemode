@@ -141,4 +141,3 @@ export async function runCodeModeServer(config: ServiceConfig): Promise<void> {
     void close().finally(() => process.exit(0));
   });
 }
-

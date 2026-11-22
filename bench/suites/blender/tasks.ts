@@ -190,4 +190,3 @@ for name, x, y, z, sx, sy, sz in DATA:
     },
   },
 ];
-

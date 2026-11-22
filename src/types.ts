@@ -78,5 +78,3 @@ export interface GeneratedApi {
   /** Identifier -> the declarations that tool contributes to `dts` (its types plus its member). */
   perTool: Record<string, string>;
 }
-
-

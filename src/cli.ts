@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 // Usage: node src/cli.ts <service> [--read-only]   (service = a file in services/; or set CODEMODE_READ_ONLY=1)
 //        node src/cli.ts --list
 import { readdirSync } from 'node:fs';

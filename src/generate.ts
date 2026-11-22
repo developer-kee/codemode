@@ -97,4 +97,3 @@ export async function generateApi(
   const dts = `${decls.join('\n\n')}\n\ndeclare const ${namespace}: {\n${members.join('\n')}\n};\n`;
   return { dts, names, perTool };
 }
-

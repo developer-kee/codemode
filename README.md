@@ -81,6 +81,12 @@ What the sandbox can and cannot do:
 
 - No network, no filesystem, no imports, no `process`. The only way out is `codemode.*`, which the host runs against the upstream server.
 - Credentials stay in the host process (the MCP client config `env` or `headers`); model-written code never sees them.
+- **The upstream gets a minimal environment.** The child process receives the SDK's safe default (`PATH`, home and temp folders), the variables a service names in `upstream.passEnv` (for example `NOTION_TOKEN`) and its explicit `upstream.env`. The wrapper's other variables, which may hold unrelated secrets, are not inherited.
+- **Remote upstreams must use https** (`http` is accepted only for `localhost`), because credentials and tool results travel over that connection.
+- **Calls end with the script.** Upstream calls still running when a script finishes or times out are aborted, so a write cannot keep going after the model has been told the script is over. At most `maxConcurrentCalls` run at once.
+- **Tool names cannot collide or shadow.** `read-file` and `read_file` become `read_file` and `read_file_2` instead of one replacing the other, and names such as `__proto__` or `constructor` are prefixed.
+- **Risky tools are off by default where we know them.** `services/playwright.ts` leaves out `browser_run_code_unsafe` unless `CODEMODE_ALLOW_UNSAFE=1`. Use `access` for the rest. Upstream servers fetched with `uvx` or `npx` are pinned to an exact version.
+- `CODEMODE_LOG=<file>` is a debugging aid that writes every script and result to a file in plain text; the wrapper says so on stderr when it is set. Leave it unset when tools return private data.
 
 Limits, set per service in `limits` (all optional):
 
@@ -91,6 +97,7 @@ Limits, set per service in `limits` (all optional):
 | `maxLogChars` | 100 000 characters of `console` output | further log lines are dropped, the last kept line is marked truncated |
 | `maxOutputChars` | 20 000 characters `execute_code` returns to the model | head 70% and tail 30% are kept with an `…[N characters omitted]…` marker; data the script holds in memory is not affected |
 | `maxToolCalls` | 100 upstream calls per script | the next call throws "Tool call limit reached" |
+| `maxConcurrentCalls` | 8 upstream calls running at once per script | further calls wait for a free slot |
 | `maxStoreChars` | 1 048 576 characters (keys plus JSON) for the whole `store` | `store.set` throws "store is full" |
 
 Arguments are checked against each tool's JSON schema before the call; a wrong shape throws with the expected signature. `get_api` returns full declarations and is not counted against `maxOutputChars`; pass the names you need rather than no names on a large catalogue.
