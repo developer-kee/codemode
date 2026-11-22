@@ -11,7 +11,9 @@
                     "typecheck":  "tsc",
                     "test":  "tsc \u0026\u0026 node --test test/*.test.ts",
                     "add":  "node scripts/add-service.ts",
-                    "start":  "node src/cli.ts"
+                    "start":  "node src/cli.ts",
+                    "bench":  "node bench/run.ts",
+                    "bench:report":  "node bench/report.ts"
                 },
     "license":  "MIT",
     "dependencies":  {

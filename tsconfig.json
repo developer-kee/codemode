@@ -20,5 +20,6 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["src", "test", "scripts", "services"]
+  "include": ["src", "test", "scripts", "services", "bench"]
 }
+
