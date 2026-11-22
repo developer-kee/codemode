@@ -34,6 +34,6 @@ A service file should end with `satisfies ServiceConfig`.
 
 ## Benchmarks
 
-Each tool is benchmarked separately: the upstream MCP server used directly vs the same server behind codemode, same model and tasks. Overview: [bench/RESULTS.md](bench/RESULTS.md); method, per-tool warnings and limitations: [bench/README.md](bench/README.md). Rerun with `npm run bench -- --service blender --runs 3` (needs `claude auth login`; read the tool's warning first).
+Each service (Blender, Windows, Playwright) is benchmarked separately, in one folder `bench/<service>/` that holds its tasks, per-tool-call cases, raw runs and generated `RESULTS.md`: the upstream MCP server used directly vs the same server behind codemode, same model and tasks. Each service has named variants (`scenarios`, `calls`, and for Windows `scenarios-4-tools`). Overview: [bench/RESULTS.md](bench/RESULTS.md); method, per-service warnings and limitations: [bench/README.md](bench/README.md). Rerun with `npm run bench -- --service blender --variant scenarios --runs 3` (needs `claude auth login`; read the service's warning first); `npm run bench:calls -- --service blender` runs the no-model per-call benchmark, and `npm run bench -- --list` shows every service and variant.
 
 
