@@ -70,7 +70,7 @@ Everything else is held equal: same machine and target application, same upstrea
 
 ## Models
 
-The benchmark is **model- and harness-agnostic**: a *runner* drives a model with the same MCP server, prompts and checks, and every record stores the model id and the runner id. Reports group runs by model family (the leading token of the model id), then by model id, and show the runner.
+The benchmark is **model- and harness-agnostic**: a *runner* drives a model with the same MCP server, prompts and checks, and every record stores the model id and the runner id. Reports lead with a **Models** table and a **Compare models** matrix — one column per model, cells showing token change, codemode/direct totals and pass counts — then the detailed per-family tables. Adding a model adds a column automatically; untouched service/variant pairs read `not run`.
 
 | Family | Model | Runner | What runs |
 |---|---|---|---|

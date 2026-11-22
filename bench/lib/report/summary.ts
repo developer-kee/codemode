@@ -3,7 +3,7 @@ import { writeFileSync } from 'node:fs';
 import type { AgentRun, PathId } from '../runners/agent.ts';
 import { buildCallsSections } from '../calls/report.ts';
 import type { BenchService, BenchVariant } from '../types.ts';
-import { familiesIn, modelFamily, runnersOf } from './families.ts';
+import { familiesIn, modelFamily, modelsIn, runnersOf } from './families.ts';
 import { loadCalls, loadRecords, overviewFile, reportFile, type RunRecord } from './records.ts';
 
 const mean = (xs: number[]): number => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -36,6 +36,55 @@ const header =
 
 const paths: PathId[] = ['direct', 'codemode'];
 
+const compareLegend =
+  'Each cell is the **token change**, `codemode / direct` total tokens, and passed/runs. Columns are models; rows are variants (and services in the overview). ' +
+  'Compare across columns with the caveat that each family runs under its own harness, and compare codemode vs direct within a cell. `not run` means no runs for that model there yet.';
+
+/** Compact comparison cell: token change, codemode/direct totals, pass count. */
+function compareCell(recs: RunRecord[]): string {
+  if (recs.length === 0) return 'not run';
+  const s = summary(recs);
+  const passes = recs.filter((r) => r.pass).length;
+  return `**${pct(s.d, s.c)}** · ${fmt(s.c)} / ${fmt(s.d)} · ${passes}/${recs.length}`;
+}
+
+/** Header for a model column: id, family and the runner that produced it. */
+function modelHeader(model: string, records: RunRecord[]): string {
+  const runners = runnersOf(records.filter((r) => r.model === model));
+  const runner = runners.length === 1 ? `, \`${runners[0]}\`` : '';
+  return `\`${model}\` (${modelFamily(model)}${runner})`;
+}
+
+/** Models table for one service's report. */
+function modelsTable(records: RunRecord[]): string[] {
+  const models = modelsIn(records);
+  const out = ['| Model | Provider | Runner | Runs | Variants |', '|---|---|---|---|---|'];
+  for (const model of models) {
+    const mr = records.filter((r) => r.model === model);
+    const variants = [...new Set(mr.map((r) => `\`${r.variant}\``))];
+    out.push(`| \`${model}\` | ${modelFamily(model)} | ${runnersOf(mr).map((r) => `\`${r}\``).join(', ')} | ${mr.length} | ${variants.join(', ')} |`);
+  }
+  out.push('');
+  return out;
+}
+
+/** Models table for the suite overview, adding which services each model covers. */
+function modelsSuiteTable(all: BenchService[]): string[] {
+  const perService = all.map((svc) => ({ id: svc.id, records: loadRecords(svc.id) }));
+  const records = perService.flatMap((x) => x.records);
+  const models = modelsIn(records);
+  const out = ['| Model | Provider | Runner | Runs | Services |', '|---|---|---|---|---|'];
+  for (const model of models) {
+    const mr = records.filter((r) => r.model === model);
+    const services = perService.filter((x) => x.records.some((r) => r.model === model)).map((x) => x.id);
+    out.push(
+      `| \`${model}\` | ${modelFamily(model)} | ${runnersOf(mr).map((r) => `\`${r}\``).join(', ')} | ${mr.length} | ${services.join(', ')} |`,
+    );
+  }
+  out.push('');
+  return out;
+}
+
 function summary(recs: RunRecord[]): { d: number; c: number; dt: number; ct: number } {
   const of = (p: PathId, g: (r: RunRecord) => number): number => mean(recs.filter((r) => r.run.path === p).map(g));
   return {
@@ -44,6 +93,42 @@ function summary(recs: RunRecord[]): { d: number; c: number; dt: number; ct: num
     dt: of('direct', (r) => r.run.durationMs) / 1000,
     ct: of('codemode', (r) => r.run.durationMs) / 1000,
   };
+}
+
+/** Variant-by-model comparison for one service's report. Omitted when only one model has runs. */
+function serviceCompare(service: BenchService, records: RunRecord[]): string[] {
+  const models = modelsIn(records);
+  if (models.length < 2) return [];
+  const out = ['## Compare models', '', compareLegend, ''];
+  out.push(`| Variant | ${models.map((m) => modelHeader(m, records)).join(' | ')} |`);
+  out.push(`|---|${models.map(() => '---').join('|')}|`);
+  for (const variant of service.variants) {
+    const vr = records.filter((r) => r.variant === variant.id);
+    if (vr.length === 0) continue;
+    out.push(`| \`${variant.id}\` | ${models.map((m) => compareCell(vr.filter((r) => r.model === m))).join(' | ')} |`);
+  }
+  out.push('');
+  return out;
+}
+
+/** Service-by-model comparison for the suite overview. Omitted when only one model has runs. */
+function suiteCompare(all: BenchService[]): string[] {
+  const perService = all.map((svc) => ({ svc, records: loadRecords(svc.id) }));
+  const records = perService.flatMap((x) => x.records);
+  const models = modelsIn(records);
+  if (models.length < 2) return [];
+  const out = ['## Compare models', '', compareLegend, ''];
+  out.push(`| Service | Variant | ${models.map((m) => modelHeader(m, records)).join(' | ')} |`);
+  out.push(`|---|---|${models.map(() => '---').join('|')}|`);
+  for (const { svc, records: r } of perService) {
+    for (const variant of svc.variants) {
+      const vr = r.filter((rec) => rec.variant === variant.id);
+      if (vr.length === 0) continue;
+      out.push(`| ${svc.title} | \`${variant.id}\` | ${models.map((m) => compareCell(vr.filter((rec) => rec.model === m))).join(' | ')} |`);
+    }
+  }
+  out.push('');
+  return out;
 }
 
 /** Per-model tables for one variant: per-task summary, per-task detail, all tasks, failures. `h` is the heading level of the model section. */
@@ -130,25 +215,17 @@ export function buildServiceReport(service: BenchService): string {
     '',
   ];
   if (records.length === 0) out.push('_No runs recorded yet._', '');
-  // One place that says which families and runners exist, before the per-variant detail.
+  // Quick provider comparison first, then the detailed per-family sections.
   if (records.length > 0) {
     out.push(
       '## Models',
       '',
-      'Runs are grouped by model family, then by model id. Each family is produced by one runner, and every family uses the same tasks and prompts; ' +
+      'Detailed results below are grouped by model family. Each family is produced by one runner and uses the same tasks and prompts; ' +
         'token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.',
       '',
+      ...modelsTable(records),
+      ...serviceCompare(service, records),
     );
-    for (const family of familiesIn(records)) {
-      const fr = records.filter((r) => modelFamily(r.model) === family);
-      out.push(`### ${family}`, '', `Runner: ${runnersOf(fr).map((r) => `\`${r}\``).join(', ')}.`, '');
-      for (const model of [...new Set(fr.map((r) => r.model))]) {
-        const mr = fr.filter((r) => r.model === model);
-        const variants = service.variants.filter((v) => mr.some((r) => r.variant === v.id)).map((v) => `\`${v.id}\``);
-        out.push(`- \`${model}\`: ${mr.length} runs in ${variants.join(', ')}`);
-      }
-      out.push('');
-    }
   }
   for (const variant of service.variants) {
     const vr = records.filter((r) => r.variant === variant.id);
@@ -194,8 +271,20 @@ export function buildOverview(all: BenchService[]): string {
   ];
   const records = all.flatMap((svc) => loadRecords(svc.id));
   if (records.length === 0) out.push('_No runs recorded yet._', '');
+  if (records.length > 0) {
+    out.push(
+      '## Models',
+      '',
+      ...modelsSuiteTable(all),
+      ...suiteCompare(all),
+      '## Detail by model family',
+      '',
+      'Full per-task tables for each model. The comparison above is the quick view; these are the underlying numbers.',
+      '',
+    );
+  }
   for (const family of familiesIn(records)) {
-    out.push(`## ${family}`, '');
+    out.push(`### ${family}`, '');
     out.push(
       '| Service | Variant | Model | Runner | Runs (pass) | Total tokens: direct | codemode | Change | Wall time: direct | codemode | Change | Detail |',
       '|---|---|---|---|---|---|---|---|---|---|---|---|',

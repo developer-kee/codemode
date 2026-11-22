@@ -3,7 +3,32 @@
 Each service is benchmarked separately: the same model, prompts and checks on two paths, the upstream MCP server used directly versus the same server behind codemode (`execute_code` with `get_api`). A service has several variants (the scenario tasks, one tool call per task, ...), listed as separate rows.
 Method, metric definitions and limitations: [README.md](README.md). Per-service detail and raw runs are linked below.
 
-## Claude
+## Models
+
+| Model | Provider | Runner | Runs | Services |
+|---|---|---|---|---|
+| `claude-sonnet-5-5` | Claude | `claude` | 156 | blender, windows, playwright |
+| `deepseek-flash` | DeepSeek | `dsh` | 36 | playwright |
+
+## Compare models
+
+Each cell is the **token change**, `codemode / direct` total tokens, and passed/runs. Columns are models; rows are variants (and services in the overview). Compare across columns with the caveat that each family runs under its own harness, and compare codemode vs direct within a cell. `not run` means no runs for that model there yet.
+
+| Service | Variant | `claude-sonnet-5-5` (Claude, `claude`) | `deepseek-flash` (DeepSeek, `dsh`) |
+|---|---|---|---|
+| Blender | `scenarios` | **-72%** · 8,024 / 28,727 · 24/24 | not run |
+| Blender | `calls` | **-82%** · 3,063 / 17,476 · 18/18 | not run |
+| Windows (Windows-MCP) | `scenarios` | **-63%** · 8,444 / 22,892 · 18/18 | not run |
+| Windows (Windows-MCP) | `scenarios-4-tools` | **8%** · 8,754 / 8,128 · 18/18 | not run |
+| Windows (Windows-MCP) | `calls` | **-78%** · 3,498 / 15,827 · 42/42 | not run |
+| Playwright (browser, local test site) | `scenarios` | **-71%** · 8,435 / 29,359 · 18/18 | **-68%** · 18,923 / 60,019 · 18/18 |
+| Playwright (browser, local test site) | `calls` | **-83%** · 3,594 / 21,020 · 18/18 | **-82%** · 3,249 / 17,647 · 18/18 |
+
+## Detail by model family
+
+Full per-task tables for each model. The comparison above is the quick view; these are the underlying numbers.
+
+### Claude
 
 | Service | Variant | Model | Runner | Runs (pass) | Total tokens: direct | codemode | Change | Wall time: direct | codemode | Change | Detail |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -15,7 +40,7 @@ Method, metric definitions and limitations: [README.md](README.md). Per-service 
 | Playwright (browser, local test site) | `scenarios` | `claude-sonnet-5-5` | `claude` | 18 (18) | 29,359 | 8,435 | **-71%** | 11.0s | 11.9s | **8%** | [services/playwright/RESULTS.md](services/playwright/RESULTS.md) |
 | Playwright (browser, local test site) | `calls` | `claude-sonnet-5-5` | `claude` | 18 (18) | 21,020 | 3,594 | **-83%** | 8.7s | 8.6s | **-1%** | [services/playwright/RESULTS.md](services/playwright/RESULTS.md) |
 
-## DeepSeek
+### DeepSeek
 
 | Service | Variant | Model | Runner | Runs (pass) | Total tokens: direct | codemode | Change | Wall time: direct | codemode | Change | Detail |
 |---|---|---|---|---|---|---|---|---|---|---|---|

@@ -13,19 +13,21 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 ## Models
 
-Runs are grouped by model family, then by model id. Each family is produced by one runner, and every family uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.
+Detailed results below are grouped by model family. Each family is produced by one runner and uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.
 
-### Claude
+| Model | Provider | Runner | Runs | Variants |
+|---|---|---|---|---|
+| `claude-sonnet-5-5` | Claude | `claude` | 36 | `scenarios`, `calls` |
+| `deepseek-flash` | DeepSeek | `dsh` | 36 | `scenarios`, `calls` |
 
-Runner: `claude`.
+## Compare models
 
-- `claude-sonnet-5-5`: 36 runs in `scenarios`, `calls`
+Each cell is the **token change**, `codemode / direct` total tokens, and passed/runs. Columns are models; rows are variants (and services in the overview). Compare across columns with the caveat that each family runs under its own harness, and compare codemode vs direct within a cell. `not run` means no runs for that model there yet.
 
-### DeepSeek
-
-Runner: `dsh`.
-
-- `deepseek-flash`: 36 runs in `scenarios`, `calls`
+| Variant | `claude-sonnet-5-5` (Claude, `claude`) | `deepseek-flash` (DeepSeek, `dsh`) |
+|---|---|---|
+| `scenarios` | **-71%** · 8,435 / 29,359 · 18/18 | **-68%** · 18,923 / 60,019 · 18/18 |
+| `calls` | **-83%** · 3,594 / 21,020 · 18/18 | **-82%** · 3,249 / 17,647 · 18/18 |
 
 ## Variant: `scenarios`, multi-step scenario tasks
 

@@ -12,13 +12,11 @@ Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../
 
 ## Models
 
-Runs are grouped by model family, then by model id. Each family is produced by one runner, and every family uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.
+Detailed results below are grouped by model family. Each family is produced by one runner and uses the same tasks and prompts; token counts are comparable within a family, not necessarily across runners, because each harness sends its own system prompt and tool guidance.
 
-### Claude
-
-Runner: `claude`.
-
-- `claude-sonnet-5-5`: 42 runs in `scenarios`, `calls`
+| Model | Provider | Runner | Runs | Variants |
+|---|---|---|---|---|
+| `claude-sonnet-5-5` | Claude | `claude` | 42 | `scenarios`, `calls` |
 
 ## Variant: `scenarios`, multi-step scenario tasks
 

@@ -37,6 +37,16 @@ export function familiesIn(records: RunRecord[]): string[] {
   return present.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 }
 
+/** Distinct models in `records`, ordered by family and then by id. */
+export function modelsIn(records: RunRecord[]): string[] {
+  const models = [...new Set(records.map((r) => r.model))];
+  const rank = (m: string): number => {
+    const i = FAMILY_ORDER.indexOf(modelFamily(m));
+    return i < 0 ? FAMILY_ORDER.length : i;
+  };
+  return models.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+}
+
 /** Runner that produced a record. Records without one predate `--runner` and all used `claude`. */
 export const runnerOf = (r: RunRecord): string => r.runner ?? 'claude';
 
