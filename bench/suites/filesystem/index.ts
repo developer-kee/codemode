@@ -3,6 +3,7 @@ import { callsVariant } from '../../lib/calls/index.ts';
 import type { BenchService, BenchVariant } from '../../lib/types/index.ts';
 import { filesystemCalls } from './cases.ts';
 import { makeTasks, SANDBOX } from './tasks.ts';
+import { npmServer } from '../../../servers/resolve.ts';
 
 /** Both paths launch the same pinned server, confined to the sandbox folder. */
 const scenarios: BenchVariant = {
@@ -10,8 +11,7 @@ const scenarios: BenchVariant = {
   title: 'multi-step scenario tasks',
   direct: {
     server: 'filesystem',
-    command: 'npx',
-    args: ['-y', '@modelcontextprotocol/server-filesystem@2.4.0', SANDBOX],
+    ...npmServer('@modelcontextprotocol/server-filesystem', SANDBOX),
   },
   codemodeEnv: { CODEMODE_FILESYSTEM_DIRS: SANDBOX },
   systemPrompt:

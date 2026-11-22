@@ -1,39 +1,42 @@
 {
-    "name": "codemode",
-    "version": "0.1.0",
-    "description": "Code Mode for MCP: wrap any MCP server as execute_code + get_api. Each service is a file in services/.",
-    "type": "module",
-    "main": "src/index.ts",
-    "exports": {
-        ".": "./src/index.ts"
-    },
-    "scripts": {
-        "typecheck": "tsc",
-        "test": "tsc && node --test test/*.test.ts",
-        "add": "node scripts/add-service.ts",
-        "start": "node src/cli.ts",
-        "bench": "node bench/cli/run.ts",
-        "bench:report": "node bench/cli/report.ts",
-        "bench:calls": "node bench/cli/calls.ts",
-        "bench:validate": "node bench/cli/validate.ts"
-    },
-    "license": "MIT",
-    "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.32.2",
-        "ajv": "^8.20.0",
-        "json-schema-to-typescript": "^16.0.0",
-        "quickjs-emscripten": "^0.32.0",
-        "sucrase": "^3.35.1",
-        "zod": "^4.6.7"
-    },
-    "bin": {
-        "codemode": "src/cli.ts"
-    },
-    "devDependencies": {
-        "@types/node": "^24.19.2",
-        "typescript": "^7.0.2"
-    },
-    "engines": {
-        "node": ">=24"
-    }
+    "name":  "codemode",
+    "version":  "0.1.0",
+    "description":  "Code Mode for MCP: wrap any MCP server as execute_code + get_api. Each service is a file in services/.",
+    "type":  "module",
+    "main":  "src/index.ts",
+    "exports":  {
+                    ".":  "./src/index.ts"
+                },
+    "scripts":  {
+                    "typecheck":  "tsc",
+                    "test":  "tsc \u0026\u0026 node --test test/*.test.ts",
+                    "add":  "node scripts/add-service.ts",
+                    "start":  "node src/cli.ts",
+                    "bench":  "node bench/cli/run.ts",
+                    "bench:report":  "node bench/cli/report.ts",
+                    "bench:calls":  "node bench/cli/calls.ts",
+                    "bench:validate":  "node bench/cli/validate.ts",
+                    "servers:install":  "npm ci --ignore-scripts --prefix servers \u0026\u0026 uv sync --frozen --project servers/python",
+                    "lock:update":  "node scripts/update-locks.ts",
+                    "lock:verify":  "node scripts/update-locks.ts --verify"
+                },
+    "license":  "MIT",
+    "dependencies":  {
+                         "@modelcontextprotocol/sdk":  "^1.32.2",
+                         "ajv":  "^8.20.0",
+                         "json-schema-to-typescript":  "^16.0.0",
+                         "quickjs-emscripten":  "^0.32.0",
+                         "sucrase":  "^3.35.1",
+                         "zod":  "^4.6.7"
+                     },
+    "bin":  {
+                "codemode":  "src/cli.ts"
+            },
+    "devDependencies":  {
+                            "@types/node":  "^24.19.2",
+                            "typescript":  "^7.0.2"
+                        },
+    "engines":  {
+                    "node":  "\u003e=24"
+                }
 }

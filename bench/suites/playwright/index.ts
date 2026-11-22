@@ -3,6 +3,7 @@ import type { BenchService, BenchVariant } from '../../lib/types/index.ts';
 import { playwrightCalls } from './cases.ts';
 import { ORIGIN, startFixture } from './fixture.ts';
 import { tasks } from './tasks.ts';
+import { npmServer } from '../../../servers/resolve.ts';
 
 /** Launch flags shared by both paths so they expose the same browser, confined to the local fixture site. */
 const FLAGS = ['--browser', 'msedge', '--headless', '--allowed-origins', ORIGIN];
@@ -14,8 +15,7 @@ const scenarios: BenchVariant = {
   title: 'multi-step scenario tasks',
   direct: {
     server: 'playwright',
-    command: 'npx',
-    args: ['-y', '@playwright/mcp@0.0.86', '--isolated', ...FLAGS],
+    ...npmServer('@playwright/mcp', '--isolated', ...FLAGS),
   },
   // The direct path always has browser_run_code_unsafe, so the wrapper keeps it too for a like-for-like tool set.
   codemodeEnv: { CODEMODE_PLAYWRIGHT_ARGS: FLAGS.join(' '), CODEMODE_ALLOW_UNSAFE: '1' },

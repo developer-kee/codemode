@@ -1,0 +1,12 @@
+{
+  "name": "codemode-servers",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The upstream MCP servers the services launch, installed from a lockfile instead of fetched by npx on every start.",
+  "dependencies": {
+    "@modelcontextprotocol/server-filesystem": "2.4.0",
+    "@notionhq/notion-mcp-server": "2.6.1",
+    "@playwright/mcp": "0.0.86"
+  }
+}

@@ -3,6 +3,7 @@ import type { BenchService, BenchVariant } from '../../lib/types/index.ts';
 import { notionCalls } from './cases.ts';
 import { parentPageId, seedWorkspace } from './fixture.ts';
 import { tasks } from './tasks.ts';
+import { npmServer } from '../../../servers/resolve.ts';
 
 /** `${NOTION_TOKEN}` is expanded from the environment, so the token is never written to a config file. */
 const env = { NOTION_TOKEN: '${NOTION_TOKEN}' };
@@ -10,12 +11,12 @@ const env = { NOTION_TOKEN: '${NOTION_TOKEN}' };
 const scenarios: BenchVariant = {
   id: 'scenarios',
   title: 'multi-step scenario tasks',
-  direct: { server: 'notion', command: 'npx', args: ['-y', '@notionhq/notion-mcp-server@2.6.1'], env },
+  direct: { server: 'notion', ...npmServer('@notionhq/notion-mcp-server'), env },
   codemodeEnv: env,
   systemPrompt:
     'You work in a Notion workspace through the tools provided. Use only the page and database named in the task. Complete the task, then reply with one short sentence.',
   notes: [
-    'Both paths expose all 23 tools of the pinned `@notionhq/notion-mcp-server@2.6.1`, whose definitions are about 76,000 characters, the largest of any service benchmarked here.',
+    'Both paths expose all 24 tools of the pinned `@notionhq/notion-mcp-server@2.6.1`, whose definitions are about 76,000 characters, the largest of any service benchmarked here.',
     '`status-count` and `owner-load` read all 40 tasks and aggregate them; `write-summary` writes a page that is then read back through the REST API.',
     'The Claude Code runner expands `${NOTION_TOKEN}` itself; other runners may not, so Notion results are only comparable across runs of the same runner.',
   ],

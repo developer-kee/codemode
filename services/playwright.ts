@@ -1,4 +1,5 @@
 import type { ServiceConfig } from '../src/types.ts';
+import { npmServer } from '../servers/resolve.ts';
 
 // Browser automation via https://github.com/microsoft/playwright-mcp (npm: @playwright/mcp), pinned for reproducible
 // results. Defaults to an isolated (in-memory) profile.
@@ -14,6 +15,6 @@ export default {
   name: 'playwright',
   // Untrusted web pages and outbound requests; the isolated profile holds no private data. Add it if you log in.
   capabilities: { privateData: false, untrustedContent: true, externalComms: true },
-  upstream: { command: 'npx', args: ['-y', '@playwright/mcp@0.0.86', '--isolated', ...extra] },
+  upstream: npmServer('@playwright/mcp', '--isolated', ...extra),
   ...(allowUnsafe ? {} : { access: { deny: ['browser_run_code_unsafe'] } }),
 } satisfies ServiceConfig;

@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run bench:validate
+      - name: Audit runtime dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Check registry signatures and provenance
+        run: npm audit signatures
+
+  servers:
+    # The upstream MCP servers install from lockfiles: check the lockfiles are honest and the tool locks still match.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: astral-sh/setup-uv@v5
+      - run: npm ci
+      - run: npm ci --ignore-scripts --prefix servers
+      - run: npm audit --prefix servers --audit-level=high
+      - run: npm audit signatures --prefix servers
+      - run: uv lock --check --project servers/python
+      - name: Tool definitions still match the committed locks
+        run: npm run lock:verify -- filesystem notion playwright

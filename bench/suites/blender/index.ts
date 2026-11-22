@@ -3,6 +3,7 @@ import type { BenchService, BenchVariant, Task } from '../../lib/types/index.ts'
 import { blenderCalls } from './cases.ts';
 import { blenderExec, resetScene, seedScene, snapshotScene } from './socket.ts';
 import { specs } from './tasks.ts';
+import { pythonServer } from '../../../servers/resolve.ts';
 
 const tasks: Task[] = specs.map((s) => ({
   id: s.id,
@@ -20,7 +21,7 @@ const tasks: Task[] = specs.map((s) => ({
 const scenarios: BenchVariant = {
   id: 'scenarios',
   title: 'multi-step scenario tasks',
-  direct: { server: 'blender', command: 'uvx', args: ['blender-mcp@2.0.0'] },
+  direct: { server: 'blender', ...pythonServer('blender-mcp') },
   systemPrompt:
     'You control a running Blender instance through the tools provided. Complete the task, then reply with one short sentence.',
   notes: ['Both paths expose every tool of the upstream `blender-mcp`.'],

@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "tools": {
+    "append_file": {
+      "description": "2b50836a8722e7592ccf834b806dfdd0cbb38b333ee874f8696a014200b90b2e",
+      "inputSchema": "e901fc2eaba1d3a061bd036d40eb77e033a17f75ce9d967ca1cb6e64ab46c145",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "d72d3cb182e3d7fcf0b1c6782251eee772cdf2a99470e1a4bd6a006b5c8f4e25"
+    },
+    "copy_file": {
+      "description": "2cc08795d6c3ec46a78ad84e402e80bdaa330f6f22530029bff8c0fed15c57bc",
+      "inputSchema": "c6bcce52bd0a749553ef80b8ee43544ad5ece40ef2c88072a2690b16f4aab730",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "create_directory": {
+      "description": "ebfc114d16eab12f4b47f781ad07200dcec7d77057d6bcd2eab96ddfd4e281be",
+      "inputSchema": "28a4867e1d2da08ae74a181442e98fc5396c58d8a824ee8adbc303f9818d9c86",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "73a3e8d549eea999d3de31ff52b0e27d51638d6060a922263264427c67a8cbb4"
+    },
+    "directory_tree": {
+      "description": "c1addd0bea8d90f272844d6000c2b1bea282c858c75a1781481a3a8214fa9468",
+      "inputSchema": "69bdec6a46d6ec8303f47749ba940e28f0bf859ef07aa6a842cf3ac86c14a7cd",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "edit_file": {
+      "description": "a7aeb5c05981e8c3b46bd3778a1344a4c03dfb067ec5a42262bcb76b8078bf91",
+      "inputSchema": "55ea5b30fc8568242e26c3be9e7acfdfef752f03e7c9750a532cff8ed29b840e",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "get_file_info": {
+      "description": "0c490832ae918364da3a64aa7860805eb8d9ec9d3507dd3c6455445dac2eecaf",
+      "inputSchema": "341692883b0120e165caa3d5736d66b11710a7ff8a5f4dfbef0dbb822b1138b4",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "list_allowed_directories": {
+      "description": "88e6ac4a88bfbf8149934eb8bc86660c8a45f17aa161c50eb04b16af72be0d0d",
+      "inputSchema": "93ab7499dc3c616f8db8780fed0d9f69270803cda913882ad2ef3943db8d7225",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "list_directory": {
+      "description": "167595f116457f8900b32edfbacd6c7ae560f461056f9e6ea525ec1577e6467c",
+      "inputSchema": "b82677a25149a3481a3c05f4b769b1c6496911bac868335e54170e09c24d1e66",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "list_directory_with_sizes": {
+      "description": "f7a72716cd32a2e7d7645099980233e66cba66995a16abe504ffa8bcd20f1ff7",
+      "inputSchema": "c4e7d1e4396f0d78e5506c159a12b540e513da82dd8814ff3f7ae724fc86870d",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "move_file": {
+      "description": "ed86851661ccc4e1214776771bb815e7aef1866f604d80afe9d3e0da85032863",
+      "inputSchema": "a925f61c00d5bb3337b4c89e5f509c3199586f70b3e21b70a7548b42d44d4ba5",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "b15393126f12ebd7533afe7d31a1beb8938a1e37d0bb2a52c382aaba4373f265"
+    },
+    "read_file": {
+      "description": "a2864e90927c1d4631d6493c7a6fe13a50c7d996de90961025f7033e8c6c3335",
+      "inputSchema": "3c51bad3f48b697f48fd24a1f310baf60fe906021ef15b38cd179ec856b635c6",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "read_media_file": {
+      "description": "2a5acb4ec2a244de7039ed29b3c212492f5352f4925beb66f268a2c3995a70c2",
+      "inputSchema": "0bf785608c87d1c51b81eb946f9e7801fff5c59647b4806820eeaa2419e698a3",
+      "outputSchema": "c1224349309c1e328d099feef5743f59b6bd0f07c1ad0d64653438985e70b712",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "read_multiple_files": {
+      "description": "0af41d3555fad09e711a3600797ffad55420e3a58b3b1db6286bad4e0a74ced7",
+      "inputSchema": "e33001b8d3c59a392539941ea3ce0fb40beba8cbbe687f40d850eeee50515aa8",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "read_text_file": {
+      "description": "a7cd25e7cff3300d98ff37567d9eac32fd23a65660bc3926a346577621fedd51",
+      "inputSchema": "3c51bad3f48b697f48fd24a1f310baf60fe906021ef15b38cd179ec856b635c6",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "search_files": {
+      "description": "534034c1e68c8e1c28d465c707c7f8908898bc52de2b2f1d176d42739c785689",
+      "inputSchema": "ad17e78560702ac5a0cbf3caf5ce0ff09ba13de8e0053642778e138b1bd3b444",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "ae78503371695cf7d7b89784165a967b2135219ecf6527f06a2c1c73d05c6ae6"
+    },
+    "write_file": {
+      "description": "f26109c30283a0292f884b3cd58c2b972fd70b14e6c34687febb2d38e4184316",
+      "inputSchema": "f20db13e48ec15175f376ba51fcbe558ede34e482cde15e2f4d55df6d554bed0",
+      "outputSchema": "89f4f1bc7a281d3d48bb2bd94e7e2f69797aca1aaec5430b4dedf9f5fd01101d",
+      "annotations": "eac8ce4ef2f806dc71b6ab74b1b7f45db5d763fc21c243fac665161bb8d6fb60"
+    }
+  }
+}

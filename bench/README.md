@@ -60,7 +60,7 @@ Records without a `variant` field (written before variants existed) are read as 
 
 | | `direct` | `codemode` |
 |---|---|---|
-| MCP server | the upstream, launched as a user would (`uvx ...`) | `node src/cli.ts <service>` (wraps the same upstream) |
+| MCP server | the upstream, launched from the locked install in `servers/` | `node src/cli.ts <service>` (wraps the same upstream) |
 | Tools the model sees | every upstream tool in the benchmark set | 2 tools: `execute_code` and `get_api` |
 | Model | same | same |
 | Prompt, system prompt | same | same |
@@ -132,7 +132,7 @@ Needs Blender open with the [BlenderMCP addon](https://github.com/ahujasid/blend
 
 ### Windows
 
-Uses [Windows-MCP](https://github.com/CursorTouch/Windows-MCP) (`uvx windows-mcp serve`). The `scenarios` variant exposes **all 20 tools** on both paths, including screenshots and mouse and keyboard input; the prompts only need files and say to stay inside the sandbox, but nothing stops the model using the others. The `scenarios-4-tools` variant whitelists four **non-visual** tools, `FileSystem,PowerShell,Process,Wait`, so no run can capture the screen or send input to the desktop. All tasks work inside one sandbox folder (`%TEMP%\codemode-bench-windows`) that is deleted and recreated before every run. The model still has real PowerShell, so it could in principle act outside that folder; run this only on a machine where that is acceptable.
+Uses [Windows-MCP](https://github.com/CursorTouch/Windows-MCP) (`windows-mcp serve`, from the locked Python environment in `servers/python`). The `scenarios` variant exposes **all 20 tools** on both paths, including screenshots and mouse and keyboard input; the prompts only need files and say to stay inside the sandbox, but nothing stops the model using the others. The `scenarios-4-tools` variant whitelists four **non-visual** tools, `FileSystem,PowerShell,Process,Wait`, so no run can capture the screen or send input to the desktop. All tasks work inside one sandbox folder (`%TEMP%\codemode-bench-windows`) that is deleted and recreated before every run. The model still has real PowerShell, so it could in principle act outside that folder; run this only on a machine where that is acceptable.
 
 | Task | What it tests |
 |---|---|
@@ -142,7 +142,7 @@ Uses [Windows-MCP](https://github.com/CursorTouch/Windows-MCP) (`uvx windows-mcp
 
 ### Playwright
 
-Uses [`@playwright/mcp`](https://github.com/microsoft/playwright-mcp) pinned to 0.0.86 (`npx`), driving headless Microsoft Edge in an isolated profile against a small deterministic site served by the harness on `http://127.0.0.1:4817` (`playwright/fixture.ts`). The browser is restricted to that origin with `--allowed-origins`; the server also offers `browser_run_code_unsafe`, which nothing here removes. Needs Edge installed and port 4817 free. Unlike the other two, these tasks return large page snapshots, so they exercise filtering big tool results in code.
+Uses [`@playwright/mcp`](https://github.com/microsoft/playwright-mcp) pinned to 0.0.86, driving headless Microsoft Edge in an isolated profile against a small deterministic site served by the harness on `http://127.0.0.1:4817` (`playwright/fixture.ts`). The browser is restricted to that origin with `--allowed-origins`; the server also offers `browser_run_code_unsafe`, which nothing here removes. Needs Edge installed and port 4817 free. Unlike the other two, these tasks return large page snapshots, so they exercise filtering big tool results in code.
 
 | Task | What it tests |
 |---|---|
@@ -152,7 +152,7 @@ Uses [`@playwright/mcp`](https://github.com/microsoft/playwright-mcp) pinned to 
 
 ### Filesystem
 
-Uses the reference server `@modelcontextprotocol/server-filesystem@2.4.0` (`npx`, 16 tools). The sandbox is `bench/work/fs-sandbox`, wiped before every run. It sits **inside the benchmark's working directory on purpose**: Claude Code tells MCP servers its working directory as a "root", and this server then uses that root instead of the directories on its command line, so a sandbox anywhere else would be reachable by the codemode path (which sends no roots) but not by the direct path. As a result the direct path can reach all of `bench/work/`, the codemode path only the sandbox.
+Uses the reference server `@modelcontextprotocol/server-filesystem@2.4.0` (16 tools). The sandbox is `bench/work/fs-sandbox`, wiped before every run. It sits **inside the benchmark's working directory on purpose**: Claude Code tells MCP servers its working directory as a "root", and this server then uses that root instead of the directories on its command line, so a sandbox anywhere else would be reachable by the codemode path (which sends no roots) but not by the direct path. As a result the direct path can reach all of `bench/work/`, the codemode path only the sandbox.
 
 | Task | What it tests |
 |---|---|
@@ -163,7 +163,7 @@ Uses the reference server `@modelcontextprotocol/server-filesystem@2.4.0` (`npx`
 
 ### Notion
 
-Uses the official `@notionhq/notion-mcp-server@2.6.1` (`npx`, 23 tools with about 76,000 characters of definitions, the largest catalogue here). **It writes to a real workspace.** Set `NOTION_TOKEN` (an internal integration token) and `NOTION_BENCH_PAGE_ID` (a page shared with that integration) in your shell; the config refers to the token as `${NOTION_TOKEN}`, which Claude Code and the per-call benchmark expand, so it is never written to a file. The benchmark creates one `codemode bench <timestamp>` page with a 40-row database under that page (about 15 s), trashes older bench pages there, and lets the model create a `Summary` page.
+Uses the official `@notionhq/notion-mcp-server@2.6.1` (24 tools with about 76,000 characters of definitions, the largest catalogue here). **It writes to a real workspace.** Set `NOTION_TOKEN` (an internal integration token) and `NOTION_BENCH_PAGE_ID` (a page shared with that integration) in your shell; the config refers to the token as `${NOTION_TOKEN}`, which Claude Code and the per-call benchmark expand, so it is never written to a file. The benchmark creates one `codemode bench <timestamp>` page with a 40-row database under that page (about 15 s), trashes older bench pages there, and lets the model create a `Summary` page.
 
 | Task | What it tests |
 |---|---|
@@ -174,7 +174,7 @@ Uses the official `@notionhq/notion-mcp-server@2.6.1` (`npx`, 23 tools with abou
 > **Not yet run.** The seeding code follows the Notion API documentation (version 2025-09-03, data sources) but has only been type-checked; expect to adjust request shapes on the first real run. Runners other than Claude Code may not expand `${NOTION_TOKEN}`.
 ## Run it
 
-Prerequisites: Node 24+ with `npm install` done in the repo root; `uvx` available; a logged-in runner — Claude Code (`claude auth login`; the desktop app's login is separate) or an API key in the environment for Claude, and for DSH a signed-in DeepSeek Harness install; plus each service's own prerequisites above.
+Prerequisites: Node 24+ with `npm install` and `npm run servers:install` done in the repo root; `uv` available; a logged-in runner — Claude Code (`claude auth login`; the desktop app's login is separate) or an API key in the environment for Claude, and for DSH a signed-in DeepSeek Harness install; plus each service's own prerequisites above.
 
 > Runs spend your usage. The Blender `scenarios` batch (24 runs) cost under $1 in total at Sonnet prices; DSH account runs report tokens but not spend.
 
@@ -257,9 +257,9 @@ Prefer tasks that are safe to repeat and fully checkable from outside the model.
 | Date | 2026-11-22 |
 | Models | `claude-sonnet-5-5` via Claude Code 2.1.229; `deepseek-flash` via DeepSeek Harness 0.2.2-rc.5 (reasoning effort `high`) |
 | Blender | 5.3.0, BlenderMCP addon 2.0 (protocol 16) |
-| `blender-mcp` (upstream, via uvx) | 2.0.0 |
-| `windows-mcp` (upstream, via uvx) | 0.8.5 |
-| `@playwright/mcp` (upstream, via npx) | 0.0.86 (Microsoft Edge, headless) |
+| `blender-mcp` (upstream, from `servers/python/uv.lock`) | 2.0.0 |
+| `windows-mcp` (upstream, from `servers/python/uv.lock`) | 0.8.5 |
+| `@playwright/mcp` (upstream, from `servers/package-lock.json`) | 0.0.86 (Microsoft Edge, headless) |
 | Node | 24.14.0 |
 | `@modelcontextprotocol/sdk` | 1.32.2 |
 | `quickjs-emscripten` | 0.32.0 |

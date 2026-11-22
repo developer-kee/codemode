@@ -35,7 +35,7 @@ The wrapper today is a **local stdio process, one per user and client**. That al
 
 - Pinning one package does not pin what it pulls in. A [Socket analysis](https://socket.dev/glossary/mcp-security) says a pin on the official filesystem server covers 1 of 12 installed packages, that `npx` resolves the rest from ranges on a fresh install, that npm provenance covers only the top-level tarball, and that MCP servers run their entry point even with `--ignore-scripts`. Vendor source; check the numbers before quoting them.
 - "Rug pull": a tool passes review and its definition changes later. The [CSA white paper](https://labs.cloudsecurityalliance.org/research-rb/csa-whitepaper-mcp-security-tool-poisoning-20260506-csa-styled/) and a [taxonomy paper](https://arxiv.org/pdf/2603.18063) note that clients generally do not warn when a tool definition changes. The first malicious MCP server seen in the wild, `postmark-mcp`, was an npm package ([Palo Alto Networks, via Socket](https://socket.dev/glossary/mcp-security)).
-- What we do: exact versions in `services/*.ts` (now including the `uvx` ones). What we do not do: lock transitive dependencies, record what the upstream advertised, or detect a change.
+- What we do now: every upstream installs from a lockfile with integrity hashes (`servers/`), and every tool definition is hashed in `services/<name>.lock.json` so a change is refused until someone reads it. Still open: an upstream's own entry point runs with your privileges (a lock reduces surprise, it is not a sandbox), and `npm run add` still scaffolds an unlocked `npx` service.
 
 ### 3.3 Prompt injection is not solved here, and cannot be by filtering
 
@@ -76,6 +76,18 @@ Our current https-only check for `url` upstreams does **not** block private or m
 5. **Adversarial tests** for the sandbox that need no model: output flood, memory bomb, deep recursion, prototype tricks, the `__call` and `__sync` entry points, argument-validation bypasses.
 6. **Capability profile per service**: declare which of the three trifecta legs a service has (private data, untrusted content, external communication) and warn at startup when a configuration exposes all three, with `access` presets (`readOnly`, `noDelete`) documented per service.
 
+### Status of the P0 items (2026-11-22)
+
+| # | Item | Status | Where |
+|---|---|---|---|
+| 1 | Install upstream servers from lockfiles | Done | `servers/package-lock.json`, `servers/python/uv.lock` (1,175 hashes), `servers/resolve.ts`, `npm run servers:install`; services and the benchmark both launch from it |
+| 2 | Tool-definition lock | Done | `src/toollock.ts`, `services/*.lock.json`, `--update-lock`, `npm run lock:update` / `lock:verify`; a tampered lock is refused (tested) |
+| 3 | Redacted audit log | Done | `src/audit.ts`, `CODEMODE_AUDIT`; a test proves code, argument values and results never reach the file. `CODEMODE_LOG` is now `CODEMODE_DEBUG_LOG` |
+| 4 | CI | Written, **not yet run on GitHub** | `.github/workflows/ci.yml` (typecheck, tests, validate, `npm audit`, `npm audit signatures`, lock checks), `dependency-review.yml`, `dependabot.yml`. Actions are pinned by tag, not by commit SHA |
+| 5 | Adversarial sandbox tests | Done, and found a real bug | `test/sandbox-adversarial.test.ts`. Runaway recursion overflowed the **host** stack before QuickJS's own limit, left the engine half-freed and aborted it on cleanup: a model-written script could crash the call and poison the engine. Fixed by a 320 KB guest stack limit and non-fatal cleanup |
+| 6 | Capability profile and warning | Partly done | `src/capabilities.ts`; every service declares its legs and all-three-without-`access` warns at start. Not done: per-service documented `access` presets |
+
+Not part of P0 and still true: a script runs on the Node event loop, and the host-side size of an upstream result is not capped (section 3.1).
 **P1, hardening for shared or unattended use**
 7. **Run the sandbox out of the main thread**: a worker thread or child process per execution, with hard memory limits and kill-on-timeout, so a runaway script cannot stall or exhaust the wrapper. Cap the size of any upstream result before it is read into memory.
 8. **Keep chosen tools native**: tools that need approval (deletes, sends, payments) are not exposed in the code API and stay as ordinary tools the client can gate; the `access` config already supports removing them, this makes it a documented pattern.

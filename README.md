@@ -32,12 +32,13 @@ Each service is one file in `services/` (`blender`, `windows`, `playwright`, `fi
 // services/notion.ts
 export default {
   name: 'notion',
-  upstream: { command: 'npx', args: ['-y', '@notionhq/notion-mcp-server'] },
+  upstream: { ...npmServer('@notionhq/notion-mcp-server'), passEnv: ['NOTION_TOKEN'] },
 } satisfies ServiceConfig;
 ```
 
 ```powershell
 npm install
+npm run servers:install                                   # the upstream MCP servers, from lockfiles
 npm run add -- linear npx -y some-linear-mcp        # add a service (or: -- name --url https://...)
 claude mcp add codemode-notion -- node C:\repos\codemode\src\cli.ts notion
 node src/cli.ts --list
@@ -85,7 +86,11 @@ What the sandbox can and cannot do:
 - **Calls end with the script.** Upstream calls still running when a script finishes or times out are aborted, so a write cannot keep going after the model has been told the script is over. At most `maxConcurrentCalls` run at once.
 - **Tool names cannot collide or shadow.** `read-file` and `read_file` become `read_file` and `read_file_2` instead of one replacing the other, and names such as `__proto__` or `constructor` are prefixed.
 - **Risky tools are off by default where we know them.** `services/playwright.ts` leaves out `browser_run_code_unsafe` unless `CODEMODE_ALLOW_UNSAFE=1`. Use `access` for the rest. Upstream servers fetched with `uvx` or `npx` are pinned to an exact version.
-- `CODEMODE_LOG=<file>` is a debugging aid that writes every script and result to a file in plain text; the wrapper says so on stderr when it is set. Leave it unset when tools return private data.
+- **Upstream servers install from lockfiles, not on every start.** `servers/package-lock.json` and `servers/python/uv.lock` pin every package and dependency with integrity hashes; `npm run servers:install` installs them (scripts disabled), and services launch them through `servers/resolve.ts`. A server that is not installed fails with that command in the message. `npm install`-time scripts of the upstream packages never run; note that an MCP server still runs its own entry point with your privileges, so pinning reduces surprise but is not a sandbox.
+- **Changed tool definitions stop the server.** `services/<name>.lock.json` holds a hash of every upstream tool's description, schema and annotations. On start, a changed definition or an unknown new tool is refused, with what changed. Read the change, then accept it with `node src/cli.ts <name> --update-lock` (or `npm run lock:update`). `CODEMODE_LOCK=warn|off` and `CODEMODE_REQUIRE_LOCK=1` adjust this. A restricted variant (fewer tools) still passes; locks are written from the unrestricted set.
+- **The audit trail leaves out the data.** `CODEMODE_AUDIT=<file>` appends one JSON line per script and per upstream call: time, duration, tool name, outcome, error class, and short hashes of the script and arguments. It never records code, argument values, results or error text, so it can stay on when tools return private data.
+- **A warning when the dangerous combination is on.** Each service declares `capabilities` (private data, untrusted content, external communication). If all three are present and nothing in `access` narrows the service, the wrapper says so on stderr at start; use `access` or `--read-only`.
+- `CODEMODE_DEBUG_LOG=<file>` is a debugging aid that writes every script and result to a file in plain text; the wrapper says so on stderr when it is set. Leave it unset when tools return private data.
 
 Limits, set per service in `limits` (all optional):
 

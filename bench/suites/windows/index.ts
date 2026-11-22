@@ -3,6 +3,7 @@ import { callsVariant } from '../../lib/calls/index.ts';
 import type { BenchService, BenchVariant } from '../../lib/types/index.ts';
 import { windowsCalls } from './cases.ts';
 import { makeTasks, SANDBOX } from './tasks.ts';
+import { pythonServer } from '../../../servers/resolve.ts';
 
 /** The four non-visual tools of the original benchmark: no screenshots or input injection, and no registry access. */
 export const TOOLS_4 = 'FileSystem,PowerShell,Process,Wait';
@@ -14,7 +15,7 @@ const systemPrompt =
 const scenarios: BenchVariant = {
   id: 'scenarios',
   title: 'multi-step scenario tasks, all 20 tools',
-  direct: { server: 'windows', command: 'uvx', args: ['windows-mcp@0.8.5', 'serve'] },
+  direct: { server: 'windows', ...pythonServer('windows-mcp', 'serve') },
   // Empty = no whitelist, so the codemode wrapper exposes every upstream tool too.
   codemodeEnv: { CODEMODE_WINDOWS_TOOLS: '' },
   systemPrompt,
@@ -33,7 +34,7 @@ const scenarios: BenchVariant = {
 const scenarios4: BenchVariant = {
   id: 'scenarios-4-tools',
   title: 'multi-step scenario tasks, 4 non-visual tools',
-  direct: { server: 'windows', command: 'uvx', args: ['windows-mcp@0.8.5', 'serve', '--tools', TOOLS_4] },
+  direct: { server: 'windows', ...pythonServer('windows-mcp', 'serve', '--tools', TOOLS_4) },
   codemodeEnv: { CODEMODE_WINDOWS_TOOLS: TOOLS_4 },
   systemPrompt,
   notes: [

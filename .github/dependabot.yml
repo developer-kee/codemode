@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    # The upstream MCP servers. A bump here changes tool definitions: CI runs lock:verify, so the pull request fails
+    # until someone reads the change and runs `npm run lock:update`.
+    directory: /servers
+    schedule: { interval: weekly }
+  - package-ecosystem: uv
+    directory: /servers/python
+    schedule: { interval: weekly }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }

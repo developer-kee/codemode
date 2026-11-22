@@ -1,5 +1,6 @@
 import { delimiter } from 'node:path';
 import type { ServiceConfig } from '../src/types.ts';
+import { npmServer } from '../servers/resolve.ts';
 
 // The reference Filesystem server, https://github.com/modelcontextprotocol/servers (npm: @modelcontextprotocol/server-filesystem),
 // pinned for reproducible results. It can only touch the directories it is started with.
@@ -12,8 +13,5 @@ export default {
   name: 'filesystem',
   // Reads and writes the allowed folders only; no way to send anything out.
   capabilities: { privateData: true, untrustedContent: true, externalComms: false },
-  upstream: {
-    command: 'npx',
-    args: ['-y', '@modelcontextprotocol/server-filesystem@2.4.0', ...(dirs.length > 0 ? dirs : [process.cwd()])],
-  },
+  upstream: npmServer('@modelcontextprotocol/server-filesystem', ...(dirs.length > 0 ? dirs : [process.cwd()])),
 } satisfies ServiceConfig;

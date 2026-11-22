@@ -7,3 +7,5 @@ bench/results/*.tmp
 
 .claude/
 .playwright-mcp/
+servers/node_modules/
+servers/python/.venv/

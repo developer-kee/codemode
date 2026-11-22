@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "tools": {
+    "App": {
+      "description": "e3d73325ba447117a52cf503798dcffdee6930656f11a1ebdb89271d9a162a79",
+      "inputSchema": "c2dd3f7b4a3af5f3d89ff2ff2d900d365e51992b3e5f707265e559efd6046f3e",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b7724e1edc1f4e95f18a6c90c054913ac1ebcc26cc960313249d2e6c30719793"
+    },
+    "Click": {
+      "description": "0c333429407110a3290c81501ea8cfeb433efe0a63e8e2d0c47ede324015c338",
+      "inputSchema": "aa5f4de6a3cb3adba60072bfbc7eccd939c4b639f8772f1d0c00593584f53ccf",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "ae2c692d9f61b7befe2a002ddf016d409373e212e067d9357853c74d552b59b4"
+    },
+    "Clipboard": {
+      "description": "b2af717fcf2a7f1bb497c6bc4240c10a2d1aaa2f6e23c82ca6e84c6ec6b939dd",
+      "inputSchema": "5d404af9e12bd79e3ee6d3279636bb9baa05d9f2ff043df5638b3937965b4ecb",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "706a96c9553d6c3234f16cdd4cebfc7cc9cfabf291279d5d04e85adb9b61b067"
+    },
+    "DisplayInventory": {
+      "description": "a74c75a7d8e360b11aebdd4c0fcfce3414dba733ec1e25390245df3daf5082f5",
+      "inputSchema": "99334726611ccf58a148b0814696bfa6fe08c1b2d027e946beccf5a74331c9aa",
+      "outputSchema": "212d91efd6ca233db1ee93c47509cfc3281575e106dc05b8e3c8dfe26896a311",
+      "annotations": "562c2334d1215ae4606459cfcc285ec74265cbd1107a7ca2ec9043eb2e676531"
+    },
+    "FileSystem": {
+      "description": "480ab79335852aa7ca6edfaf6d453c52ec8a074e6ed7ddffae8d845c68d3e821",
+      "inputSchema": "0589ec4a65c7b8040fd93e9d8f51ae47aafd002352db9860ecebd1d6e0e35b24",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "c40b7707cf980b4a2c434327c095b19a03f349995628535d694e3ee83c3b8243"
+    },
+    "Move": {
+      "description": "8479f9cdf2c0610aacbdf69b049db0dcbc19f9ee5d30bf015baf7db03e873bec",
+      "inputSchema": "85a0b63cc0920a094023a197ff7bb760a9000d7a160558e0fe43820b437ba238",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "0ecb43cd2a67bdede2e6e65b89ee097694f97a7ad977a5000d055009cce7ec43"
+    },
+    "MultiEdit": {
+      "description": "3f3d41318a6861b7bdfd9a35ed890a5cdf36a50ab4eb441a3544edc2411a78ff",
+      "inputSchema": "8485fdbcf06538b22be2ee1004bbc753167eedd4eb3b4a6f846b3cf2010d45c7",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "396c7b69374f18c1cf4cde670a27fde0effb9be59a6dd844b3a9e8863d9025a7"
+    },
+    "MultiSelect": {
+      "description": "c985858f30a98aed73f112dd080b008ed524b40e6ca4af2a363ac3f7f3c5c0c1",
+      "inputSchema": "3645f151bafa394d3b99f55bc63b6ddbffe73527e737b559b0f1f882dd6a2586",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "d0e91545b9afb8855c74abdaa446ffc5551242c4fe4ea0235563d185e588575c"
+    },
+    "Notification": {
+      "description": "03e51bf534c730410b6b4006a473625cdbea58ee548cb9603d80030a645f8300",
+      "inputSchema": "eeec7628a50a4bb629e32d4147963c77948982fa7c5ef909f4c56225249ab93a",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "ac4c539ef16ca06401f25b5a8d16fde388cf0e49b5defa3cec9fd7976a6b6ed7"
+    },
+    "PowerShell": {
+      "description": "428981b29cf36ad74eede95f109cbc1087d84f5028d9a7fbbcc4ad830ac45c1b",
+      "inputSchema": "55cd43923f8adce97b2bc99baa7c4e9b27dd9b0687a08c9341bc9673dfac9c82",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "5dd55b530c1574a10faa7b13fad3329eb6983f9e6889aa8cabc223b32ce87d5b"
+    },
+    "Process": {
+      "description": "4f4072c89d47bcf23173102125abfa26c9905e84368f91b7e1f46b88c245d266",
+      "inputSchema": "c31f934770bf4208010e1a0c38f7074fb40222007d514ae6160213b42152143f",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "5e16ca0a86c6e942227cdd05e250e2314f3fcc8612f6c7aebaa533a14eab60f3"
+    },
+    "Registry": {
+      "description": "2c3922418e1e89f4d9e672e24ebbc1badf6d6c00eb6e8747520e0854f34e3e1a",
+      "inputSchema": "cda87f94586c1a8d76725547b21269dc29379a6e5ca1091ba5cb1cdb4cfa5793",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "196956f74f69aa6f114d1debe86055168a21d0163a2af1fd2b4f7b93d044bc94"
+    },
+    "Scrape": {
+      "description": "b25b2ce68a71acb889ad38d2fefbb62af0d180d250452811966d3a01f3535b24",
+      "inputSchema": "175ab60e7cf576d5aad0101a396ae54dbd917e42ce9ce2bbe8bd691735879a16",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "8952117d73d1ae83086fb347119b22df63ab58c7451a963e16dbfa754349d0af"
+    },
+    "Screenshot": {
+      "description": "ff4fdfaccfcf15b051b0acf720502fd46349562c37446b3ff6667147cd807f2f",
+      "inputSchema": "f1d40fe785e123a3f44efd16a04787b54571daf4cce9e40c3676d4980f6eeee8",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "bb2e35180a560dda03ceb01f229aa6a480a058043d3b7c30b6a228da2fb14b9d"
+    },
+    "Scroll": {
+      "description": "ff78122e76bd7a497ea0a9f767db4da96ce457080d6b8fff88eff19b4a05acd1",
+      "inputSchema": "d53094a4e97a44a15efc2e52ea88c03da5832f459e5df5932dcf8e50adc20d06",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "7e8e18f6e7e12a70359d824772d580f765a3f49b69b42eb7361e5ee9237dcbf3"
+    },
+    "Shortcut": {
+      "description": "4cd14f6dbe50ee33fb79a075177ec5ad0e5e1f854f925830ae3333daf0fee167",
+      "inputSchema": "3279fd5f60f0e5d01314a6bdbf783c1939157570597346c1647b9c2cf66c4f1c",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "b6564aab3fdf5d1729c5cd646ed2dfc4d3996dcdda24aea0225e91c8be0d1cee"
+    },
+    "Snapshot": {
+      "description": "a570f7681d7216e1d7bb04da92e687ca2e2f355c1012171da0e075935f21dbb1",
+      "inputSchema": "12ff112dd761e75d50df8427534d93c29c520395830d665eca8ea5dd0a486240",
+      "outputSchema": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "annotations": "238c844e40f6774d83613ff4b9e23d0088dd65384c65013bc3ec48d46a812450"
+    },
+    "Type": {
+      "description": "f6682412fa7b6d744ed37674374421f453a68f9c21a9c7cc0be65a0e3c761e0f",
+      "inputSchema": "4390beecce171199441bc0ffbb2afd349c5a44f6336dca56395af0eb3e9a5fc7",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "9c9864ebda122fc1e7e36c38d756defb1448d09b0a7978434d61804bd68abded"
+    },
+    "Wait": {
+      "description": "72c4c6d063d73f1cfa1c0b32724c5cd814ca9735371826bb9fbf6523f9a3f9cf",
+      "inputSchema": "454f7e8a163fad8d24384e01a3630ade897380899d87f00d59a86c2f5057bdf2",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "9078c6b184be62417d3eddf21adb7d36ab112d94260cec432216f6cccb2302f9"
+    },
+    "WaitFor": {
+      "description": "197c9af39bcd7abebca29a55ab17556f5ce538224b68a55672c90bfe8d68f88c",
+      "inputSchema": "543c184de0449cce9e9a1e311e69082a8c6b510e0ee921165805b8d9ce02f2d2",
+      "outputSchema": "320e41851b1ddd813b3b4f83174e2640e71cfbbe58cf9a54adf22443c789d814",
+      "annotations": "b07ee5e13689c74233c49ad40c8b944d6e818c47a2891ef2d2fa1b1323ce7f24"
+    }
+  }
+}
