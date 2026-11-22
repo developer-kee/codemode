@@ -49,7 +49,9 @@ function checkVariant(service: BenchService, variant: BenchVariant): void {
   if (!variant.systemPrompt.trim()) error(scope, 'variant has no system prompt');
   if (!variant.direct.command.trim()) error(scope, 'variant has no direct upstream command');
   if (!Array.isArray(variant.direct.args)) error(scope, 'variant direct.args must be an array');
-  if (variant.tasks.length === 0) error(scope, 'variant has no tasks');
+  // A `calls` variant is empty when no case has a model prompt: the suite is then latency and definition cost only.
+  const latencyOnly = variant.id === 'calls' && service.calls.cases.every((c) => c.prompt === undefined);
+  if (variant.tasks.length === 0 && !latencyOnly) error(scope, 'variant has no tasks');
   const taskIds = new Set<string>();
   for (const t of variant.tasks) {
     if (!t.id.trim()) error(scope, 'a task has an empty id');

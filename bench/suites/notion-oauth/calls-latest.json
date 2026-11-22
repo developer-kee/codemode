@@ -1,0 +1,902 @@
+{
+  "date": "2026-11-22",
+  "iterations": 10,
+  "toolCount": 39,
+  "costs": {
+    "rows": [
+      {
+        "tool": "notion-search",
+        "covered": true,
+        "directChars": 7375,
+        "codemodeChars": 13,
+        "onDemandChars": 5745
+      },
+      {
+        "tool": "notion-memory-search",
+        "covered": true,
+        "directChars": 1229,
+        "codemodeChars": 20,
+        "onDemandChars": 1030
+      },
+      {
+        "tool": "notion-get-tool-access",
+        "covered": true,
+        "directChars": 2199,
+        "codemodeChars": 22,
+        "onDemandChars": 2043
+      },
+      {
+        "tool": "notion-fetch",
+        "covered": false,
+        "directChars": 3957,
+        "codemodeChars": 12,
+        "onDemandChars": 3855
+      },
+      {
+        "tool": "notion-download-attachment",
+        "covered": false,
+        "directChars": 1493,
+        "codemodeChars": 26,
+        "onDemandChars": 1425
+      },
+      {
+        "tool": "notion-get-file-download-urls",
+        "covered": false,
+        "directChars": 1430,
+        "codemodeChars": 29,
+        "onDemandChars": 1336
+      },
+      {
+        "tool": "notion-download-skill",
+        "covered": false,
+        "directChars": 837,
+        "codemodeChars": 21,
+        "onDemandChars": 719
+      },
+      {
+        "tool": "notion-get-enabled-skills",
+        "covered": true,
+        "directChars": 795,
+        "codemodeChars": 25,
+        "onDemandChars": 718
+      },
+      {
+        "tool": "notion-get-comments",
+        "covered": false,
+        "directChars": 3082,
+        "codemodeChars": 19,
+        "onDemandChars": 2965
+      },
+      {
+        "tool": "notion-get-suggested-edit",
+        "covered": false,
+        "directChars": 978,
+        "codemodeChars": 25,
+        "onDemandChars": 858
+      },
+      {
+        "tool": "notion-get-async-task",
+        "covered": false,
+        "directChars": 1289,
+        "codemodeChars": 21,
+        "onDemandChars": 1184
+      },
+      {
+        "tool": "notion-get-teams",
+        "covered": true,
+        "directChars": 1054,
+        "codemodeChars": 16,
+        "onDemandChars": 971
+      },
+      {
+        "tool": "notion-get-groups",
+        "covered": true,
+        "directChars": 1419,
+        "codemodeChars": 17,
+        "onDemandChars": 1322
+      },
+      {
+        "tool": "notion-get-users",
+        "covered": true,
+        "directChars": 1705,
+        "codemodeChars": 16,
+        "onDemandChars": 1515
+      },
+      {
+        "tool": "notion-query-data-sources",
+        "covered": false,
+        "directChars": 28591,
+        "codemodeChars": 25,
+        "onDemandChars": 20164
+      },
+      {
+        "tool": "notion-query-multiple-data-sources",
+        "covered": false,
+        "directChars": 3680,
+        "codemodeChars": 34,
+        "onDemandChars": 3908
+      },
+      {
+        "tool": "notion-query-meeting-notes",
+        "covered": false,
+        "directChars": 14616,
+        "codemodeChars": 26,
+        "onDemandChars": 10169
+      },
+      {
+        "tool": "notion-list-private-pages",
+        "covered": true,
+        "directChars": 991,
+        "codemodeChars": 25,
+        "onDemandChars": 882
+      },
+      {
+        "tool": "notion-list-shared-pages",
+        "covered": true,
+        "directChars": 983,
+        "codemodeChars": 24,
+        "onDemandChars": 872
+      },
+      {
+        "tool": "notion-list-favorite-pages",
+        "covered": true,
+        "directChars": 874,
+        "codemodeChars": 26,
+        "onDemandChars": 767
+      },
+      {
+        "tool": "notion-list-recent-pages",
+        "covered": true,
+        "directChars": 1083,
+        "codemodeChars": 24,
+        "onDemandChars": 968
+      },
+      {
+        "tool": "notion-search-agents",
+        "covered": false,
+        "directChars": 1623,
+        "codemodeChars": 20,
+        "onDemandChars": 1444
+      },
+      {
+        "tool": "notion-search-sessions",
+        "covered": false,
+        "directChars": 1085,
+        "codemodeChars": 22,
+        "onDemandChars": 975
+      },
+      {
+        "tool": "notion-query-sessions",
+        "covered": false,
+        "directChars": 5492,
+        "codemodeChars": 21,
+        "onDemandChars": 6606
+      },
+      {
+        "tool": "notion-get-session-status",
+        "covered": false,
+        "directChars": 1042,
+        "codemodeChars": 25,
+        "onDemandChars": 939
+      },
+      {
+        "tool": "notion-wait-session",
+        "covered": false,
+        "directChars": 1146,
+        "codemodeChars": 19,
+        "onDemandChars": 980
+      },
+      {
+        "tool": "notion-list-session-events",
+        "covered": false,
+        "directChars": 1475,
+        "codemodeChars": 26,
+        "onDemandChars": 1210
+      },
+      {
+        "tool": "notion-read-session-event",
+        "covered": false,
+        "directChars": 1177,
+        "codemodeChars": 25,
+        "onDemandChars": 1006
+      },
+      {
+        "tool": "notion-get-version-changes",
+        "covered": false,
+        "directChars": 2734,
+        "codemodeChars": 26,
+        "onDemandChars": 3102
+      },
+      {
+        "tool": "notion-view-version",
+        "covered": false,
+        "directChars": 1734,
+        "codemodeChars": 19,
+        "onDemandChars": 1568
+      },
+      {
+        "tool": "notion-list-page-backlinks",
+        "covered": false,
+        "directChars": 1553,
+        "codemodeChars": 26,
+        "onDemandChars": 2026
+      },
+      {
+        "tool": "notion-get-sidebar-tabs",
+        "covered": true,
+        "directChars": 890,
+        "codemodeChars": 23,
+        "onDemandChars": 809
+      },
+      {
+        "tool": "notion-calendar-list-calendars",
+        "covered": true,
+        "directChars": 952,
+        "codemodeChars": 30,
+        "onDemandChars": 846
+      },
+      {
+        "tool": "notion-calendar-list-events",
+        "covered": true,
+        "directChars": 1116,
+        "codemodeChars": 27,
+        "onDemandChars": 932
+      },
+      {
+        "tool": "notion-calendar-list-coworkers-events",
+        "covered": false,
+        "directChars": 1141,
+        "codemodeChars": 37,
+        "onDemandChars": 934
+      },
+      {
+        "tool": "notion-calendar-list-calendar-resources",
+        "covered": false,
+        "directChars": 2460,
+        "codemodeChars": 39,
+        "onDemandChars": 2108
+      },
+      {
+        "tool": "notion-calendar-list-contacts",
+        "covered": true,
+        "directChars": 842,
+        "codemodeChars": 29,
+        "onDemandChars": 740
+      },
+      {
+        "tool": "notion-get-self",
+        "covered": true,
+        "directChars": 715,
+        "codemodeChars": 15,
+        "onDemandChars": 620
+      },
+      {
+        "tool": "notion-get-setup-guide",
+        "covered": true,
+        "directChars": 731,
+        "codemodeChars": 22,
+        "onDemandChars": 648
+      }
+    ],
+    "directTotalChars": 107568,
+    "codemodeTotalChars": 1799,
+    "descriptionChars": 1407,
+    "indexLevel": 3
+  },
+  "latency": {
+    "rows": [
+      {
+        "id": "notion-get-self",
+        "tool": "notion-get-self",
+        "iterations": 10,
+        "direct": {
+          "median": 313.45700000000033,
+          "p95": 362.6284000000005,
+          "min": 250.83659999999873,
+          "max": 362.6284000000005
+        },
+        "codemode": {
+          "median": 301.8093999999992,
+          "p95": 353.33410000000003,
+          "min": 246.41789999999946,
+          "max": 353.33410000000003
+        },
+        "directChars": 201,
+        "codemodeChars": 260,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-get-users",
+        "tool": "notion-get-users",
+        "iterations": 10,
+        "direct": {
+          "median": 298.4274999999998,
+          "p95": 314.52529999999933,
+          "min": 270.1406999999999,
+          "max": 314.52529999999933
+        },
+        "codemode": {
+          "median": 285.3300999999992,
+          "p95": 293.78069999999934,
+          "min": 264.9796000000006,
+          "max": 293.78069999999934
+        },
+        "directChars": 376,
+        "codemodeChars": 540,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-get-teams",
+        "tool": "notion-get-teams",
+        "iterations": 10,
+        "direct": {
+          "median": 271.40399999999863,
+          "p95": 388.32760000000053,
+          "min": 226.28779999999824,
+          "max": 388.32760000000053
+        },
+        "codemode": {
+          "median": 266.91049999999814,
+          "p95": 605.8179999999993,
+          "min": 233.40950000000157,
+          "max": 605.8179999999993
+        },
+        "directChars": 50,
+        "codemodeChars": 71,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-get-groups",
+        "tool": "notion-get-groups",
+        "iterations": 10,
+        "direct": {
+          "median": 242.2383000000009,
+          "p95": 302.21180000000095,
+          "min": 231.3109000000004,
+          "max": 302.21180000000095
+        },
+        "codemode": {
+          "median": 249.53150000000096,
+          "p95": 286.2967000000026,
+          "min": 225.8751000000011,
+          "max": 286.2967000000026
+        },
+        "directChars": 30,
+        "codemodeChars": 47,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-get-tool-access",
+        "tool": "notion-get-tool-access",
+        "iterations": 10,
+        "direct": {
+          "median": 282.3646000000008,
+          "p95": 631.5875999999989,
+          "min": 261.82180000000153,
+          "max": 631.5875999999989
+        },
+        "codemode": {
+          "median": 281.2247999999963,
+          "p95": 305.7160999999978,
+          "min": 241.520999999997,
+          "max": 305.7160999999978
+        },
+        "directChars": 7949,
+        "codemodeChars": 9508,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-get-enabled-skills",
+        "tool": "notion-get-enabled-skills",
+        "iterations": 10,
+        "direct": {
+          "median": 251.55509999999776,
+          "p95": 290.3001000000004,
+          "min": 234.72340000000258,
+          "max": 290.3001000000004
+        },
+        "codemode": {
+          "median": 240.81929999999556,
+          "p95": 285.40959999999905,
+          "min": 228.74500000000262,
+          "max": 285.40959999999905
+        },
+        "directChars": 13,
+        "codemodeChars": 26,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-get-setup-guide",
+        "tool": "notion-get-setup-guide",
+        "iterations": 10,
+        "direct": {
+          "median": 250.93769999999495,
+          "p95": 301.4683999999979,
+          "min": 233.63209999999526,
+          "max": 301.4683999999979
+        },
+        "codemode": {
+          "median": 257.681700000001,
+          "p95": 353.9225000000006,
+          "min": 218.56060000000434,
+          "max": 353.9225000000006
+        },
+        "directChars": 10516,
+        "codemodeChars": 10529,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-get-sidebar-tabs",
+        "tool": "notion-get-sidebar-tabs",
+        "iterations": 10,
+        "direct": {
+          "median": 286.6392999999953,
+          "p95": 478.6643999999942,
+          "min": 238.4291000000012,
+          "max": 478.6643999999942
+        },
+        "codemode": {
+          "median": 275.3580000000002,
+          "p95": 1836.3701999999976,
+          "min": 251.5535000000018,
+          "max": 1836.3701999999976
+        },
+        "directChars": 5357,
+        "codemodeChars": 7782,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-search",
+        "tool": "notion-search",
+        "iterations": 10,
+        "direct": {
+          "median": 500.1042000000016,
+          "p95": 770.8894,
+          "min": 430.6619999999966,
+          "max": 770.8894
+        },
+        "codemode": {
+          "median": 517.6299999999974,
+          "p95": 1437.0795999999973,
+          "min": 427.85629999999946,
+          "max": 1437.0795999999973
+        },
+        "directChars": 2165,
+        "codemodeChars": 2664,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-memory-search",
+        "tool": "notion-memory-search",
+        "iterations": 10,
+        "direct": {
+          "median": 251.32200000000012,
+          "p95": 266.90089999999327,
+          "min": 234.92859999999928,
+          "max": 266.90089999999327
+        },
+        "codemode": {
+          "median": 243.96719999999914,
+          "p95": 265.3783000000112,
+          "min": 228.79850000000442,
+          "max": 265.3783000000112
+        },
+        "directChars": 14,
+        "codemodeChars": 27,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-list-private-pages",
+        "tool": "notion-list-private-pages",
+        "iterations": 10,
+        "direct": {
+          "median": 274.6618999999919,
+          "p95": 442.1168000000034,
+          "min": 238.2433999999921,
+          "max": 442.1168000000034
+        },
+        "codemode": {
+          "median": 273.15969999998924,
+          "p95": 301.2176000000036,
+          "min": 261.98709999999846,
+          "max": 301.2176000000036
+        },
+        "directChars": 664,
+        "codemodeChars": 870,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-list-shared-pages",
+        "tool": "notion-list-shared-pages",
+        "iterations": 10,
+        "direct": {
+          "median": 290.8323999999993,
+          "p95": 542.5192999999999,
+          "min": 254.9091000000044,
+          "max": 542.5192999999999
+        },
+        "codemode": {
+          "median": 285.3092999999935,
+          "p95": 1316.578600000008,
+          "min": 269.1503999999986,
+          "max": 1316.578600000008
+        },
+        "directChars": 14,
+        "codemodeChars": 27,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-list-favorite-pages",
+        "tool": "notion-list-favorite-pages",
+        "iterations": 10,
+        "direct": {
+          "median": 255.771900000007,
+          "p95": 334.765699999989,
+          "min": 239.07039999999688,
+          "max": 334.765699999989
+        },
+        "codemode": {
+          "median": 288.6351999999897,
+          "p95": 320.7198000000062,
+          "min": 240.7911999999924,
+          "max": 320.7198000000062
+        },
+        "directChars": 406,
+        "codemodeChars": 532,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-list-recent-pages",
+        "tool": "notion-list-recent-pages",
+        "iterations": 10,
+        "direct": {
+          "median": 323.24099999999453,
+          "p95": 1238.9900999999954,
+          "min": 275.0485999999946,
+          "max": 1238.9900999999954
+        },
+        "codemode": {
+          "median": 305.8173999999999,
+          "p95": 5518.272599999997,
+          "min": 276.67459999999846,
+          "max": 5518.272599999997
+        },
+        "directChars": 762,
+        "codemodeChars": 976,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-calendar-list-calendars",
+        "tool": "notion-calendar-list-calendars",
+        "iterations": 10,
+        "direct": {
+          "median": 703.3295999999973,
+          "p95": 1319.077099999995,
+          "min": 658.5601999999926,
+          "max": 1319.077099999995
+        },
+        "codemode": {
+          "median": 753.2917000000016,
+          "p95": 945.4116000000067,
+          "min": 652.6811999999918,
+          "max": 945.4116000000067
+        },
+        "directChars": 1960,
+        "codemodeChars": 2818,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-calendar-list-contacts",
+        "tool": "notion-calendar-list-contacts",
+        "iterations": 10,
+        "direct": {
+          "median": 477.72930000000633,
+          "p95": 601.5112999999983,
+          "min": 410.9216000000015,
+          "max": 601.5112999999983
+        },
+        "codemode": {
+          "median": 493.2056000000157,
+          "p95": 573.7602999999945,
+          "min": 424.9054999999935,
+          "max": 573.7602999999945
+        },
+        "directChars": 8374,
+        "codemodeChars": 16622,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "notion-calendar-list-events",
+        "tool": "notion-calendar-list-events",
+        "iterations": 10,
+        "direct": {
+          "median": 1049.0566000000108,
+          "p95": 1522.0757999999914,
+          "min": 945.8960000000079,
+          "max": 1522.0757999999914
+        },
+        "codemode": {
+          "median": 1032.659800000023,
+          "p95": 1536.5249999999942,
+          "min": 940.6266999999934,
+          "max": 1536.5249999999942
+        },
+        "directChars": 3589,
+        "codemodeChars": 5438,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      }
+    ],
+    "sandboxOnly": {
+      "median": 0.7552000000141561,
+      "p95": 1.091599999985192,
+      "min": 0.694099999993341,
+      "max": 1.091599999985192
+    }
+  },
+  "coveredTools": 17,
+  "skipped": [
+    {
+      "tool": "notion-query-meeting-notes",
+      "reason": "Answers \"requires a Business plan\" on other plans, so its latency would depend on the account, not the wrapper."
+    },
+    {
+      "tool": "notion-query-sessions",
+      "reason": "Answers \"requires a Business plan\" on other plans, so its latency would depend on the account, not the wrapper."
+    },
+    {
+      "tool": "notion-fetch",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-get-comments",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-get-suggested-edit",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-get-version-changes",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-view-version",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-list-page-backlinks",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-query-data-sources",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-query-multiple-data-sources",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-download-attachment",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-get-file-download-urls",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-download-skill",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-get-async-task",
+      "reason": "Needs an id or URL from an earlier read of the workspace, which this run does not keep."
+    },
+    {
+      "tool": "notion-search-agents",
+      "reason": "Agent sessions: needs a session that exists, or waits on one."
+    },
+    {
+      "tool": "notion-search-sessions",
+      "reason": "Agent sessions: needs a session that exists, or waits on one."
+    },
+    {
+      "tool": "notion-get-session-status",
+      "reason": "Agent sessions: needs a session that exists, or waits on one."
+    },
+    {
+      "tool": "notion-wait-session",
+      "reason": "Agent sessions: needs a session that exists, or waits on one."
+    },
+    {
+      "tool": "notion-list-session-events",
+      "reason": "Agent sessions: needs a session that exists, or waits on one."
+    },
+    {
+      "tool": "notion-read-session-event",
+      "reason": "Agent sessions: needs a session that exists, or waits on one."
+    },
+    {
+      "tool": "notion-calendar-list-coworkers-events",
+      "reason": "Needs coworker emails or room-booking input that depend on the workspace."
+    },
+    {
+      "tool": "notion-calendar-list-calendar-resources",
+      "reason": "Needs coworker emails or room-booking input that depend on the workspace."
+    }
+  ],
+  "cases": [
+    {
+      "id": "notion-get-self",
+      "tool": "notion-get-self",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-get-users",
+      "tool": "notion-get-users",
+      "args": {
+        "page_size": 5
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-get-teams",
+      "tool": "notion-get-teams",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-get-groups",
+      "tool": "notion-get-groups",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-get-tool-access",
+      "tool": "notion-get-tool-access",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-get-enabled-skills",
+      "tool": "notion-get-enabled-skills",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-get-setup-guide",
+      "tool": "notion-get-setup-guide",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-get-sidebar-tabs",
+      "tool": "notion-get-sidebar-tabs",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-search",
+      "tool": "notion-search",
+      "args": {
+        "query": "notes",
+        "page_size": 5
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-memory-search",
+      "tool": "notion-memory-search",
+      "args": {
+        "query": "notes",
+        "limit": 5
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-list-private-pages",
+      "tool": "notion-list-private-pages",
+      "args": {
+        "limit": 5
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-list-shared-pages",
+      "tool": "notion-list-shared-pages",
+      "args": {
+        "limit": 5
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-list-favorite-pages",
+      "tool": "notion-list-favorite-pages",
+      "args": {
+        "limit": 5
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-list-recent-pages",
+      "tool": "notion-list-recent-pages",
+      "args": {
+        "limit": 5
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-calendar-list-calendars",
+      "tool": "notion-calendar-list-calendars",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-calendar-list-contacts",
+      "tool": "notion-calendar-list-contacts",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "notion-calendar-list-events",
+      "tool": "notion-calendar-list-events",
+      "args": {
+        "timeMin": "2026-11-01T00:00:00Z",
+        "timeMax": "2026-11-08T00:00:00Z",
+        "timeZone": "UTC"
+      },
+      "hasPrompt": false
+    }
+  ]
+}

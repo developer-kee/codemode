@@ -41,12 +41,19 @@ function resultChars(res: CallToolResult): number {
   return n;
 }
 
+/** `BENCH_SHOW_ERRORS=1` prints why a timed call failed (errors are otherwise only counted). */
+function showError(text: string): void {
+  if (process.env['BENCH_SHOW_ERRORS']) console.error(`  call failed: ${text.slice(0, 200).replace(/s+/g, ' ')}`);
+}
+
 async function timed(fn: () => Promise<CallToolResult>): Promise<{ ms: number; chars: number; ok: boolean }> {
   const t0 = performance.now();
   try {
     const res = await fn();
+    if (res.isError === true) showError(res.content?.map((c) => (c.type === 'text' ? c.text : '')).join(' ') ?? '');
     return { ms: performance.now() - t0, chars: resultChars(res), ok: res.isError !== true };
-  } catch {
+  } catch (e) {
+    showError(e instanceof Error ? e.message : String(e));
     return { ms: performance.now() - t0, chars: 0, ok: false };
   }
 }
