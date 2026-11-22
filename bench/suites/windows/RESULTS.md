@@ -6,7 +6,7 @@
 Numbers are means over runs. `Pass` is an objective check of the resulting state, not the model's own claim.
 Variants: `scenarios`, `scenarios-4-tools`, `calls`. Method, metric definitions and limitations: [../../README.md](../../README.md).
 
-> **Warning:** Gives the model real PowerShell and file access to this PC. Tasks are written to stay inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows, which is deleted and recreated before every run, but a model can still run arbitrary commands. Run on a machine you are happy to do that on. The `scenarios` and `calls` variants expose every tool, including screenshots and input: see their warning.
+> **Warning:** Gives the model real PowerShell and file access to this PC. Tasks are written to stay inside <path>, which is deleted and recreated before every run, but a model can still run arbitrary commands. Run on a machine you are happy to do that on. The `scenarios` and `calls` variants expose every tool, including screenshots and input: see their warning.
 
 ## Models
 
@@ -23,7 +23,7 @@ Detailed results below are grouped by model family. Each family is produced by o
 
 Reproduce: `npm run bench -- --service windows --variant scenarios --runs 3`.
 
-> **Warning:** Gives the model EVERY Windows-MCP tool: PowerShell, files, processes, registry, screenshots of your desktop (sent to the model API), and mouse and keyboard input. The tasks only need files, and the prompt says to stay inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows (wiped before every run), but nothing stops the model using the other tools. Do not run this with anything sensitive on screen or open.
+> **Warning:** Gives the model EVERY Windows-MCP tool: PowerShell, files, processes, registry, screenshots of your desktop (sent to the model API), and mouse and keyboard input. The tasks only need files, and the prompt says to stay inside <path> (wiped before every run), but nothing stops the model using the other tools. Do not run this with anything sensitive on screen or open.
 
 ### Claude
 
@@ -132,7 +132,7 @@ Wall time, codemode vs direct: **-19%** (16.0s vs 19.6s). Wall time covers the w
 
 Reproduce: `npm run bench -- --service windows --variant calls --runs 3`.
 
-> **Warning:** Gives the model EVERY Windows-MCP tool: PowerShell, files, processes, registry, screenshots of your desktop (sent to the model API), and mouse and keyboard input. The tasks only need files, and the prompt says to stay inside C:\Users\KEE-YA~1\AppData\Local\Temp\codemode-bench-windows (wiped before every run), but nothing stops the model using the other tools. Do not run this with anything sensitive on screen or open.
+> **Warning:** Gives the model EVERY Windows-MCP tool: PowerShell, files, processes, registry, screenshots of your desktop (sent to the model API), and mouse and keyboard input. The tasks only need files, and the prompt says to stay inside <path> (wiped before every run), but nothing stops the model using the other tools. Do not run this with anything sensitive on screen or open.
 
 ### Claude
 

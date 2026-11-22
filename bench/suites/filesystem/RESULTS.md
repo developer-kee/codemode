@@ -6,7 +6,7 @@
 Numbers are means over runs. `Pass` is an objective check of the resulting state, not the model's own claim.
 Variants: `scenarios`, `calls`. Method, metric definitions and limitations: [../../README.md](../../README.md).
 
-> **Warning:** Gives the model read and write access to C:\repos\codemode\bench\work\fs-sandbox, which is deleted and recreated before every run, and to nothing else: the server is started with that single allowed directory. Nothing is downloaded except the pinned npm package.
+> **Warning:** Gives the model read and write access to <path>, which is deleted and recreated before every run, and to nothing else: the server is started with that single allowed directory. Nothing is downloaded except the pinned npm package.
 
 ## Models
 

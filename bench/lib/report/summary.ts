@@ -207,12 +207,12 @@ export function buildServiceReport(service: BenchService): string {
   const out: string[] = [
     `# Benchmark: ${service.title}, direct MCP vs codemode`,
     '',
-    ...service.notes.map((n) => `- ${n}`),
+    ...service.notes.map((n) => `- ${portablePaths(n)}`),
     '',
     'Numbers are means over runs. `Pass` is an objective check of the resulting state, not the model\'s own claim.',
     `Variants: ${service.variants.map((v) => `\`${v.id}\``).join(', ')}. Method, metric definitions and limitations: [../../README.md](../../README.md).`,
     '',
-    `> **Warning:** ${service.warning}`,
+    `> **Warning:** ${portablePaths(service.warning)}`,
     '',
   ];
   if (records.length === 0) out.push('_No runs recorded yet._', '');
@@ -234,12 +234,12 @@ export function buildServiceReport(service: BenchService): string {
     out.push(
       `## Variant: \`${variant.id}\`, ${variant.title}`,
       '',
-      ...variant.notes.map((n) => `- ${n}`),
+      ...variant.notes.map((n) => `- ${portablePaths(n)}`),
       '',
       `Reproduce: \`npm run bench -- --service ${service.id} --variant ${variant.id} --runs 3\`.`,
       '',
     );
-    if (variant.warning) out.push(`> **Warning:** ${variant.warning}`, '');
+    if (variant.warning) out.push(`> **Warning:** ${portablePaths(variant.warning)}`, '');
     for (const family of familiesIn(vr)) {
       const fm = vr.filter((r) => modelFamily(r.model) === family);
       out.push(`### ${family}`, '');
