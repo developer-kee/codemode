@@ -1,22 +1,25 @@
 ﻿{
-  "name": "codemode-core",
-  "version": "0.1.0",
-  "description": "Wrap any MCP server as a single 'execute_code' tool: tools become a typed TypeScript API, model-written code runs in a no-network QuickJS sandbox.",
-  "type": "module",
-  "main": "src/index.js",
-  "exports": {
-    ".": "./src/index.js"
-  },
-  "scripts": {
-    "test": "node --test test/*.test.js"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.2",
-    "json-schema-to-typescript": "^16.0.0",
-    "quickjs-emscripten": "^0.32.0",
-    "sucrase": "^3.35.1",
-    "zod": "^4.6.7"
-  }
+    "name":  "codemode",
+    "version":  "0.1.0",
+    "description":  "Code Mode for MCP: wrap any MCP server as one execute_code tool. Each service is a file in services/.",
+    "type":  "module",
+    "main":  "src/index.js",
+    "exports":  {
+                    ".":  "./src/index.js"
+                },
+    "scripts":  {
+                    "test":  "node --test test/*.test.js",
+                    "add":  "node scripts/add-service.js"
+                },
+    "license":  "MIT",
+    "dependencies":  {
+                         "@modelcontextprotocol/sdk":  "^1.32.2",
+                         "json-schema-to-typescript":  "^16.0.0",
+                         "quickjs-emscripten":  "^0.32.0",
+                         "sucrase":  "^3.35.1",
+                         "zod":  "^4.6.7"
+                     },
+    "bin":  {
+                "codemode":  "src/cli.js"
+            }
 }
-
