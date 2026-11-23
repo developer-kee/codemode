@@ -1,0 +1,518 @@
+{
+  "date": "2026-11-23",
+  "iterations": 10,
+  "toolCount": 23,
+  "costs": {
+    "rows": [
+      {
+        "tool": "version",
+        "covered": true,
+        "directChars": 423,
+        "codemodeChars": 13,
+        "onDemandChars": 405
+      },
+      {
+        "tool": "list_commands",
+        "covered": true,
+        "directChars": 1786,
+        "codemodeChars": 79,
+        "onDemandChars": 1609
+      },
+      {
+        "tool": "describe_command",
+        "covered": true,
+        "directChars": 467,
+        "codemodeChars": 24,
+        "onDemandChars": 428
+      },
+      {
+        "tool": "execute",
+        "covered": false,
+        "directChars": 3939,
+        "codemodeChars": 48,
+        "onDemandChars": 3619
+      },
+      {
+        "tool": "batch",
+        "covered": false,
+        "directChars": 4997,
+        "codemodeChars": 99,
+        "onDemandChars": 4552
+      },
+      {
+        "tool": "inspect_design",
+        "covered": true,
+        "directChars": 1986,
+        "codemodeChars": 68,
+        "onDemandChars": 1831
+      },
+      {
+        "tool": "measure",
+        "covered": true,
+        "directChars": 1444,
+        "codemodeChars": 49,
+        "onDemandChars": 1325
+      },
+      {
+        "tool": "body_topology",
+        "covered": false,
+        "directChars": 1124,
+        "codemodeChars": 31,
+        "onDemandChars": 1043
+      },
+      {
+        "tool": "set_parameter",
+        "covered": false,
+        "directChars": 1128,
+        "codemodeChars": 61,
+        "onDemandChars": 973
+      },
+      {
+        "tool": "check_parameters",
+        "covered": false,
+        "directChars": 1894,
+        "codemodeChars": 53,
+        "onDemandChars": 1703
+      },
+      {
+        "tool": "screenshot",
+        "covered": false,
+        "directChars": 2171,
+        "codemodeChars": 77,
+        "onDemandChars": 2009
+      },
+      {
+        "tool": "compare_picture",
+        "covered": false,
+        "directChars": 2364,
+        "codemodeChars": 94,
+        "onDemandChars": 2114
+      },
+      {
+        "tool": "export",
+        "covered": false,
+        "directChars": 2382,
+        "codemodeChars": 106,
+        "onDemandChars": 2179
+      },
+      {
+        "tool": "crash_reports",
+        "covered": true,
+        "directChars": 762,
+        "codemodeChars": 30,
+        "onDemandChars": 721
+      },
+      {
+        "tool": "running",
+        "covered": true,
+        "directChars": 552,
+        "codemodeChars": 13,
+        "onDemandChars": 534
+      },
+      {
+        "tool": "pending",
+        "covered": true,
+        "directChars": 524,
+        "codemodeChars": 13,
+        "onDemandChars": 504
+      },
+      {
+        "tool": "cancel",
+        "covered": false,
+        "directChars": 701,
+        "codemodeChars": 12,
+        "onDemandChars": 679
+      },
+      {
+        "tool": "undo",
+        "covered": false,
+        "directChars": 145,
+        "codemodeChars": 10,
+        "onDemandChars": 121
+      },
+      {
+        "tool": "redo",
+        "covered": false,
+        "directChars": 138,
+        "codemodeChars": 10,
+        "onDemandChars": 114
+      },
+      {
+        "tool": "new_design",
+        "covered": false,
+        "directChars": 264,
+        "codemodeChars": 21,
+        "onDemandChars": 234
+      },
+      {
+        "tool": "open",
+        "covered": false,
+        "directChars": 2417,
+        "codemodeChars": 38,
+        "onDemandChars": 2268
+      },
+      {
+        "tool": "save",
+        "covered": false,
+        "directChars": 1158,
+        "codemodeChars": 36,
+        "onDemandChars": 1074
+      },
+      {
+        "tool": "skill_reference",
+        "covered": true,
+        "directChars": 611,
+        "codemodeChars": 33,
+        "onDemandChars": 528
+      }
+    ],
+    "directTotalChars": 33377,
+    "codemodeTotalChars": 1914,
+    "descriptionChars": 1500,
+    "indexLevel": 2
+  },
+  "latency": {
+    "rows": [
+      {
+        "id": "version",
+        "tool": "version",
+        "iterations": 10,
+        "direct": {
+          "median": 0.9097999999999047,
+          "p95": 1.2643000000000484,
+          "min": 0.575800000000072,
+          "max": 1.2643000000000484
+        },
+        "codemode": {
+          "median": 3.8903000000000247,
+          "p95": 6.7690000000000055,
+          "min": 3.344699999999875,
+          "max": 6.7690000000000055
+        },
+        "directChars": 103,
+        "codemodeChars": 111,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "list_commands",
+        "tool": "list_commands",
+        "iterations": 10,
+        "direct": {
+          "median": 3.8523999999999887,
+          "p95": 4.774400000000014,
+          "min": 3.244699999999966,
+          "max": 4.774400000000014
+        },
+        "codemode": {
+          "median": 7.475900000000138,
+          "p95": 9.381599999999935,
+          "min": 6.955300000000079,
+          "max": 9.381599999999935
+        },
+        "directChars": 5558,
+        "codemodeChars": 5566,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "describe_command",
+        "tool": "describe_command",
+        "iterations": 10,
+        "direct": {
+          "median": 1.2221999999999298,
+          "p95": 1.8834999999999127,
+          "min": 0.8054999999999382,
+          "max": 1.8834999999999127
+        },
+        "codemode": {
+          "median": 4.781200000000126,
+          "p95": 5.758199999999988,
+          "min": 3.9857999999999265,
+          "max": 5.758199999999988
+        },
+        "directChars": 10064,
+        "codemodeChars": 10068,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "skill_reference",
+        "tool": "skill_reference",
+        "iterations": 10,
+        "direct": {
+          "median": 0.8638999999998305,
+          "p95": 0.9384999999999764,
+          "min": 0.6087999999999738,
+          "max": 0.9384999999999764
+        },
+        "codemode": {
+          "median": 3.5236999999999625,
+          "p95": 4.386000000000195,
+          "min": 3.0042000000000826,
+          "max": 4.386000000000195
+        },
+        "directChars": 17044,
+        "codemodeChars": 17052,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "inspect_design",
+        "tool": "inspect_design",
+        "iterations": 10,
+        "direct": {
+          "median": 0.8589999999999236,
+          "p95": 0.9266999999999825,
+          "min": 0.5156000000001768,
+          "max": 0.9266999999999825
+        },
+        "codemode": {
+          "median": 2.616700000000037,
+          "p95": 3.318300000000363,
+          "min": 1.8714999999997417,
+          "max": 3.318300000000363
+        },
+        "directChars": 286,
+        "codemodeChars": 294,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "measure",
+        "tool": "measure",
+        "iterations": 10,
+        "direct": {
+          "median": 0.782799999999952,
+          "p95": 1.3429000000000997,
+          "min": 0.6037000000001171,
+          "max": 1.3429000000000997
+        },
+        "codemode": {
+          "median": 2.6111000000000786,
+          "p95": 5.4319000000000415,
+          "min": 2.178599999999733,
+          "max": 5.4319000000000415
+        },
+        "directChars": 201,
+        "codemodeChars": 200,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "running",
+        "tool": "running",
+        "iterations": 10,
+        "direct": {
+          "median": 0.6754000000000815,
+          "p95": 0.8809000000001106,
+          "min": 0.4011999999997897,
+          "max": 0.8809000000001106
+        },
+        "codemode": {
+          "median": 2.4787999999998647,
+          "p95": 3.076599999999871,
+          "min": 2.0350000000003092,
+          "max": 3.076599999999871
+        },
+        "directChars": 19,
+        "codemodeChars": 27,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "pending",
+        "tool": "pending",
+        "iterations": 10,
+        "direct": {
+          "median": 0.4989999999997963,
+          "p95": 0.7337999999999738,
+          "min": 0.44119999999975335,
+          "max": 0.7337999999999738
+        },
+        "codemode": {
+          "median": 2.229400000000169,
+          "p95": 2.593500000000404,
+          "min": 1.8150000000000546,
+          "max": 2.593500000000404
+        },
+        "directChars": 53,
+        "codemodeChars": 61,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      },
+      {
+        "id": "crash_reports",
+        "tool": "crash_reports",
+        "iterations": 10,
+        "direct": {
+          "median": 0.8178000000002612,
+          "p95": 1.039600000000064,
+          "min": 0.6322000000000116,
+          "max": 1.039600000000064
+        },
+        "codemode": {
+          "median": 2.97420000000011,
+          "p95": 3.4555999999997766,
+          "min": 2.095100000000002,
+          "max": 3.4555999999997766
+        },
+        "directChars": 90,
+        "codemodeChars": 98,
+        "errors": {
+          "direct": 0,
+          "codemode": 0
+        }
+      }
+    ],
+    "sandboxOnly": {
+      "median": 1.1027000000003682,
+      "p95": 1.5183999999999287,
+      "min": 0.8579999999997199,
+      "max": 1.5183999999999287
+    }
+  },
+  "coveredTools": 9,
+  "skipped": [
+    {
+      "tool": "execute",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "batch",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "set_parameter",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "check_parameters",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "new_design",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "open",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "save",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "export",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "undo",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "redo",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "cancel",
+      "reason": "Changes the design, files or the running app, so it is not timed against a live install."
+    },
+    {
+      "tool": "body_topology",
+      "reason": "Needs a body id from a design that has one; the benchmark session is empty."
+    },
+    {
+      "tool": "screenshot",
+      "reason": "Returns an image, which a script cannot show the model; left out of the code API."
+    },
+    {
+      "tool": "compare_picture",
+      "reason": "Takes and returns images; left out of the code API."
+    }
+  ],
+  "cases": [
+    {
+      "id": "version",
+      "tool": "version",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "list_commands",
+      "tool": "list_commands",
+      "args": {
+        "filter": "fillet",
+        "limit": 5
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "describe_command",
+      "tool": "describe_command",
+      "args": {
+        "id": "solid.box"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "skill_reference",
+      "tool": "skill_reference",
+      "args": {
+        "skill": "solidcraft-modeling"
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "inspect_design",
+      "tool": "inspect_design",
+      "args": {
+        "measure": false,
+        "sketches": false
+      },
+      "hasPrompt": false
+    },
+    {
+      "id": "measure",
+      "tool": "measure",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "running",
+      "tool": "running",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "pending",
+      "tool": "pending",
+      "args": {},
+      "hasPrompt": false
+    },
+    {
+      "id": "crash_reports",
+      "tool": "crash_reports",
+      "args": {
+        "limit": 3
+      },
+      "hasPrompt": false
+    }
+  ]
+}

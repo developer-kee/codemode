@@ -57,6 +57,7 @@ Same model, same tasks, same server, used directly versus behind codemode, and e
 | Playwright | 25 | **-71%** | -26% | +8% | 9/9 and 9/9 |
 | Windows | 20 | **-65%** | -8% | +2% | 9/9 and 9/9 |
 | Windows, only 4 tools | 4 | -3% | **+42%** | -19% | 9/9 and 9/9 |
+| SolidCraft | 23 | no model runs yet; tool definitions are **-94%** (8,344 to 479 tokens per turn) | | | |
 | Notion (self-hosted token) | 24 | not run yet | | | |
 
 How to read this:
@@ -110,6 +111,7 @@ Each service is one folder in `services/`:
 | `windows` | Windows-MCP | A Windows desktop; gives the model PowerShell, files and input |
 | `playwright` | `@playwright/mcp` | A browser; `browser_run_code_unsafe` is off unless `CODEMODE_ALLOW_UNSAFE=1` |
 | `filesystem` | The reference Filesystem server | Directories via `CODEMODE_FILESYSTEM_DIRS` |
+| `solidcraft` | SolidCraft, a parametric CAD app (23 tools) | SolidCraft installed (`solidcraft-cli`; override with `SOLIDCRAFT_CLI`). With the app's bridge on (Preferences > Extend > Assistant > "Let AI agents connect", port 27878) scripts edit the open design; otherwise a headless session (`CODEMODE_SOLIDCRAFT_HEADLESS=1` forces it). `screenshot` and `compare_picture` are left out because a script can't show images; the server limits file access itself, and `CODEMODE_SOLIDCRAFT_ALLOW_PATHS` adds folders |
 | `notion/token` | The self-hosted Notion server (24 tools) | `NOTION_TOKEN` (an integration token) |
 | `notion/oauth` | Notion's hosted server (77 tools) | `npm run login -- notion/oauth` once; no token in any config |
 

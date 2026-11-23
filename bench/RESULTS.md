@@ -15,6 +15,7 @@ One line per service, from the same fixed rule as the TL;DR at the top of each r
 | Filesystem (reference MCP server) | Saves a lot of tokens and is faster (tokens -88%, time -47%). | [suites/filesystem/RESULTS.md](suites/filesystem/RESULTS.md) |
 | Notion (official MCP server) | No runs yet, so nothing is measured. | [suites/notion/RESULTS.md](suites/notion/RESULTS.md) |
 | Notion (hosted MCP server, OAuth) | Codemode passed fewer runs than direct. Read the failed runs below before trusting the savings. | [suites/notion-oauth/RESULTS.md](suites/notion-oauth/RESULTS.md) |
+| SolidCraft (parametric CAD, read-only tools) | Tool definitions shrink by 94%, but no model runs are recorded, so the effect on tokens, time and correctness is not measured. | [suites/solidcraft/RESULTS.md](suites/solidcraft/RESULTS.md) |
 
 ## Models
 
