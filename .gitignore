@@ -9,3 +9,6 @@ bench/results/*.tmp
 .playwright-mcp/
 servers/node_modules/
 servers/python/.venv/
+
+# Generated from your own Claude Code transcripts (npm run mcp:usage); not for sharing
+docs/mcp-usage.md

@@ -438,7 +438,7 @@
       "id": "read_text_file",
       "tool": "read_text_file",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt"
+        "path": "<path>"
       },
       "hasPrompt": true
     },
@@ -447,8 +447,8 @@
       "tool": "read_multiple_files",
       "args": {
         "paths": [
-          "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt",
-          "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\b.txt"
+          "<path>",
+          "<path>"
         ]
       },
       "hasPrompt": true
@@ -457,7 +457,7 @@
       "id": "list_directory",
       "tool": "list_directory",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls"
+        "path": "<path>"
       },
       "hasPrompt": true
     },
@@ -465,7 +465,7 @@
       "id": "list_directory_with_sizes",
       "tool": "list_directory_with_sizes",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls",
+        "path": "<path>",
         "sortBy": "name"
       },
       "hasPrompt": false
@@ -474,7 +474,7 @@
       "id": "directory_tree",
       "tool": "directory_tree",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls"
+        "path": "<path>"
       },
       "hasPrompt": true
     },
@@ -482,7 +482,7 @@
       "id": "search_files",
       "tool": "search_files",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls",
+        "path": "<path>",
         "pattern": "c.txt"
       },
       "hasPrompt": true
@@ -491,7 +491,7 @@
       "id": "get_file_info",
       "tool": "get_file_info",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\a.txt"
+        "path": "<path>"
       },
       "hasPrompt": true
     },
@@ -499,7 +499,7 @@
       "id": "write_file",
       "tool": "write_file",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\out.txt",
+        "path": "<path>",
         "content": "written-4821"
       },
       "hasPrompt": true
@@ -508,7 +508,7 @@
       "id": "append_file",
       "tool": "append_file",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\log.txt",
+        "path": "<path>",
         "content": "line\n"
       },
       "hasPrompt": false
@@ -517,7 +517,7 @@
       "id": "edit_file",
       "tool": "edit_file",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\edit.txt",
+        "path": "<path>",
         "edits": [
           {
             "oldText": "AAA",
@@ -532,7 +532,7 @@
       "id": "create_directory",
       "tool": "create_directory",
       "args": {
-        "path": "C:\\repos\\codemode\\bench\\work\\fs-sandbox\\calls\\made\\deep"
+        "path": "<path>"
       },
       "hasPrompt": true
     }

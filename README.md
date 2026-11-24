@@ -209,7 +209,7 @@ services/           one folder per wrapped MCP server, each with its tool-defini
 servers/            the upstream MCP servers, installed from lockfiles
 bench/              the benchmark: cli/ (entrypoints), lib/ (harness), suites/<id>/ (tasks, raw runs, RESULTS.md)
 docs/               landscape.md (other Code Mode implementations), production.md (security and scaling plan),
-                    mcp-candidates.md and mcp-usage.md (which servers would benefit)
+                    mcp-candidates.md (which servers would benefit)
 test/               unit and end-to-end tests
 scripts/            add-service, login, lock update, usage analysis
 ```

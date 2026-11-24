@@ -417,7 +417,7 @@
       "tool": "FileSystem",
       "args": {
         "mode": "list",
-        "path": "C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls"
+        "path": "<path>"
       },
       "hasPrompt": true
     },
@@ -426,7 +426,7 @@
       "tool": "FileSystem",
       "args": {
         "mode": "read",
-        "path": "C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls\\a.txt"
+        "path": "<path>"
       },
       "hasPrompt": true
     },
@@ -435,7 +435,7 @@
       "tool": "FileSystem",
       "args": {
         "mode": "write",
-        "path": "C:\\Users\\KEE-YA~1\\AppData\\Local\\Temp\\codemode-bench-windows-calls\\out.txt",
+        "path": "<path>",
         "content": "written-4821",
         "overwrite": true
       },
@@ -456,7 +456,7 @@
       "tool": "Registry",
       "args": {
         "mode": "get",
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+        "path": "HKL<path> NT\\CurrentVersion",
         "name": "ProductName"
       },
       "hasPrompt": true
